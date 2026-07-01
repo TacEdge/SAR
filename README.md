@@ -42,8 +42,17 @@ It is a folder of static files, so any static host works:
 
 No build step, no dependencies.
 
-## Screens are unmodified
+## Screens
 
-The nine `M*.html` screen files are loaded byte-for-byte as found; only the shell
-files (`index.html`, `shell.css`, `shell.js`) and this README were added. A
-`git diff` shows the screen files untouched.
+Eight of the nine `M*.html` screen files are loaded byte-for-byte as found. The
+shell files (`index.html`, `shell.css`, `shell.js`) and this README were added.
+
+One screen was changed on request: `M2 The COP Screen.html` now shows real
+satellite imagery. Its abstract base map was replaced with a Leaflet map over
+Esri World Imagery (an open basemap, no API key), and the operational overlays
+(operational area, search sectors, search paths, completed track, and the unit
+and clue pins) are anchored to real coordinates near Luxmore Hut so they pan and
+zoom with the map. The existing behaviour (task to sector to resource
+cross-highlighting, layer toggles, domain switch) is preserved. Leaflet is
+vendored under `vendor/leaflet/`, so the page needs no CDN; only the satellite
+tiles require an internet connection.

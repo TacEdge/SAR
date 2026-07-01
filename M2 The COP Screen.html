@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <style>
 /* ===== SAROP design tokens v0.1 ===== */
 :root{
@@ -56,34 +57,17 @@ button{font-family:inherit; cursor:pointer}
 .cop{display:grid; grid-template-columns:1fr 372px; height:calc(100vh - 52px); min-height:600px}
 .mapwrap{position:relative; overflow:hidden; border-right:1px solid var(--hairline)}
 
-/* base map */
-.basemap{position:absolute; inset:0;
-  background:
-    linear-gradient(rgba(178,181,148,.18) 1px,transparent 1px) 0 0/32px 32px,
-    linear-gradient(90deg,rgba(178,181,148,.18) 1px,transparent 1px) 0 0/32px 32px,
-    radial-gradient(ellipse 60% 50% at 34% 42%,rgba(110,125,92,.12),transparent 60%),
-    radial-gradient(ellipse 40% 40% at 72% 66%,rgba(110,125,92,.10),transparent 60%),
-    var(--cream-2);}
-html[data-domain="marine"] .basemap{
-  background:
-    linear-gradient(rgba(53,96,110,.14) 1px,transparent 1px) 0 0/32px 32px,
-    linear-gradient(90deg,rgba(53,96,110,.14) 1px,transparent 1px) 0 0/32px 32px,
-    radial-gradient(ellipse 50% 40% at 60% 55%,rgba(53,96,110,.12),transparent 60%),
-    #E7EDEE;}
-.mapsvg{position:absolute; inset:0; width:100%; height:100%}
-.layer-hidden{display:none}
+/* base map: real satellite imagery via Leaflet */
+#map{position:absolute; inset:0; background:var(--cream-2); z-index:0}
+.leaflet-container{font-family:var(--ui)}
+/* keep Leaflet chrome quiet and on-brand */
+.leaflet-control-zoom a{color:var(--ink); border-color:var(--hairline)}
+.leaflet-control-attribution{font-size:10px; background:rgba(251,250,246,.82); color:var(--ink-3)}
+.leaflet-control-scale-line{border-color:var(--ink-2); color:var(--ink-2); background:rgba(251,250,246,.82); font-family:var(--mono); font-size:10px}
 
-/* svg feature styling */
-.area{fill:none; stroke:var(--accent); stroke-width:2; stroke-dasharray:7 5; opacity:.7}
-.sector{fill:var(--accent); opacity:.10; stroke:var(--accent); stroke-width:1.5; cursor:pointer; transition:opacity .15s}
-.sector:hover{opacity:.20}
-.sector.hot{opacity:.26}
-.path{fill:none; stroke:var(--forest); stroke-width:2; stroke-dasharray:4 4; opacity:.85}
-.track{fill:none; stroke:var(--info); stroke-width:2.5; opacity:.75; stroke-linecap:round}
-html[data-domain="marine"] .track{stroke:#2f7d8f}
-
-/* pins (HTML over svg) */
-.pin{position:absolute; transform:translate(-50%,-100%); display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer}
+/* pins rendered as Leaflet div-icons, reusing the original teardrop look */
+.leaflet-div-icon{background:transparent; border:0}
+.pin{display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer}
 .pin .mk{width:18px; height:18px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #fff; box-shadow:var(--shadow)}
 .pin .cap{font-family:var(--mono); font-size:10px; background:var(--paper); padding:1px 6px; border-radius:var(--r-sm); border:1px solid var(--hairline); white-space:nowrap; transform:translateY(-2px)}
 .pin.hot .cap{background:var(--accent); color:#fff; border-color:var(--accent)}
@@ -91,7 +75,7 @@ html[data-domain="marine"] .track{stroke:#2f7d8f}
 
 /* floating panels on the map */
 .floatpanel{position:absolute; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); box-shadow:var(--shadow)}
-.mapinc{top:var(--s3); left:var(--s3); width:250px; padding:var(--s3) var(--s4)}
+.mapinc{top:80px; left:var(--s3); width:250px; padding:var(--s3) var(--s4)}
 .mapinc .h{display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--s2)}
 .mapinc .h .t{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive)}
 .mapinc .r{display:flex; justify-content:space-between; font-size:13px; padding:3px 0}
@@ -204,22 +188,7 @@ html[data-domain="marine"] .track{stroke:#2f7d8f}
 <div class="cop">
   <!-- MAP -->
   <div class="mapwrap">
-    <div class="basemap"></div>
-    <svg class="mapsvg" viewBox="0 0 600 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <g id="lyr-area"><path class="area" d="M70,50 L545,66 L522,410 L92,392 Z"/></g>
-      <g id="lyr-sectors">
-        <polygon class="sector" data-sector="A" points="96,74 300,84 292,232 100,224"/>
-        <polygon class="sector" data-sector="B" points="316,238 512,250 500,392 306,380"/>
-      </g>
-      <g id="lyr-paths"><path class="path" d="M120,100 L270,110 L130,150 L262,160 L140,200 L256,210"/></g>
-      <g id="lyr-tracks"><path class="track" d="M340,270 L400,300 L370,340 L440,360 L410,388"/></g>
-    </svg>
-
-    <!-- pins -->
-    <div class="pin lkp" style="left:24%; top:26%" data-res=""><span class="mk"></span><span class="cap">LKP</span></div>
-    <div class="pin clue" style="left:33%; top:40%" data-res=""><span class="mk"></span><span class="cap">clue · footprint</span></div>
-    <div class="pin team" id="pin-r2" style="left:30%; top:33%" data-res="R2"><span class="mk"></span><span class="cap">ROMEO-2</span></div>
-    <div class="pin team" id="pin-r4" style="left:68%; top:70%" data-res="R4"><span class="mk"></span><span class="cap">ROMEO-4</span></div>
+    <div id="map"></div>
 
     <!-- floating incident + progress -->
     <div class="floatpanel mapinc reveal" style="animation-delay:.05s">
@@ -246,10 +215,9 @@ html[data-domain="marine"] .track{stroke:#2f7d8f}
 
     <!-- query readout -->
     <div class="floatpanel mapquery reveal" style="animation-delay:.2s" id="query">
-      <span><span class="lb">Grid</span> <span id="qGrid">NZTM 1573290E 5180410N</span></span>
-      <span><span class="lb">Bearing</span> <span id="qBrg">247° · 1.8 km</span></span>
+      <span><span class="lb">Position</span> <span id="qGrid">45.3805°S 167.6178°E</span></span>
+      <span><span class="lb">From LKP</span> <span id="qBrg">—</span></span>
     </div>
-    <div class="floatpanel scalebar reveal" style="animation-delay:.2s"><span class="ln"></span>1 km</div>
 
     <!-- plan toolbar -->
     <div class="maptools reveal" style="animation-delay:.28s" role="group" aria-label="Map tools">
@@ -315,35 +283,96 @@ html[data-domain="marine"] .track{stroke:#2f7d8f}
   </div>
 </div>
 
+<script src="vendor/leaflet/leaflet.js"></script>
 <script>
 (function(){
   var root=document.documentElement;
+  var qGrid=document.getElementById('qGrid'), qBrg=document.getElementById('qBrg');
 
-  // domain switch
+  /* ===== real satellite map (Leaflet + Esri World Imagery) ===== */
+  var LKP=[-45.3805,167.6178];
+  var map=L.map('map',{minZoom:10, maxZoom:18, zoomControl:true, attributionControl:true})
+           .setView([-45.3888,167.6235],14);
+
+  // Esri World Imagery: open satellite basemap, no API key required.
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+    maxZoom:18,
+    attribution:'Imagery © Esri, Maxar, Earthstar Geographics, GIS User Community'
+  }).addTo(map);
+  L.control.scale({imperial:false, position:'bottomright'}).addTo(map);
+
+  function accent(){ return root.getAttribute('data-domain')==='marine' ? '#35606E' : '#2B4721'; }
+  function trackCol(){ return root.getAttribute('data-domain')==='marine' ? '#2f7d8f' : '#35606E'; }
+
+  // ---- operational overlays, anchored to real coordinates near Luxmore Hut ----
+  var areaLayer=L.polygon([[-45.372,167.598],[-45.372,167.652],[-45.408,167.658],[-45.410,167.600]],
+    {color:accent(), weight:2, dashArray:'7 5', fill:false, opacity:.85});
+
+  var secNormal={weight:1.5, color:accent(), fillColor:accent(), fillOpacity:.12, opacity:.8};
+  function secHot(){ return {weight:2, color:accent(), fillColor:accent(), fillOpacity:.30, opacity:1}; }
+  var sectorA=L.polygon([[-45.374,167.602],[-45.374,167.628],[-45.390,167.626],[-45.390,167.604]], secNormal);
+  var sectorB=L.polygon([[-45.391,167.630],[-45.391,167.652],[-45.404,167.652],[-45.404,167.630]], secNormal);
+  var sectors={A:sectorA, B:sectorB};
+  var sectorsGroup=L.layerGroup([sectorA, sectorB]);
+
+  var pathsLayer=L.polyline([[-45.377,167.607],[-45.378,167.624],[-45.381,167.609],[-45.383,167.623],[-45.386,167.611],[-45.388,167.622]],
+    {color:accent(), weight:2, dashArray:'4 4', opacity:.9});
+  var tracksLayer=L.polyline([[-45.393,167.634],[-45.395,167.642],[-45.398,167.637],[-45.401,167.646],[-45.403,167.641]],
+    {color:trackCol(), weight:3, opacity:.8, lineCap:'round'});
+
+  areaLayer.addTo(map); sectorsGroup.addTo(map); pathsLayer.addTo(map); tracksLayer.addTo(map);
+
+  // ---- unit / clue pins as div-icons (keep the original teardrop look) ----
+  function pin(kind,label){
+    return L.divIcon({className:'pinwrap',
+      html:'<div class="pin '+kind+'"><span class="mk"></span><span class="cap">'+label+'</span></div>',
+      iconSize:[130,40], iconAnchor:[65,40]});
+  }
+  L.marker(LKP,{icon:pin('lkp','LKP')}).addTo(map);
+  L.marker([-45.3852,167.6098],{icon:pin('clue','clue · footprint')}).addTo(map);
+  var mR2=L.marker([-45.3838,167.6135],{icon:pin('team','ROMEO-2')}).addTo(map);
+  var mR4=L.marker([-45.3968,167.6402],{icon:pin('team','ROMEO-4')}).addTo(map);
+  var pinByRes={R2:mR2, R4:mR4};
+  function pinEl(res){ var m=pinByRes[res]; var el=m&&m.getElement(); return el?el.querySelector('.pin'):null; }
+
+  // fit the operation on load; keep the map sized correctly inside the frame
+  map.fitBounds(areaLayer.getBounds().pad(0.12));
+  setTimeout(function(){ map.invalidateSize(); },200);
+  window.addEventListener('resize',function(){ map.invalidateSize(); });
+
+  /* ===== domain switch (driven by the shell or the in-screen toggle) ===== */
+  function restyle(){
+    areaLayer.setStyle({color:accent()});
+    secNormal.color=accent(); secNormal.fillColor=accent();
+    sectorA.setStyle(sectorA._hot?secHot():secNormal);
+    sectorB.setStyle(sectorB._hot?secHot():secNormal);
+    pathsLayer.setStyle({color:accent()});
+    tracksLayer.setStyle({color:trackCol()});
+  }
   function setDomain(dom){
     root.setAttribute('data-domain',dom);
     document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-dom')===dom?'true':'false');});
-    document.getElementById('qGrid').textContent = dom==='marine' ? '43°31.8\u2032S 172°45.1\u2032E' : 'NZTM 1573290E 5180410N';
+    restyle();
   }
   document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){setDomain(b.getAttribute('data-dom'));});});
 
-  // cross-reference: click a task -> highlight its sector + team pin
+  /* ===== cross-reference: task, sector and resource ===== */
   function clearHot(){
-    document.querySelectorAll('.sector.hot').forEach(function(s){s.classList.remove('hot');});
+    sectorA._hot=false; sectorA.setStyle(secNormal);
+    sectorB._hot=false; sectorB.setStyle(secNormal);
     document.querySelectorAll('.pin.hot').forEach(function(p){p.classList.remove('hot');});
     document.querySelectorAll('.trow.sel,.rrow.sel').forEach(function(r){r.classList.remove('sel');});
   }
   function highlight(sector,res,rowEl){
     clearHot();
     if(rowEl) rowEl.classList.add('sel');
-    if(sector){var s=document.querySelector('.sector[data-sector="'+sector+'"]'); if(s) s.classList.add('hot');}
-    if(res){var p=document.querySelector('.pin[data-res="'+res+'"]'); if(p) p.classList.add('hot');
-      var rr=document.querySelector('.rrow[data-res="'+res+'"]'); if(rr) rr.classList.add('sel');}
+    if(sector && sectors[sector]){ var s=sectors[sector]; s._hot=true; s.setStyle(secHot()); }
+    if(res){ var el=pinEl(res); if(el) el.classList.add('hot');
+      var rr=document.querySelector('.rrow[data-res="'+res+'"]'); if(rr) rr.classList.add('sel'); }
   }
   document.querySelectorAll('.trow').forEach(function(row){
     row.addEventListener('click',function(){
-      var sel=row.classList.contains('sel');
-      if(sel){clearHot();return;}
+      if(row.classList.contains('sel')){clearHot();return;}
       highlight(row.getAttribute('data-sector'), row.getAttribute('data-res'), row);
     });
   });
@@ -351,28 +380,28 @@ html[data-domain="marine"] .track{stroke:#2f7d8f}
     row.addEventListener('click',function(){
       var res=row.getAttribute('data-res'); if(!res){clearHot();return;}
       if(row.classList.contains('sel')){clearHot();return;}
-      // find matching task sector
       var t=document.querySelector('.trow[data-res="'+res+'"]');
       highlight(t?t.getAttribute('data-sector'):'', res, null);
       row.classList.add('sel'); if(t) t.classList.add('sel');
     });
   });
-  document.querySelectorAll('.sector').forEach(function(s){
-    s.addEventListener('click',function(){
-      var sec=s.getAttribute('data-sector');
-      var t=document.querySelector('.trow[data-sector="'+sec+'"]');
-      if(t){highlight(sec, t.getAttribute('data-res'), t);} 
-    });
-  });
+  sectorA.on('click',function(){ sectorClick('A'); });
+  sectorB.on('click',function(){ sectorClick('B'); });
+  function sectorClick(sec){
+    var t=document.querySelector('.trow[data-sector="'+sec+'"]');
+    if(t) highlight(sec, t.getAttribute('data-res'), t);
+  }
 
-  // base-layer toggles
+  /* ===== base-layer toggles now drive Leaflet layers ===== */
+  var layerMap={'lyr-area':areaLayer, 'lyr-sectors':sectorsGroup, 'lyr-paths':pathsLayer, 'lyr-tracks':tracksLayer};
   document.querySelectorAll('.layers input').forEach(function(cb){
     cb.addEventListener('change',function(){
-      document.getElementById(cb.getAttribute('data-layer')).classList.toggle('layer-hidden', !cb.checked);
+      var lyr=layerMap[cb.getAttribute('data-layer')]; if(!lyr) return;
+      if(cb.checked) map.addLayer(lyr); else map.removeLayer(lyr);
     });
   });
 
-  // plan toolbar (visual only)
+  /* ===== plan toolbar (visual only) ===== */
   document.querySelectorAll('.maptools button').forEach(function(b){
     b.addEventListener('click',function(){
       document.querySelectorAll('.maptools button').forEach(function(x){x.classList.remove('on');});
@@ -380,7 +409,7 @@ html[data-domain="marine"] .track{stroke:#2f7d8f}
     });
   });
 
-  // log filter
+  /* ===== log filter ===== */
   document.querySelectorAll('.railfilter button').forEach(function(b){
     b.addEventListener('click',function(){
       document.querySelectorAll('.railfilter button').forEach(function(x){x.classList.remove('on');});
@@ -392,25 +421,27 @@ html[data-domain="marine"] .track{stroke:#2f7d8f}
     });
   });
 
-  // map query readout follows pointer over the map
-  var mapwrap=document.querySelector('.mapwrap');
-  mapwrap.addEventListener('mousemove',function(e){
-    var r=mapwrap.getBoundingClientRect();
-    var x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
-    var E=1572800+Math.round(x*1400), N=5180900-Math.round(y*1200);
-    var marine=root.getAttribute('data-domain')==='marine';
-    document.getElementById('qGrid').textContent = marine
-      ? (43+ (31+y*3).toFixed(1)/60).toFixed(0)+'°'+(31+y*3).toFixed(1)+'\u2032S '+(172+ (37+x*10).toFixed(1)/60).toFixed(0)+'°'+(37+x*10).toFixed(1)+'\u2032E'
-      : 'NZTM '+E+'E '+N+'N';
-    var brg=Math.round(x*360); document.getElementById('qBrg').textContent=brg+'° · '+(0.5+y*3).toFixed(1)+' km';
+  /* ===== position readout follows the pointer over the imagery ===== */
+  function fmt(lat,lng){
+    return Math.abs(lat).toFixed(4)+'°'+(lat<0?'S':'N')+' '+Math.abs(lng).toFixed(4)+'°'+(lng<0?'W':'E');
+  }
+  function bearing(a,b){
+    var toR=Math.PI/180, y=Math.sin((b[1]-a[1])*toR)*Math.cos(b[0]*toR);
+    var x=Math.cos(a[0]*toR)*Math.sin(b[0]*toR)-Math.sin(a[0]*toR)*Math.cos(b[0]*toR)*Math.cos((b[1]-a[1])*toR);
+    return (Math.atan2(y,x)/toR+360)%360;
+  }
+  map.on('mousemove',function(e){
+    qGrid.textContent=fmt(e.latlng.lat, e.latlng.lng);
+    var km=map.distance(e.latlng, L.latLng(LKP))/1000;
+    qBrg.textContent=Math.round(bearing(LKP,[e.latlng.lat,e.latlng.lng]))+'° · '+km.toFixed(1)+' km';
   });
 
-  // render toast
+  /* ===== render toast ===== */
   var toast=document.getElementById('toast');
   setTimeout(function(){toast.classList.add('show');},600);
   setTimeout(function(){toast.classList.remove('show');},4200);
 
-  // elapsed ticks
+  /* ===== elapsed ticks ===== */
   var base=161; // 02:41
   setInterval(function(){base++; var m=Math.floor(base/60),s=base%60; document.getElementById('elapsed').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;},1000);
 })();
