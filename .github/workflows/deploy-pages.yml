@@ -8,6 +8,7 @@ name: Deploy prototype to GitHub Pages
 on:
   push:
     branches:
+      - main
       - claude/sarop-workspace-prototype-a8rs2m
   workflow_dispatch:
 
