@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shell.css">
+</head>
+<body>
+
+<!-- top bar: identity, guided path, global domain toggle -->
+<div class="topbar">
+  <div class="brand">
+    <span class="mark">TacEdge SAR</span>
+    <span class="sub">SAROP Workspace</span>
+  </div>
+  <div class="right">
+    <div class="walk" role="group" aria-label="Guided walkthrough">
+      <button id="prevBtn" type="button" disabled>‹ Prev</button>
+      <span class="step" id="stepLabel">—</span>
+      <button id="nextBtn" type="button" disabled>Next ›</button>
+    </div>
+    <div class="domain">
+      <span class="lab">Domain</span>
+      <div class="seg" role="group" aria-label="Domain">
+        <button data-dom="land" aria-pressed="true">Land</button>
+        <button data-dom="marine" aria-pressed="false">Marine</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="body">
+  <!-- left navigation, flow order -->
+  <nav class="nav" aria-label="Screens">
+    <div class="navhead">Walkthrough</div>
+    <div id="navList"></div>
+  </nav>
+
+  <!-- central stage: iframe + landing panel -->
+  <div class="stage">
+    <iframe id="screenFrame" title="SAROP Workspace screen"></iframe>
+    <div class="landing" id="landing">
+      <div class="card">
+        <div class="kicker">SAROP Workspace</div>
+        <h1>Prototype walkthrough</h1>
+        <p>A clickable walk through the nine workspace screens, in flow order. Begin at stand-up, or pick any screen from the left.</p>
+        <button class="begin" id="beginBtn" type="button">Begin walkthrough</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+/* ============================================================
+   SAROP Workspace prototype shell
+   Chrome only. Built entirely from the screens' own design
+   tokens (SAROP design tokens v0.1). Invents no new colours,
+   fonts or spacing. The nine screen files are never modified.
+   ============================================================ */
+
+:root{
+  /* tokens lifted verbatim from the screens' design system block */
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  --info:#35606E; --info-bg:#E0EAEC; --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+/* shell follows the same domain accent rule the screens use */
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0; background:var(--canvas); color:var(--ink);
+  font-family:var(--ui); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; overflow:hidden}
+button{font-family:inherit}
+
+/* ===== top bar (mirrors the screens' app bar) ===== */
+.topbar{background:var(--forest); color:var(--cream); flex:none;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
+.topbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
+.topbar .mark{font-weight:700; letter-spacing:.02em; font-size:15px}
+.topbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage);
+  letter-spacing:.06em; text-transform:uppercase}
+.topbar .right{display:flex; align-items:center; gap:var(--s5)}
+
+/* guided-path Prev / Next */
+.walk{display:flex; align-items:center; gap:var(--s2)}
+.walk .step{font-family:var(--mono); font-size:11px; color:var(--sage);
+  letter-spacing:.06em; text-transform:uppercase; min-width:52px; text-align:center}
+.walk button{font-size:12px; font-weight:600; letter-spacing:.04em;
+  background:transparent; color:#CFD6C2; border:1px solid rgba(255,255,255,.28);
+  border-radius:var(--r-sm); padding:6px 13px; cursor:pointer}
+.walk button:hover:not(:disabled){background:rgba(255,255,255,.10); color:var(--cream)}
+.walk button:disabled{opacity:.35; cursor:not-allowed}
+
+/* domain toggle (mirrors the screens' .seg) */
+.domain{display:flex; align-items:center; gap:var(--s2)}
+.domain .lab{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sage)}
+.seg{display:inline-flex; border:1px solid rgba(255,255,255,.28);
+  border-radius:var(--r-pill); overflow:hidden}
+.seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+  background:transparent; color:#CFD6C2; border:0; padding:5px 13px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
+
+/* ===== body: nav + stage ===== */
+.body{flex:1; display:flex; min-height:0}
+
+.nav{flex:none; width:248px; background:var(--paper); border-right:1px solid var(--hairline);
+  overflow-y:auto; padding:var(--s4) 0}
+.nav .navhead{padding:0 var(--s5) var(--s3); font-size:11px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--olive)}
+.nav .navitem{display:flex; gap:var(--s3); align-items:flex-start; width:100%;
+  text-align:left; background:transparent; border:0; cursor:pointer;
+  padding:10px var(--s5); border-left:3px solid transparent; color:var(--ink)}
+.nav .navitem:hover{background:var(--cream-2)}
+.nav .navitem.active{background:var(--forest-tint); border-left-color:var(--accent)}
+.nav .navitem .code{font-family:var(--mono); font-size:12px; font-weight:600;
+  color:var(--olive); flex:none; width:24px; padding-top:1px}
+.nav .navitem.active .code{color:var(--accent)}
+.nav .navitem .txt{min-width:0}
+.nav .navitem .txt .name{display:block; font-size:14px; font-weight:600; letter-spacing:.01em}
+.nav .navitem .txt .note{display:block; font-size:11.5px; color:var(--ink-3); margin-top:2px}
+.nav .navitem.active .txt .name{color:var(--forest)}
+
+.stage{flex:1; position:relative; min-width:0; background:var(--canvas)}
+.stage iframe{width:100%; height:100%; border:0; display:block; background:var(--paper)}
+
+/* ===== landing panel ===== */
+.landing{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:var(--canvas); padding:var(--s6)}
+.landing.hidden{display:none}
+.landing .card{max-width:520px; background:var(--paper); border:1px solid var(--hairline);
+  border-radius:var(--r-md); box-shadow:var(--shadow); padding:var(--s7) var(--s6); text-align:center}
+.landing .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--olive)}
+.landing h1{font-size:26px; font-weight:700; letter-spacing:-.01em; margin:var(--s3) 0 var(--s2); color:var(--ink)}
+.landing p{color:var(--ink-2); margin:0 auto var(--s6); max-width:40ch}
+.landing .begin{font-size:15px; font-weight:600; padding:12px 26px; border-radius:var(--r-sm);
+  border:1px solid transparent; background:var(--accent); color:#fff; cursor:pointer; letter-spacing:.01em}
+.landing .begin:hover{background:var(--forest-deep)}
+html[data-domain="marine"] .landing .begin:hover{background:#274b57}
