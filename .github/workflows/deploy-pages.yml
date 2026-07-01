@@ -1,0 +1,56 @@
+name: Deploy prototype to GitHub Pages
+
+# Publishes the static SAROP Workspace prototype (the shell plus the nine
+# screen files) to GitHub Pages. Runs on push to the prototype branch, or
+# on demand. The internal walkthrough PDF and the repo plumbing are left
+# out of the published site.
+
+on:
+  push:
+    branches:
+      - claude/sarop-workspace-prototype-a8rs2m
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; newer pushes supersede in-flight ones.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble published site (exclude PDF and repo plumbing)
+        run: |
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='_site' \
+            --exclude='*.pdf' \
+            ./ _site/
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
