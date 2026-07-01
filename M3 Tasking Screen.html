@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — M3 Tasking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  --critical:#A6352B; --critical-bg:#F6E4DF;
+  --caution:#A9741B; --caution-bg:#F5EBD6;
+  --info:#35606E; --info-bg:#E0EAEC;
+  --neutral:#83836F; --neutral-bg:#E9E7DC;
+  --land:var(--forest); --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased}
+button{font-family:inherit; cursor:pointer}
+.mono{font-family:var(--mono)}
+
+/* app bar */
+.appbar{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between; padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
+.appbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
+.appbar .mark{font-weight:700; font-size:15px}
+.appbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
+.appbar .inc{display:flex; align-items:center; gap:var(--s3); margin-left:var(--s5); padding-left:var(--s5); border-left:1px solid rgba(255,255,255,.18)}
+.appbar .inc .ref{font-family:var(--mono); font-size:13px; color:var(--cream)}
+.appbar .right{display:flex; align-items:center; gap:var(--s5)}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill)}
+.pill .dot{width:7px; height:7px; border-radius:50%}
+.p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
+.domain{display:flex; align-items:center; gap:var(--s2)}
+.domain .lab{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sage)}
+.seg{display:inline-flex; border:1px solid rgba(255,255,255,.28); border-radius:var(--r-pill); overflow:hidden}
+.seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; background:transparent; color:#CFD6C2; border:0; padding:5px 13px}
+.seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
+.tasktimer{display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:13px; color:var(--sage)}
+.tasktimer .t{font-weight:600; font-size:15px; color:var(--cream)}
+.tasktimer .r{width:8px;height:8px;border-radius:50%;background:var(--sage)}
+.tasktimer.run .r{background:#CFE0B8; animation:pulse 1.2s infinite}
+.tasktimer.over .t{color:var(--caution-bg)} .tasktimer.over .r{background:var(--caution)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.tasktimer.run .r{animation:none}}
+
+/* page */
+.page{max-width:1160px; margin:0 auto; padding:var(--s5) var(--s5) var(--s8)}
+.head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:var(--s4)}
+.head h1{font-size:24px; font-weight:700; margin:0}
+.head p{color:var(--ink-2); margin:6px 0 0; font-size:14px}
+.grid{display:grid; grid-template-columns:1fr 420px; gap:var(--s5); align-items:start}
+
+/* composer */
+.panel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
+.panel .ph{padding:11px var(--s5); border-bottom:1px solid var(--hairline); background:var(--cream-2); display:flex; justify-content:space-between; align-items:center}
+.panel .ph .t{font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--olive)}
+.panel .ph .ref{font-family:var(--mono); font-size:12px; color:var(--ink-3)}
+.panel .pb{padding:var(--s5)}
+.field{margin-bottom:var(--s5)}
+.field:last-child{margin-bottom:0}
+.field > label{display:block; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--olive); margin-bottom:var(--s2)}
+.field input,.field textarea{width:100%; font-family:var(--ui); font-size:15px; padding:11px 13px; background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-sm); color:var(--ink); resize:vertical}
+.field input::placeholder,.field textarea::placeholder{color:#a7a996}
+.field input:focus,.field textarea:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+.hint{font-size:12px; color:var(--ink-3); margin-top:6px}
+
+/* type + geometry pickers */
+.pickrow{display:flex; flex-wrap:wrap; gap:var(--s2)}
+.pick{font-size:13px; font-weight:500; padding:8px 14px; border-radius:var(--r-sm); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2)}
+.pick[aria-pressed="true"]{background:var(--accent-tint); color:var(--accent); border-color:var(--accent); font-weight:600}
+.geo-attached{display:none; align-items:center; gap:8px; margin-top:var(--s3); font-size:13px; color:var(--forest); background:var(--forest-tint); border:1px solid var(--accent); border-radius:var(--r-sm); padding:8px 12px}
+.geo-attached.show{display:inline-flex}
+.geo-attached .mono{color:var(--ink)}
+
+/* resource chips */
+.reschips{display:flex; flex-wrap:wrap; gap:var(--s2)}
+.reschip{display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:500; padding:8px 13px; border-radius:var(--r-pill); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2)}
+.reschip .st{width:7px;height:7px;border-radius:50%}
+.reschip .st.in{background:var(--forest)} .reschip .st.stage{background:var(--caution)} .reschip .st.avail{background:var(--neutral)}
+.reschip small{font-family:var(--mono); font-size:10px; color:var(--ink-3)}
+.reschip[aria-pressed="true"]{border-color:var(--accent); background:var(--accent-tint); color:var(--accent)}
+.reschip[aria-pressed="true"] small{color:var(--accent)}
+
+/* routing (domain-driven) */
+.route{margin-top:var(--s2); border:1px solid var(--rule); border-radius:var(--r-md); padding:var(--s4); background:var(--cream-2)}
+.route .rlabel{font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin-bottom:8px}
+.route .mode{display:flex; align-items:center; gap:10px; font-size:15px; font-weight:600; color:var(--accent)}
+.route .mode .ic{width:26px;height:26px;border-radius:var(--r-sm); background:var(--accent-tint); color:var(--accent); display:flex; align-items:center; justify-content:center; flex:none}
+.route .mode .ic svg{width:15px;height:15px}
+.route .desc{font-size:13px; color:var(--ink-2); margin-top:8px}
+.route .desc b{color:var(--ink)}
+.land-only{display:block} .marine-only{display:none}
+html[data-domain="marine"] .land-only{display:none}
+html[data-domain="marine"] .marine-only{display:block}
+
+/* channel + push */
+.pushrow{display:flex; align-items:center; gap:var(--s4); margin-top:var(--s6); padding-top:var(--s5); border-top:1px solid var(--hairline)}
+.channels{display:inline-flex; border:1px solid var(--rule); border-radius:var(--r-sm); overflow:hidden}
+.channels button{font-size:12.5px; font-weight:500; padding:9px 14px; border:0; background:var(--paper); color:var(--ink-2)}
+.channels button:not(:last-child){border-right:1px solid var(--rule)}
+.channels button[aria-pressed="true"]{background:var(--forest-tint); color:var(--accent); font-weight:600}
+.btn-push{font-size:15px; font-weight:600; padding:12px 24px; border-radius:var(--r-sm); border:0; background:var(--accent); color:#fff; display:inline-flex; align-items:center; gap:9px}
+.btn-push:hover{background:var(--forest-deep)}
+html[data-domain="marine"] .btn-push:hover{background:#274b57}
+.btn-push:disabled{background:var(--neutral-bg); color:var(--ink-3); cursor:not-allowed}
+.btn-push svg{width:16px;height:16px}
+.pushnote{font-size:12px; color:var(--ink-3)}
+
+/* board */
+.board .rh{display:flex; align-items:center; justify-content:space-between; padding:11px var(--s4); background:var(--cream-2); border-bottom:1px solid var(--hairline)}
+.board .rh .t{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
+.filters{display:flex; gap:6px; padding:var(--s3) var(--s4) 0}
+.filters button{font-size:11px; font-weight:500; padding:4px 11px; border-radius:var(--r-pill); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2)}
+.filters button.on{background:var(--accent); color:#fff; border-color:var(--accent)}
+.tasks{padding:var(--s3) var(--s4) var(--s4)}
+.task{border:1px solid var(--hairline); border-radius:var(--r-md); padding:var(--s3) var(--s4); margin-bottom:var(--s3); background:var(--paper)}
+.task:last-child{margin-bottom:0}
+.task.fresh{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-tint)}
+.task .top{display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s3)}
+.task .tid{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.task .nm{font-size:14px; font-weight:600; margin:2px 0}
+.task .meta{font-family:var(--mono); font-size:11px; color:var(--ink-3); display:flex; gap:10px; flex-wrap:wrap; margin-top:4px}
+.task .meta .pushed{color:var(--forest); display:inline-flex; align-items:center; gap:4px}
+.task .meta .pushed svg{width:11px;height:11px}
+.chipst{font-family:var(--mono); font-size:10px; font-weight:500; padding:2px 8px; border-radius:var(--r-sm); border:1px solid; text-transform:uppercase; letter-spacing:.03em; white-space:nowrap; flex:none}
+.c-created{border-color:var(--rule); color:var(--ink-3); background:var(--paper)}
+.c-assigned{border-color:var(--info); color:var(--info); background:var(--info-bg)}
+.c-progress{border-color:var(--forest); color:var(--forest); background:var(--forest-tint)}
+
+/* push confirmation */
+.pushed-strip{display:none; align-items:center; gap:var(--s3); margin-top:var(--s4); background:var(--forest-tint); border:1px solid var(--forest); border-radius:var(--r-md); padding:var(--s4) var(--s5); color:var(--forest)}
+.pushed-strip.show{display:flex}
+.pushed-strip .ic{width:26px;height:26px;border-radius:50%; background:var(--forest); color:#fff; display:flex; align-items:center; justify-content:center; flex:none}
+.pushed-strip .ic svg{width:15px;height:15px}
+.pushed-strip .tt{font-weight:600; font-size:15px}
+.pushed-strip .ss{font-size:12.5px; color:var(--olive)}
+
+@media (max-width:900px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand">
+    <span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span>
+    <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
+  </div>
+  <div class="right">
+    <div class="tasktimer" id="timer" title="Time on this task"><span class="r"></span><span class="t" id="ttime">00:00</span> <span>task · target &lt; 1:00</span></div>
+    <div class="domain">
+      <span class="lab">Domain</span>
+      <div class="seg" role="group" aria-label="Domain">
+        <button data-dom="land" aria-pressed="true">Land</button>
+        <button data-dom="marine" aria-pressed="false">Marine</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="head">
+    <div><h1>Tasking</h1><p>Create it, assign it, attach where, push it to the field. One task object, whether you task direct or for-affect.</p></div>
+  </div>
+
+  <div class="grid">
+    <!-- COMPOSER -->
+    <div class="panel">
+      <div class="ph"><span class="t">New task</span><span class="ref" id="newRef">TASK-016</span></div>
+      <div class="pb">
+
+        <div class="field">
+          <label for="subj">Subject</label>
+          <input id="subj" type="text" placeholder="e.g. Sector C creek-line search">
+        </div>
+
+        <div class="field">
+          <label>Task type</label>
+          <div class="pickrow" role="group" aria-label="Task type">
+            <button class="pick" aria-pressed="true" data-type>Hasty search</button>
+            <button class="pick" data-type>Sector sweep</button>
+            <button class="pick" data-type>Containment</button>
+            <button class="pick" data-type>Track / clue</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Assign resource</label>
+          <div class="reschips" role="group" aria-label="Resources">
+            <button class="reschip" data-res="ROMEO-2"><span class="st in"></span>ROMEO-2 <small>ground · sector A</small></button>
+            <button class="reschip" data-res="ROMEO-4"><span class="st in"></span>ROMEO-4 <small>ground · sector B</small></button>
+            <button class="reschip" data-res="K9-1"><span class="st stage"></span>K9-1 <small>dog · staging</small></button>
+            <button class="reschip" data-res="Heli-1"><span class="st avail"></span>Heli-1 <small>air · Wanaka</small></button>
+          </div>
+          <div class="hint">One or more. Assigned assets and their history stay linked to the task.</div>
+        </div>
+
+        <div class="field">
+          <label>Location</label>
+          <div class="pickrow" role="group" aria-label="Geometry">
+            <button class="pick geo" aria-pressed="true" data-geo="Search area">Search area</button>
+            <button class="pick geo" data-geo="Search path">Search path</button>
+            <button class="pick geo" data-geo="Single location">Single location</button>
+          </div>
+          <div class="geo-attached show" id="geoAttached"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span id="geoText">Sector C attached · <span class="mono">0.82 km²</span></span></div>
+        </div>
+
+        <div class="field">
+          <label>Routing</label>
+          <div class="route">
+            <div class="land-only">
+              <div class="rlabel">Land · direct tasking</div>
+              <div class="mode"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>Direct task to the assigned team</div>
+              <div class="desc">The team works <b>under your immediate control</b>. You task and track them directly (TASK-10).</div>
+            </div>
+            <div class="marine-only">
+              <div class="rlabel">Marine · task for-affect</div>
+              <div class="mode"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v6M5 21a7 7 0 0 1 14 0M12 9l4 4M12 9l-4 4"/></svg></span>Task Coastguard for-affect</div>
+              <div class="desc">Coastguard receives the tasking as a <b>parent</b> and issues its own direct tasks to its assets (<b>child</b>). Same task object, one flow (TASK-11).</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pushrow">
+          <div class="channels" role="group" aria-label="Push channel">
+            <button aria-pressed="true" data-ch>App</button>
+            <button data-ch>SMS</button>
+            <button data-ch>Email</button>
+          </div>
+          <button class="btn-push" id="pushBtn" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Push to field
+          </button>
+          <span class="pushnote" id="pushNote">Add a subject and a resource to push.</span>
+        </div>
+
+        <div class="pushed-strip" id="pushed">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>
+          <div><div class="tt" id="pushedTitle">Task pushed</div><div class="ss" id="pushedSub"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOARD -->
+    <div class="panel board">
+      <div class="rh"><span class="t">Task board</span><span class="ref mono" style="color:var(--ink-3)" id="taskCount">3 open</span></div>
+      <div class="filters" role="group" aria-label="Filter tasks">
+        <button class="on" data-f="all">All</button>
+        <button data-f="c-created">Created</button>
+        <button data-f="c-assigned">Assigned</button>
+        <button data-f="c-progress">In progress</button>
+      </div>
+      <div class="tasks" id="taskList">
+        <div class="task" data-st="c-progress">
+          <div class="top"><div><div class="tid">TASK-012</div><div class="nm">Sector A hasty search</div></div><span class="chipst c-progress">In progress</span></div>
+          <div class="meta"><span>ROMEO-2</span><span>sector A · 0.9 km²</span><span class="pushed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>app</span></div>
+        </div>
+        <div class="task" data-st="c-assigned">
+          <div class="top"><div><div class="tid">TASK-014</div><div class="nm">Sector B sweep</div></div><span class="chipst c-assigned">Assigned</span></div>
+          <div class="meta"><span>ROMEO-4</span><span>sector B · 1.2 km²</span><span class="pushed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>app</span></div>
+        </div>
+        <div class="task" data-st="c-created">
+          <div class="top"><div><div class="tid">TASK-015</div><div class="nm">Road-end containment</div></div><span class="chipst c-created">Created</span></div>
+          <div class="meta"><span>unassigned</span><span>single location</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var subj=document.getElementById('subj'), pushBtn=document.getElementById('pushBtn'), pushNote=document.getElementById('pushNote');
+  var chosenRes=[], geo='Search area', channel='App', nextId=16;
+
+  // domain
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var d=b.getAttribute('data-dom'); root.setAttribute('data-domain',d);
+      document.querySelectorAll('.seg button').forEach(function(x){x.setAttribute('aria-pressed', x.getAttribute('data-dom')===d?'true':'false');});
+    });
+  });
+
+  // single-select pickers (type, geo, channel)
+  function singleSelect(sel, cb){
+    document.querySelectorAll(sel).forEach(function(b){
+      b.addEventListener('click',function(){
+        document.querySelectorAll(sel).forEach(function(x){x.setAttribute('aria-pressed','false');});
+        b.setAttribute('aria-pressed','true'); if(cb) cb(b);
+      });
+    });
+  }
+  singleSelect('.pick[data-type]');
+  singleSelect('.pick.geo', function(b){
+    geo=b.getAttribute('data-geo');
+    var att=document.getElementById('geoAttached'), txt=document.getElementById('geoText');
+    if(geo==='Search area'){txt.innerHTML='Sector C attached · <span class="mono">0.82 km²</span>';}
+    else if(geo==='Search path'){txt.innerHTML='Path drawn · <span class="mono">6 legs · 3.1 km</span>';}
+    else{txt.innerHTML='Point set · <span class="mono">NZTM 1573620E 5180140N</span>';}
+    att.classList.add('show');
+  });
+  singleSelect('.channels button[data-ch]', function(b){channel=b.textContent;});
+
+  // resource multi-select
+  document.querySelectorAll('.reschip').forEach(function(chip){
+    chip.addEventListener('click',function(){
+      var r=chip.getAttribute('data-res'), on=chip.getAttribute('aria-pressed')==='true';
+      chip.setAttribute('aria-pressed', on?'false':'true');
+      chosenRes = on ? chosenRes.filter(function(x){return x!==r;}) : chosenRes.concat([r]);
+      refresh(); startTimer();
+    });
+  });
+
+  // task timer
+  var timer=document.getElementById('timer'), running=false, t=0, iv=null;
+  function startTimer(){ if(running) return; running=true; timer.classList.add('run');
+    iv=setInterval(function(){t++; var m=Math.floor(t/60),s=t%60; document.getElementById('ttime').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s; if(t>=60) timer.classList.add('over');},1000);
+  }
+  function stopTimer(){running=false; timer.classList.remove('run'); clearInterval(iv);}
+  function resetTimer(){t=0; document.getElementById('ttime').textContent='00:00'; timer.classList.remove('over');}
+  subj.addEventListener('focus',startTimer); subj.addEventListener('input',function(){refresh();startTimer();});
+
+  function refresh(){
+    var ready = subj.value.trim() && chosenRes.length;
+    pushBtn.disabled=!ready; pushNote.style.display=ready?'none':'inline';
+  }
+
+  // push
+  pushBtn.addEventListener('click',function(){
+    if(pushBtn.disabled) return;
+    var el=document.getElementById('ttime').textContent;
+    stopTimer();
+    var id='TASK-0'+nextId; nextId++;
+    var team=chosenRes.join(', ');
+    var marine=root.getAttribute('data-domain')==='marine';
+    var geoLabel = geo==='Search area'?'Sector C · 0.82 km²':(geo==='Search path'?'6-leg path · 3.1 km':'single location');
+    // add to board
+    var el2=document.createElement('div'); el2.className='task fresh'; el2.setAttribute('data-st','c-assigned');
+    el2.innerHTML='<div class="top"><div><div class="tid">'+id+'</div><div class="nm">'+(subj.value.trim())+'</div></div><span class="chipst c-assigned">Assigned</span></div>'+
+      '<div class="meta"><span>'+team+'</span><span>'+geoLabel+'</span><span class="pushed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>'+channel.toLowerCase()+'</span></div>';
+    var list=document.getElementById('taskList'); list.insertBefore(el2, list.firstChild);
+    setTimeout(function(){el2.classList.remove('fresh');},2600);
+    // confirmation
+    var strip=document.getElementById('pushed'); strip.classList.add('show');
+    document.getElementById('pushedTitle').textContent='Task pushed to '+team+' in '+el;
+    document.getElementById('pushedSub').textContent = marine
+      ? 'Sent to Coastguard for-affect via '+channel+'. Parent task '+id+' open; child tasks follow from the agency.'
+      : 'Delivered to the field via '+channel+'. '+id+' is now Assigned and logged.';
+    // reset composer
+    subj.value=''; chosenRes=[]; document.querySelectorAll('.reschip').forEach(function(c){c.setAttribute('aria-pressed','false');});
+    document.getElementById('newRef').textContent='TASK-0'+nextId;
+    refresh(); resetTimer();
+  });
+
+  // filter
+  document.querySelectorAll('.filters button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.filters button').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); var f=b.getAttribute('data-f');
+      document.querySelectorAll('.task').forEach(function(t){t.style.display=(f==='all'||t.getAttribute('data-st')===f)?'block':'none';});
+    });
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — M5 Log &amp; Records</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  --critical:#A6352B; --critical-bg:#F6E4DF;
+  --caution:#A9741B; --caution-bg:#F5EBD6;
+  --info:#35606E; --info-bg:#E0EAEC;
+  --neutral:#83836F; --neutral-bg:#E9E7DC;
+  --land:var(--forest); --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased}
+button{font-family:inherit; cursor:pointer}
+.mono{font-family:var(--mono)}
+
+/* app bar */
+.appbar{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between; padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
+.appbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
+.appbar .mark{font-weight:700; font-size:15px}
+.appbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
+.appbar .inc{display:flex; align-items:center; gap:var(--s3); margin-left:var(--s5); padding-left:var(--s5); border-left:1px solid rgba(255,255,255,.18)}
+.appbar .inc .ref{font-family:var(--mono); font-size:13px; color:var(--cream)}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill)}
+.pill .dot{width:7px; height:7px; border-radius:50%}
+.p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
+.trustflag{font-size:12px; color:var(--sage); display:flex; align-items:center; gap:8px}
+.trustflag svg{width:13px;height:13px}
+
+/* page */
+.page{max-width:1200px; margin:0 auto; padding:var(--s5) var(--s5) var(--s6)}
+.head h1{font-size:24px; font-weight:700; margin:0}
+.head p{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:80ch}
+
+/* search + filters */
+.searchbar{display:flex; align-items:center; gap:var(--s3); margin:var(--s5) 0 var(--s3); background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-md); padding:2px 4px 2px var(--s4)}
+.searchbar:focus-within{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+.searchbar svg{width:18px; height:18px; color:var(--ink-3); flex:none}
+.searchbar input{flex:1; border:0; background:transparent; font-family:var(--ui); font-size:15px; padding:11px 0; color:var(--ink); outline:none}
+.searchbar .scope{font-size:11px; color:var(--ink-3); font-family:var(--mono); padding-right:var(--s3); border-right:1px solid var(--hairline); margin-right:var(--s2)}
+.filters{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:var(--s4)}
+.filters button{font-size:12px; font-weight:500; padding:5px 12px; border-radius:var(--r-pill); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2)}
+.filters button.on{background:var(--accent); color:#fff; border-color:var(--accent)}
+
+/* grid */
+.grid{display:grid; grid-template-columns:1fr 400px; gap:var(--s5); align-items:start}
+
+/* log list */
+.logpanel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
+.logpanel .lh{display:flex; justify-content:space-between; align-items:center; padding:11px var(--s4); background:var(--cream-2); border-bottom:1px solid var(--hairline)}
+.lh .t{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
+.lh .c{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.entry{display:flex; gap:var(--s3); padding:12px var(--s4); border-bottom:1px solid var(--hairline); cursor:pointer}
+.entry:last-child{border-bottom:0}
+.entry:hover{background:var(--cream-2)}
+.entry.sel{background:var(--accent-tint)}
+.entry .etime{font-family:var(--mono); font-size:12px; color:var(--ink-3); width:38px; flex:none; padding-top:1px}
+.entry .ebar{width:4px; border-radius:2px; flex:none}
+.entry .ex{flex:1; min-width:0}
+.entry .ecat{font-size:9px; font-weight:700; letter-spacing:.09em; text-transform:uppercase}
+.entry .esubj{font-size:14px; font-weight:600; margin:1px 0 2px}
+.entry .edesc{font-size:13px; color:var(--ink-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.entry .estamp{font-family:var(--mono); font-size:10px; color:var(--ink-3); margin-top:5px; display:flex; align-items:center; gap:5px}
+.entry .estamp .lock{display:inline-flex; align-items:center; gap:3px}
+.entry .estamp .lock svg{width:9px;height:9px}
+.entry .struckmark{font-family:var(--mono); font-size:9px; color:var(--critical); text-transform:uppercase; letter-spacing:.05em; margin-top:3px; display:inline-flex; align-items:center; gap:4px}
+.empty{padding:40px var(--s4); text-align:center; color:var(--ink-3)}
+.empty b{color:var(--ink-2); display:block; margin-bottom:4px}
+
+/* detail rail */
+.rail{position:sticky; top:var(--s5)}
+.dpanel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden; margin-bottom:var(--s4)}
+.dpanel .dh{padding:var(--s4); border-bottom:1px solid var(--hairline)}
+.dpanel .dh .dtop{display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s3)}
+.dpanel .dh .did{font-family:var(--mono); font-size:12px; color:var(--ink-3)}
+.dpanel .dh .dsubj{font-size:17px; font-weight:700; margin:3px 0}
+.catbadge{font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:3px 9px; border-radius:var(--r-sm); white-space:nowrap; flex:none}
+.dbody{padding:var(--s4)}
+.dbody .desc{font-size:14px; color:var(--ink); margin-bottom:var(--s4)}
+.drow{display:flex; gap:var(--s3); padding:7px 0; border-top:1px solid var(--hairline); font-size:13px}
+.drow .dk{width:96px; flex:none; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); padding-top:2px}
+.drow .dv{color:var(--ink)} .drow .dv .mono{font-family:var(--mono)}
+
+/* timestamps block */
+.stamps{margin-top:var(--s4); background:var(--cream-2); border:1px solid var(--hairline); border-radius:var(--r-sm); padding:var(--s3) var(--s4)}
+.stamps .srow{display:flex; justify-content:space-between; align-items:center; padding:5px 0; font-size:12.5px}
+.stamps .srow:not(:last-child){border-bottom:1px solid var(--hairline)}
+.stamps .sk{color:var(--ink-3)}
+.stamps .sv{font-family:var(--mono); color:var(--ink)}
+.stamps .locked{display:inline-flex; align-items:center; gap:5px; color:var(--forest); font-weight:600}
+.stamps .locked svg{width:11px;height:11px}
+.stamps .editable{color:var(--olive)}
+.stamps .note{font-size:11px; color:var(--ink-3); margin-top:6px; padding-top:6px; border-top:1px solid var(--hairline)}
+
+/* history / non-destructible */
+.hist{margin-top:var(--s4)}
+.hist .ht{font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive); margin-bottom:var(--s2)}
+.hline{display:flex; gap:var(--s3); padding:6px 0; font-size:12.5px; position:relative}
+.hline .hdot{width:9px; height:9px; border-radius:50%; background:var(--rule); margin-top:4px; flex:none}
+.hline.corr .hdot{background:var(--critical)}
+.hline .htime{font-family:var(--mono); font-size:11px; color:var(--ink-3); width:34px; flex:none}
+.hline .hx{flex:1}
+.hline .hw{color:var(--ink-2)} .hline.corr .hw{color:var(--critical); font-weight:500}
+.hline .hby{font-family:var(--mono); font-size:10px; color:var(--ink-3)}
+.struckbox{margin-top:var(--s3); background:var(--critical-bg); border:1px solid var(--critical); border-radius:var(--r-sm); padding:10px 12px; font-size:12.5px}
+.struckbox s{text-decoration:line-through; text-decoration-color:var(--critical); text-decoration-thickness:1.5px; color:var(--ink-3)}
+.struckbox .corr{color:var(--ink); font-weight:600}
+.struckbox .lab{font-family:var(--mono); font-size:9px; color:var(--critical); text-transform:uppercase; letter-spacing:.06em; display:block; margin-top:5px}
+
+/* detail actions */
+.dact{display:flex; gap:6px; padding:var(--s3) var(--s4); background:var(--cream-2); border-top:1px solid var(--hairline); flex-wrap:wrap}
+.dact button{font-size:12px; font-weight:500; padding:7px 12px; border-radius:var(--r-sm); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2); display:inline-flex; align-items:center; gap:5px}
+.dact button:hover{background:var(--forest-tint); color:var(--accent); border-color:var(--accent)}
+.dact button.danger{color:var(--critical)} .dact button.danger:hover{background:var(--critical-bg); border-color:var(--critical); color:var(--critical)}
+.dact svg{width:13px;height:13px}
+.actmsg{font-size:11px; color:var(--ink-3); padding:0 var(--s4) var(--s3); background:var(--cream-2); display:none}
+.actmsg.show{display:block}
+
+/* record store */
+.recpanel .rh{padding:11px var(--s4); background:var(--cream-2); border-bottom:1px solid var(--hairline); display:flex; justify-content:space-between; align-items:center}
+.recpanel .rh .t{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
+.recfile{display:flex; align-items:center; gap:var(--s3); padding:10px var(--s4); border-bottom:1px solid var(--hairline)}
+.recfile:last-child{border-bottom:0}
+.recfile .fi{width:30px; height:30px; border-radius:var(--r-sm); background:var(--forest-tint); color:var(--forest); display:flex; align-items:center; justify-content:center; flex:none}
+.recfile .fi svg{width:15px;height:15px}
+.recfile .fn{flex:1; font-size:13px; font-weight:500}
+.recfile .fm{font-family:var(--mono); font-size:10px; color:var(--ink-3)}
+
+@media (max-width:920px){ .grid{grid-template-columns:1fr} .rail{position:static} }
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand">
+    <span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span>
+    <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
+  </div>
+  <div class="trustflag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Trusted record · timestamped, attributed, non-destructible</div>
+</div>
+
+<div class="page">
+  <div class="head">
+    <h1>Log &amp; records</h1>
+    <p>Every action, decision, clue and communication, in one chronological record. Searchable during and after the operation, and reviewable remotely, with no district method to learn.</p>
+  </div>
+
+  <div class="searchbar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input id="search" type="text" placeholder="Search the record — subject, description, author, reference…">
+    <span class="scope">fuzzy · during &amp; after</span>
+  </div>
+  <div class="filters" role="group" aria-label="Filter by category">
+    <button class="on" data-f="all">All</button>
+    <button data-f="decision">Decisions</button>
+    <button data-f="clue">Clues</button>
+    <button data-f="observation">Observations</button>
+    <button data-f="comms">Comms</button>
+    <button data-f="task">Tasks</button>
+  </div>
+
+  <div class="grid">
+    <div class="logpanel">
+      <div class="lh"><span class="t">Event log</span><span class="c" id="logCount"></span></div>
+      <div id="logList"></div>
+    </div>
+
+    <div class="rail">
+      <div class="dpanel" id="detail"></div>
+      <div class="dpanel recpanel">
+        <div class="rh"><span class="t">Record store</span><span class="c mono" style="font-size:11px; color:var(--ink-3)">4 files</span></div>
+        <div class="recfile"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span><span class="fn">footprint.jpg</span><span class="fm">2.1 MB · 1449 · R. Tāne</span></div>
+        <div class="recfile"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span class="fn">IAP-v1.pdf</span><span class="fm">Incident action plan · 1438 · IC</span></div>
+        <div class="recfile"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span class="fn">missing-person-report.pdf</span><span class="fm">FORMS-4 · 1425 · Intel</span></div>
+        <div class="recfile"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v16"/></svg></span><span class="fn">team-signin.csv</span><span class="fm">Staging · live · Logistics</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach = Array.prototype.forEach; }
+(function(){
+  var CAT={
+    decision:{label:'Decision', color:'var(--forest)', bg:'var(--forest-tint)'},
+    clue:{label:'Clue', color:'var(--critical)', bg:'var(--critical-bg)'},
+    observation:{label:'Observation', color:'var(--olive)', bg:'var(--neutral-bg)'},
+    task:{label:'Task', color:'var(--info)', bg:'var(--info-bg)'},
+    track:{label:'Track', color:'var(--info)', bg:'var(--info-bg)'},
+    comms:{label:'Comms', color:'var(--info)', bg:'var(--info-bg)'},
+    information:{label:'Information', color:'var(--neutral)', bg:'var(--neutral-bg)'}
+  };
+  var E=[
+    {id:'LOG-0148',t:'1451',tt:'14:51:07 NZST',cat:'decision',pri:'Normal',status:'Active',subj:'Sector priority',desc:'Prioritise sector A on hasty; hold sector B for daylight.',author:'IC',hist:[{t:'1451',w:'Created',by:'IC'}]},
+    {id:'LOG-0142',t:'1449',tt:'14:49:32 NZST',cat:'clue',pri:'High',status:'Active',subj:'Footprint near creek fork',desc:'Single footprint, north-west heading, near the creek fork. Photo attached.',geo:'NZTM 1573290E 5180410N',author:'R. Tāne',att:'footprint.jpg',hist:[{t:'1449',w:'Captured in field (M4)',by:'R. Tāne'}]},
+    {id:'LOG-0141',t:'1446',tt:'14:46:10 NZST',cat:'observation',pri:'Normal',status:'Active',subj:'Ground sign, true left',desc:'Broken fern and disturbed ground on the true left, consistent with recent passage.',geo:'NZTM 1573180E 5180520N',author:'R. Tāne',hist:[{t:'1446',w:'Captured in field (M4)',by:'R. Tāne'}]},
+    {id:'LOG-0138',t:'1443',tt:'14:43:55 NZST',cat:'task',pri:'Normal',status:'Active',subj:'TASK-014 Sector B sweep',desc:'Sector B sweep assignment.',author:'IC',assign:'ROMEO-4',struck:{from:'ROMEO-2',to:'ROMEO-4'},hist:[{t:'1443',w:'Created · assigned ROMEO-2',by:'IC'},{t:'1451',w:'Struck & corrected · reassigned ROMEO-4',by:'IC',corr:true}]},
+    {id:'LOG-0135',t:'1440',tt:'14:40:02 NZST',cat:'track',pri:'Normal',status:'Active',subj:'Sweep leg, sector B',desc:'Sweep leg recorded, 1.1 km along the sector B boundary.',meta:'4 legs · 1.1 km',author:'ROMEO-4',hist:[{t:'1440',w:'Captured in field (M4)',by:'ROMEO-4'}]},
+    {id:'LOG-0131',t:'1435',tt:'14:35:20 NZST',cat:'comms',pri:'Normal',status:'Active',subj:'ROMEO-2 on task',desc:'ROMEO-2 on task, CH.62. Signal good.',channel:'CH.62 · radio',author:'AREC',hist:[{t:'1435',w:'Logged',by:'AREC'}]},
+    {id:'LOG-0128',t:'1431',tt:'14:31:44 NZST',cat:'information',pri:'Normal',status:'Active',subj:'Weather trend',desc:'MetService: cloud lowering to 900 m after 1600.',author:'Intel',hist:[{t:'1431',w:'Logged',by:'Intel'}]},
+    {id:'LOG-0122',t:'1422',tt:'14:22:11 NZST',cat:'decision',pri:'Normal',status:'Active',subj:'Stand-up',desc:'Stand up SAR-2607-042. Category I, land. IC assigned.',author:'IC',hist:[{t:'1422',w:'Created at stand-up (M1)',by:'IC'}]}
+  ];
+  var LOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  var sel='LOG-0142', filter='all', query='';
+
+  function matches(e){
+    if(filter!=='all' && e.cat!==filter) return false;
+    if(!query) return true;
+    var hay=(e.id+' '+e.subj+' '+e.desc+' '+e.author+' '+CAT[e.cat].label+' '+(e.geo||'')).toLowerCase();
+    return query.toLowerCase().split(/\s+/).every(function(term){return hay.indexOf(term)>=0;});
+  }
+
+  function renderList(){
+    var list=document.getElementById('logList'); var shown=E.filter(matches);
+    document.getElementById('logCount').textContent=shown.length+' of '+E.length+' entries';
+    if(!shown.length){ list.innerHTML='<div class="empty"><b>No entries match.</b>Try fewer words, or clear the filter to see the full record.</div>'; return; }
+    list.innerHTML=shown.map(function(e){
+      var c=CAT[e.cat];
+      return '<div class="entry'+(e.id===sel?' sel':'')+'" data-id="'+e.id+'">'+
+        '<span class="etime">'+e.t+'</span>'+
+        '<span class="ebar" style="background:'+c.color+'"></span>'+
+        '<span class="ex"><span class="ecat" style="color:'+c.color+'">'+c.label+'</span>'+
+          '<div class="esubj">'+e.subj+'</div>'+
+          '<div class="edesc">'+e.desc+'</div>'+
+          '<div class="estamp"><span class="lock" style="color:'+c.color+'">'+LOCK+'</span>'+e.author+' · '+e.id+'</div>'+
+          (e.struck?'<div class="struckmark">'+LOCK+' struck &amp; corrected · original retained</div>':'')+
+        '</span></div>';
+    }).join('');
+    list.querySelectorAll('.entry').forEach(function(row){ row.addEventListener('click',function(){ sel=row.getAttribute('data-id'); renderList(); renderDetail(); }); });
+  }
+
+  function renderDetail(){
+    var e=E.filter(function(x){return x.id===sel;})[0]; if(!e) return;
+    var c=CAT[e.cat];
+    var rows='';
+    rows+=drow('Priority', e.pri);
+    rows+=drow('Status', e.status);
+    if(e.geo) rows+=drow('Geo-reference','<span class="mono">'+e.geo+'</span>');
+    if(e.assign) rows+=drow('Assigned','<span class="mono">'+e.assign+'</span>');
+    if(e.channel) rows+=drow('Channel','<span class="mono">'+e.channel+'</span>');
+    if(e.meta) rows+=drow('Detail','<span class="mono">'+e.meta+'</span>');
+    if(e.att) rows+=drow('Attachment','<span class="mono">'+e.att+'</span>');
+
+    var struckHtml = e.struck ? '<div class="struckbox">Assigned to <s>'+e.struck.from+'</s> <span class="corr">'+e.struck.to+'</span><span class="lab">Struck &amp; corrected. Original retained. Nothing is deleted.</span></div>' : '';
+
+    var histHtml=e.hist.map(function(h){
+      return '<div class="hline'+(h.corr?' corr':'')+'"><span class="hdot"></span><span class="htime">'+h.t+'</span><span class="hx"><span class="hw">'+h.w+'</span> <span class="hby">'+h.by+'</span></span></div>';
+    }).join('');
+
+    document.getElementById('detail').innerHTML=
+      '<div class="dh"><div class="dtop"><div><div class="did">'+e.id+'</div><div class="dsubj">'+e.subj+'</div></div>'+
+        '<span class="catbadge" style="color:'+c.color+'; background:'+c.bg+'">'+c.label+'</span></div></div>'+
+      '<div class="dbody">'+
+        '<div class="desc">'+e.desc+'</div>'+ rows +
+        '<div class="stamps">'+
+          '<div class="srow"><span class="sk editable">Logged (you set)</span><span class="sv editable">'+e.t+'</span></div>'+
+          '<div class="srow"><span class="sk">Recorded (system)</span><span class="locked">'+LOCK+e.tt+'</span></div>'+
+          '<div class="srow"><span class="sk">Author</span><span class="sv">'+e.author+'</span></div>'+
+          '<div class="note">The recorded time and author are system-set and cannot be edited. The logged time can be adjusted for out-of-sequence capture.</div>'+
+        '</div>'+
+        struckHtml +
+        '<div class="hist"><div class="ht">History</div>'+histHtml+'</div>'+
+      '</div>'+
+      '<div class="dact">'+
+        '<button data-a="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>Edit</button>'+
+        '<button class="danger" data-a="strike"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>Strike &amp; correct</button>'+
+        '<button data-a="attach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.5L12 21a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/></svg>Attach</button>'+
+        '<button data-a="print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>Print</button>'+
+      '</div>'+
+      '<div class="actmsg" id="actmsg"></div>';
+
+    document.querySelectorAll('.dact button').forEach(function(b){
+      b.addEventListener('click',function(){
+        var a=b.getAttribute('data-a'), m=document.getElementById('actmsg');
+        var msg={edit:'Edits are tracked. The original entry is retained in the history.',
+                 strike:'Corrections strike the original in place, never delete it. The struck text stays visible in the record.',
+                 attach:'Files attach to the entry, each date, time and user stamped.',
+                 print:'Entries, tasks and forms print in a readable format for offline use.'}[a];
+        m.textContent=msg; m.classList.add('show');
+      });
+    });
+  }
+  function drow(k,v){return '<div class="drow"><span class="dk">'+k+'</span><span class="dv">'+v+'</span></div>';}
+
+  document.getElementById('search').addEventListener('input',function(e){query=e.target.value.trim(); renderList();});
+  document.querySelectorAll('.filters button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.filters button').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); filter=b.getAttribute('data-f'); renderList();
+    });
+  });
+
+  renderList(); renderDetail();
+})();
+</script>
+</body>
+</html>

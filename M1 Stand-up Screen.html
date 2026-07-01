@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — M1 Stand-up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== SAROP design tokens v0.1 (from the design system) ===== */
+:root{
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  --critical:#A6352B; --critical-bg:#F6E4DF;
+  --caution:#A9741B; --caution-bg:#F5EBD6;
+  --info:#35606E; --info-bg:#E0EAEC;
+  --neutral:#83836F; --neutral-bg:#E9E7DC;
+  --land:var(--forest); --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+
+/* ===== app chrome ===== */
+.appbar{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between;
+  padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
+.appbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
+.appbar .mark{font-weight:700; letter-spacing:.02em; font-size:15px}
+.appbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
+.appbar .right{display:flex; align-items:center; gap:var(--s5)}
+.domain{display:flex; align-items:center; gap:var(--s2)}
+.domain .lab{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sage)}
+.seg{display:inline-flex; border:1px solid rgba(255,255,255,.28); border-radius:var(--r-pill); overflow:hidden}
+.seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; background:transparent; color:#CFD6C2; border:0; padding:5px 13px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
+.clock{display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:13px; color:var(--cream)}
+.clock .t{font-weight:600; font-size:15px; letter-spacing:.02em}
+.clock .tgt{font-size:10px; color:var(--sage); text-transform:uppercase; letter-spacing:.08em}
+.clock .ring{width:9px; height:9px; border-radius:50%; background:var(--sage)}
+.clock.over .ring{background:var(--caution)} .clock.over .t{color:var(--caution-bg)}
+
+/* ===== page ===== */
+.page{max-width:1080px; margin:0 auto; padding:var(--s6) var(--s5) var(--s8)}
+.head h1{font-size:26px; font-weight:700; letter-spacing:-.01em; margin:0}
+.head p{color:var(--ink-2); margin:var(--s2) 0 0; font-size:15px}
+.grid{display:grid; grid-template-columns:1.15fr .85fr; gap:var(--s5); margin-top:var(--s5); align-items:start}
+
+/* ===== form panel ===== */
+.panel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
+.panel .ph{padding:var(--s3) var(--s5); border-bottom:1px solid var(--hairline); background:var(--cream-2);
+  font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--olive)}
+.panel .pb{padding:var(--s5)}
+.field{margin-bottom:var(--s5)}
+.field:last-child{margin-bottom:0}
+.field > label{display:block; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--olive); margin-bottom:var(--s2)}
+.field .opt{color:var(--ink-3); font-weight:500; letter-spacing:0; text-transform:none}
+.field input, .field textarea{width:100%; font-family:var(--ui); font-size:15px; padding:11px 13px; background:var(--paper);
+  border:1px solid var(--rule); border-radius:var(--r-sm); color:var(--ink); resize:vertical}
+.field input::placeholder, .field textarea::placeholder{color:#a7a996}
+.field input:focus, .field textarea:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+.field .mono-ref{font-family:var(--mono); font-size:16px; font-weight:500; color:var(--ink); background:var(--forest-tint);
+  border:1px solid var(--rule); border-radius:var(--r-sm); padding:11px 13px; display:flex; align-items:center; justify-content:space-between}
+.field .mono-ref .auto{font-family:var(--ui); font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive)}
+.hint{font-size:12px; color:var(--ink-3); margin-top:6px}
+
+/* segmented domain (in-form, large) */
+.domseg{display:inline-flex; border:1px solid var(--rule); border-radius:var(--r-sm); overflow:hidden; background:var(--paper)}
+.domseg button{font-size:14px; font-weight:600; padding:10px 22px; border:0; background:transparent; color:var(--ink-2); cursor:pointer; display:flex; align-items:center; gap:8px}
+.domseg button .d{width:9px; height:9px; border-radius:50%; background:var(--rule)}
+.domseg button[aria-pressed="true"]{background:var(--accent-tint); color:var(--accent)}
+.domseg button[aria-pressed="true"] .d{background:var(--accent)}
+.domseg button:not(:last-child){border-right:1px solid var(--rule)}
+
+/* category set-marker */
+.catset{display:flex; align-items:center; gap:10px; font-size:14px}
+.catset .val{font-weight:600; color:var(--ink); background:var(--forest-tint); color:var(--forest); padding:4px 12px; border-radius:var(--r-pill); font-size:13px}
+
+/* roles */
+.roles{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s3)}
+.rolechip{display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:500; padding:6px 12px; border-radius:var(--r-pill);
+  border:1px dashed var(--rule); color:var(--ink-3); background:var(--paper); cursor:pointer}
+.rolechip[aria-pressed="true"]{border-style:solid; border-color:var(--accent); color:var(--accent); background:var(--accent-tint)}
+.rolechip .x{font-family:var(--mono); font-size:12px; opacity:.6}
+
+/* primary action */
+.actions{display:flex; align-items:center; gap:var(--s4); margin-top:var(--s6); padding-top:var(--s5); border-top:1px solid var(--hairline)}
+.btn{font-size:15px; font-weight:600; padding:12px 24px; border-radius:var(--r-sm); border:1px solid transparent; cursor:pointer; letter-spacing:.01em}
+.btn-primary{background:var(--accent); color:#fff}
+.btn-primary:hover{background:var(--forest-deep)}
+html[data-domain="marine"] .btn-primary:hover{background:#274b57}
+.btn-primary:disabled{background:var(--neutral-bg); color:var(--ink-3); cursor:not-allowed}
+.btn-ghost{background:transparent; color:var(--olive); border-color:var(--rule)}
+.btn-ghost:hover{background:var(--forest-tint); color:var(--forest)}
+.actions .neednote{font-size:12px; color:var(--ink-3)}
+
+/* ===== summary column ===== */
+.sumcard{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
+.sumcard .top{padding:var(--s4) var(--s5); border-bottom:1px solid var(--hairline); display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s3)}
+.sumcard .ref{font-family:var(--mono); font-size:17px; font-weight:600; color:var(--ink)}
+.sumcard .reflab{font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:3px}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:4px 11px; border-radius:var(--r-pill); white-space:nowrap}
+.pill .dot{width:7px; height:7px; border-radius:50%}
+.p-invest{background:var(--neutral-bg); color:#5f6152} .p-invest .dot{background:var(--neutral)}
+.p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
+.sumcard .body{padding:var(--s4) var(--s5)}
+.sumrow{display:flex; gap:var(--s3); padding:9px 0; border-bottom:1px solid var(--hairline); font-size:14px}
+.sumrow:last-child{border-bottom:0}
+.sumrow .k{width:104px; flex:none; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); padding-top:2px}
+.sumrow .v{color:var(--ink)}
+.sumrow .v.empty{color:#b3b5a3; font-style:italic}
+.sumrow .v .mono{font-family:var(--mono)}
+.dom-badge{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill); text-transform:uppercase; letter-spacing:.05em}
+.dom-land{background:var(--forest-tint); color:var(--forest)}
+.dom-marine{background:var(--info-bg); color:var(--info)}
+.sumcard .foot{padding:10px var(--s5); background:var(--cream-2); border-top:1px solid var(--hairline)}
+.stamp{display:inline-flex; align-items:center; gap:var(--s2); font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.stamp .lock{display:inline-flex; align-items:center; gap:4px; color:var(--accent); font-weight:600}
+.stamp .lock svg{width:11px; height:11px}
+.stamp .sep{color:var(--rule)}
+
+/* checklist */
+.check{margin-top:var(--s5); background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:var(--s5)}
+.check h3{margin:0 0 var(--s2); font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--olive)}
+.check .sub{font-size:12px; color:var(--ink-3); margin:0 0 var(--s4)}
+.ckitem{display:flex; align-items:center; gap:var(--s3); padding:8px 0; border-top:1px solid var(--hairline); font-size:14px; color:var(--ink-3)}
+.ckitem:first-of-type{border-top:0}
+.ckitem .box{width:20px; height:20px; border-radius:var(--r-sm); border:1.5px solid var(--rule); flex:none; display:flex; align-items:center; justify-content:center}
+.ckitem .box svg{width:12px; height:12px; color:#fff; opacity:0}
+.ckitem.done{color:var(--ink)}
+.ckitem.done .box{background:var(--accent); border-color:var(--accent)}
+.ckitem.done .box svg{opacity:1}
+.ckitem .who{margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+
+/* success strip */
+.live{display:none; margin-top:var(--s4); align-items:center; gap:var(--s3); background:var(--forest-tint); border:1px solid var(--forest);
+  border-radius:var(--r-md); padding:var(--s4) var(--s5); color:var(--forest)}
+.live.show{display:flex}
+.live .lico{width:26px; height:26px; border-radius:50%; background:var(--forest); color:#fff; display:flex; align-items:center; justify-content:center; flex:none}
+.live .lico svg{width:15px; height:15px}
+.live .lt{font-weight:600; font-size:15px}
+.live .ls{font-size:12.5px; color:var(--olive)}
+
+/* post-active status control */
+.statusctl{display:none; margin-top:var(--s4)}
+.statusctl.show{display:block}
+.statusctl .lbl{font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin-bottom:8px}
+.statusctl .opts{display:flex; flex-wrap:wrap; gap:8px}
+.statusctl .opts button{font-size:12.5px; font-weight:500; padding:6px 13px; border-radius:var(--r-pill); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2); cursor:pointer}
+.statusctl .opts button.cur{border-color:var(--forest); background:var(--forest-tint); color:var(--forest); font-weight:600}
+
+@media (max-width:860px){ .grid{grid-template-columns:1fr} .clock .tgt{display:none} }
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand"><span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span></div>
+  <div class="right">
+    <div class="domain">
+      <span class="lab">Domain</span>
+      <div class="seg" role="group" aria-label="Domain">
+        <button data-dom="land" aria-pressed="true">Land</button>
+        <button data-dom="marine" aria-pressed="false">Marine</button>
+      </div>
+    </div>
+    <div class="clock" id="clock" title="Time since you opened stand-up">
+      <span class="ring"></span>
+      <div><span class="t" id="elapsed">00:00</span> <span class="tgt">elapsed · target &lt; 10:00</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="head">
+    <h1>Stand up an operation</h1>
+    <p>From notification to a running operation. Fill what you know, appoint yourself or a controller, and go active. Everything else can follow.</p>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: the form -->
+    <div class="panel">
+      <div class="ph">New operation</div>
+      <div class="pb">
+
+        <div class="field">
+          <label>Domain</label>
+          <div class="domseg" role="group" aria-label="Operation domain">
+            <button data-fdom="land" aria-pressed="true"><span class="d"></span>Land</button>
+            <button data-fdom="marine" aria-pressed="false"><span class="d"></span>Marine (close-to-shore)</button>
+          </div>
+          <div class="hint" id="domHint">Sets the base map, urgency scoring, forms and terminology for the whole operation.</div>
+        </div>
+
+        <div class="field">
+          <label>Category</label>
+          <div class="catset"><span class="val">Category I</span><span class="hint" style="margin:0">Local coordination. Cat I / II is a marker, not the config axis.</span></div>
+        </div>
+
+        <div class="field">
+          <label>Reference</label>
+          <div class="mono-ref"><span id="refField">SAR-2607-042</span><span class="auto">Auto-assigned</span></div>
+        </div>
+
+        <div class="field">
+          <label for="desc">Description</label>
+          <textarea id="desc" rows="2" placeholder="One line on the incident, e.g. Overdue tramper, Kepler Track, last seen Luxmore Hut."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="pref">Police event number <span class="opt">· optional</span></label>
+          <input id="pref" type="text" placeholder="P-number or RCCNZ reference, if known">
+          <div class="hint">The CAD and records link. Can be added later.</div>
+        </div>
+
+        <div class="field">
+          <label for="ic">Incident Controller</label>
+          <input id="ic" type="text" placeholder="Name of the controller (you, if standing up alone)">
+          <div class="hint">The one role needed to go active. Add the rest of the IMT as people arrive.</div>
+          <div class="roles" id="roles" aria-label="Optional IMT roles">
+            <span class="rolechip" role="button" tabindex="0" data-role="Intelligence"><span class="x">+</span>Intelligence</span>
+            <span class="rolechip" role="button" tabindex="0" data-role="Planning"><span class="x">+</span>Planning</span>
+            <span class="rolechip" role="button" tabindex="0" data-role="Operations"><span class="x">+</span>Operations</span>
+            <span class="rolechip" role="button" tabindex="0" data-role="Logistics"><span class="x">+</span>Logistics</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="goBtn" disabled>Go active</button>
+          <span class="neednote" id="needNote">Add a description and a controller to go active.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: live summary + checklist -->
+    <div>
+      <div class="sumcard">
+        <div class="top">
+          <div>
+            <div class="reflab">Incident</div>
+            <div class="ref" id="sumRef">SAR-2607-042</div>
+          </div>
+          <span class="pill p-invest" id="sumStatus"><span class="dot"></span>Investigating</span>
+        </div>
+        <div class="body">
+          <div class="sumrow"><span class="k">Domain</span><span class="v"><span class="dom-badge dom-land" id="sumDomain">Land</span></span></div>
+          <div class="sumrow"><span class="k">Category</span><span class="v">Category I</span></div>
+          <div class="sumrow"><span class="k">Description</span><span class="v empty" id="sumDesc">Not set</span></div>
+          <div class="sumrow"><span class="k">Police ref</span><span class="v empty" id="sumPref">Not set</span></div>
+          <div class="sumrow"><span class="k">Controller</span><span class="v empty" id="sumIc">Not appointed</span></div>
+          <div class="sumrow" id="sumRolesRow" style="display:none"><span class="k">IMT roles</span><span class="v" id="sumRoles"></span></div>
+        </div>
+        <div class="foot">
+          <span class="stamp">
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>locked</span>
+            <span class="sep">·</span><span id="stampTime">--:--</span><span class="sep">·</span><span id="stampUser">unassigned</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="live" id="live">
+        <span class="lico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>
+        <div><div class="lt">Operation active</div><div class="ls" id="liveSub">Standing up. Record is live and logging.</div></div>
+      </div>
+
+      <div class="statusctl" id="statusctl">
+        <div class="lbl">Status</div>
+        <div class="opts">
+          <button class="cur" data-st="Active">Active</button>
+          <button data-st="Suspended">Suspend</button>
+          <button data-st="Completed">Complete</button>
+          <button data-st="Stood-down">Stand down</button>
+        </div>
+      </div>
+
+      <div class="check">
+        <h3>Stand-up</h3>
+        <p class="sub">The five steps to a running operation.</p>
+        <div class="ckitem done" id="ck-reach"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Reached without admin<span class="who">no specialist setup</span></div>
+        <div class="ckitem" id="ck-create"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Created &amp; described</div>
+        <div class="ckitem" id="ck-config"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Domain &amp; category set</div>
+        <div class="ckitem" id="ck-role"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Controller appointed</div>
+        <div class="ckitem" id="ck-active"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Active<span class="who" id="ckActiveWho"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var desc=document.getElementById('desc'), ic=document.getElementById('ic'), pref=document.getElementById('pref');
+  var goBtn=document.getElementById('goBtn'), needNote=document.getElementById('needNote');
+  var active=false, chosenRoles=[];
+
+  function pad(n){return (n<10?'0':'')+n;}
+  function nowClock(){var d=new Date();return pad(d.getHours())+pad(d.getMinutes())+' NZST';}
+
+  // elapsed stand-up timer
+  var start=Date.now();
+  setInterval(function(){
+    if(active) return;
+    var s=Math.floor((Date.now()-start)/1000);
+    document.getElementById('elapsed').textContent=pad(Math.floor(s/60))+':'+pad(s%60);
+    if(s>=600) document.getElementById('clock').classList.add('over');
+  },1000);
+
+  // domain sync (header seg + form seg share state)
+  function setDomain(dom){
+    root.setAttribute('data-domain',dom);
+    document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-dom')===dom?'true':'false');});
+    document.querySelectorAll('.domseg button').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-fdom')===dom?'true':'false');});
+    var badge=document.getElementById('sumDomain');
+    if(dom==='marine'){badge.textContent='Marine'; badge.className='dom-badge dom-marine';
+      document.getElementById('domHint').textContent='Marine base chart, marine urgency scoring, and the for-affect tasking path to Coastguard.';}
+    else{badge.textContent='Land'; badge.className='dom-badge dom-land';
+      document.getElementById('domHint').textContent='Sets the base map, urgency scoring, forms and terminology for the whole operation.';}
+  }
+  document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){setDomain(b.getAttribute('data-dom'));});});
+  document.querySelectorAll('.domseg button').forEach(function(b){b.addEventListener('click',function(){setDomain(b.getAttribute('data-fdom'));});});
+
+  // live summary + checklist
+  function refresh(){
+    var dv=desc.value.trim(), iv=ic.value.trim(), pv=pref.value.trim();
+    var sd=document.getElementById('sumDesc'); sd.textContent=dv||'Not set'; sd.className='v'+(dv?'':' empty');
+    var si=document.getElementById('sumIc'); si.textContent=iv||'Not appointed'; si.className='v'+(iv?'':' empty');
+    var sp=document.getElementById('sumPref'); sp.innerHTML=pv?'<span class="mono">'+pv+'</span>':'Not set'; sp.className='v'+(pv?'':' empty');
+    document.getElementById('stampUser').textContent=iv||'unassigned';
+
+    setCk('ck-create', !!dv);
+    setCk('ck-config', true); // domain + category always set (Cat I default, domain has a default)
+    setCk('ck-role', !!iv);
+
+    var ready=dv&&iv;
+    goBtn.disabled=!ready||active;
+    needNote.style.display = (ready||active)?'none':'inline';
+  }
+  function setCk(id,on){document.getElementById(id).classList.toggle('done',!!on);}
+  desc.addEventListener('input',refresh); ic.addEventListener('input',refresh); pref.addEventListener('input',refresh);
+
+  // optional roles
+  document.querySelectorAll('.rolechip').forEach(function(chip){
+    function toggle(){
+      var r=chip.getAttribute('data-role'), on=chip.getAttribute('aria-pressed')==='true';
+      chip.setAttribute('aria-pressed', on?'false':'true');
+      chip.querySelector('.x').textContent = on?'+':'✓';
+      chosenRoles = on ? chosenRoles.filter(function(x){return x!==r;}) : chosenRoles.concat([r]);
+      var row=document.getElementById('sumRolesRow');
+      if(chosenRoles.length){row.style.display='flex'; document.getElementById('sumRoles').textContent=chosenRoles.join(', ');}
+      else row.style.display='none';
+    }
+    chip.addEventListener('click',toggle);
+    chip.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle();}});
+  });
+
+  // go active
+  goBtn.addEventListener('click',function(){
+    if(goBtn.disabled) return;
+    active=true;
+    var el=document.getElementById('elapsed').textContent;
+    var t=nowClock();
+    var st=document.getElementById('sumStatus'); st.className='pill p-active'; st.innerHTML='<span class="dot"></span>Active';
+    document.getElementById('stampTime').textContent=t;
+    document.getElementById('ck-active').classList.add('done');
+    document.getElementById('ckActiveWho').textContent=el;
+    document.getElementById('clock').classList.remove('over');
+    document.getElementById('elapsed').textContent=el;
+    var live=document.getElementById('live'); live.classList.add('show');
+    document.getElementById('liveSub').textContent='Stood up in '+el+'. Record is live and logging. The COP is ready.';
+    goBtn.textContent='Operation active'; goBtn.disabled=true; needNote.style.display='none';
+    document.getElementById('statusctl').classList.add('show');
+  });
+
+  // post-active status control
+  document.querySelectorAll('#statusctl .opts button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('#statusctl .opts button').forEach(function(x){x.classList.remove('cur');});
+      b.classList.add('cur');
+      var stName=b.getAttribute('data-st');
+      var st=document.getElementById('sumStatus');
+      var map={'Active':'p-active','Suspended':'p-invest','Completed':'p-invest','Stood-down':'p-invest'};
+      st.className='pill '+(map[stName]||'p-invest'); st.innerHTML='<span class="dot"></span>'+stName;
+    });
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>

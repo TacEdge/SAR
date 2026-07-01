@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — M2 The COP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== SAROP design tokens v0.1 ===== */
+:root{
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  --critical:#A6352B; --critical-bg:#F6E4DF;
+  --caution:#A9741B; --caution-bg:#F5EBD6;
+  --info:#35606E; --info-bg:#E0EAEC;
+  --neutral:#83836F; --neutral-bg:#E9E7DC;
+  --land:var(--forest); --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased; overflow:hidden}
+button{font-family:inherit; cursor:pointer}
+.mono{font-family:var(--mono)}
+
+/* ===== app bar ===== */
+.appbar{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between;
+  padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
+.appbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
+.appbar .mark{font-weight:700; font-size:15px}
+.appbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
+.appbar .inc{display:flex; align-items:center; gap:var(--s3); margin-left:var(--s5); padding-left:var(--s5); border-left:1px solid rgba(255,255,255,.18)}
+.appbar .inc .ref{font-family:var(--mono); font-size:13px; color:var(--cream)}
+.appbar .right{display:flex; align-items:center; gap:var(--s5)}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill); white-space:nowrap}
+.pill .dot{width:7px; height:7px; border-radius:50%}
+.p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
+.domain{display:flex; align-items:center; gap:var(--s2)}
+.domain .lab{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sage)}
+.seg{display:inline-flex; border:1px solid rgba(255,255,255,.28); border-radius:var(--r-pill); overflow:hidden}
+.seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; background:transparent; color:#CFD6C2; border:0; padding:5px 13px}
+.seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
+.readytag{font-family:var(--mono); font-size:11px; color:var(--sage); display:flex; align-items:center; gap:7px}
+.readytag .g{width:8px;height:8px;border-radius:50%;background:var(--sage)}
+
+/* ===== COP layout ===== */
+.cop{display:grid; grid-template-columns:1fr 372px; height:calc(100vh - 52px); min-height:600px}
+.mapwrap{position:relative; overflow:hidden; border-right:1px solid var(--hairline)}
+
+/* base map */
+.basemap{position:absolute; inset:0;
+  background:
+    linear-gradient(rgba(178,181,148,.18) 1px,transparent 1px) 0 0/32px 32px,
+    linear-gradient(90deg,rgba(178,181,148,.18) 1px,transparent 1px) 0 0/32px 32px,
+    radial-gradient(ellipse 60% 50% at 34% 42%,rgba(110,125,92,.12),transparent 60%),
+    radial-gradient(ellipse 40% 40% at 72% 66%,rgba(110,125,92,.10),transparent 60%),
+    var(--cream-2);}
+html[data-domain="marine"] .basemap{
+  background:
+    linear-gradient(rgba(53,96,110,.14) 1px,transparent 1px) 0 0/32px 32px,
+    linear-gradient(90deg,rgba(53,96,110,.14) 1px,transparent 1px) 0 0/32px 32px,
+    radial-gradient(ellipse 50% 40% at 60% 55%,rgba(53,96,110,.12),transparent 60%),
+    #E7EDEE;}
+.mapsvg{position:absolute; inset:0; width:100%; height:100%}
+.layer-hidden{display:none}
+
+/* svg feature styling */
+.area{fill:none; stroke:var(--accent); stroke-width:2; stroke-dasharray:7 5; opacity:.7}
+.sector{fill:var(--accent); opacity:.10; stroke:var(--accent); stroke-width:1.5; cursor:pointer; transition:opacity .15s}
+.sector:hover{opacity:.20}
+.sector.hot{opacity:.26}
+.path{fill:none; stroke:var(--forest); stroke-width:2; stroke-dasharray:4 4; opacity:.85}
+.track{fill:none; stroke:var(--info); stroke-width:2.5; opacity:.75; stroke-linecap:round}
+html[data-domain="marine"] .track{stroke:#2f7d8f}
+
+/* pins (HTML over svg) */
+.pin{position:absolute; transform:translate(-50%,-100%); display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer}
+.pin .mk{width:18px; height:18px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #fff; box-shadow:var(--shadow)}
+.pin .cap{font-family:var(--mono); font-size:10px; background:var(--paper); padding:1px 6px; border-radius:var(--r-sm); border:1px solid var(--hairline); white-space:nowrap; transform:translateY(-2px)}
+.pin.hot .cap{background:var(--accent); color:#fff; border-color:var(--accent)}
+.pin.lkp .mk{background:var(--caution)} .pin.clue .mk{background:var(--critical)} .pin.team .mk{background:var(--forest)}
+
+/* floating panels on the map */
+.floatpanel{position:absolute; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); box-shadow:var(--shadow)}
+.mapinc{top:var(--s3); left:var(--s3); width:250px; padding:var(--s3) var(--s4)}
+.mapinc .h{display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--s2)}
+.mapinc .h .t{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive)}
+.mapinc .r{display:flex; justify-content:space-between; font-size:13px; padding:3px 0}
+.mapinc .r .m{font-family:var(--mono); color:var(--ink)}
+.progress{margin-top:var(--s2)}
+.progress .bar{height:7px; background:var(--forest-tint); border-radius:var(--r-pill); overflow:hidden}
+.progress .bar i{display:block; height:100%; width:38%; background:var(--accent); border-radius:var(--r-pill)}
+.progress .lg{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--ink-3); margin-top:4px}
+
+.layers{top:var(--s3); right:var(--s3); padding:var(--s3)}
+.layers .t{font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:6px}
+.layers label{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-2); padding:3px 0; cursor:pointer}
+.layers input{accent-color:var(--accent)}
+
+.mapquery{left:var(--s3); bottom:var(--s3); padding:8px var(--s4); font-family:var(--mono); font-size:12px; color:var(--ink); display:flex; gap:var(--s4); align-items:center}
+.mapquery .lb{color:var(--ink-3); font-size:10px; text-transform:uppercase; letter-spacing:.08em}
+.scalebar{right:var(--s3); bottom:var(--s3); padding:6px 10px; display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11px; color:var(--ink-2)}
+.scalebar .ln{width:56px; height:3px; background:var(--ink-2); position:relative}
+.scalebar .ln:before,.scalebar .ln:after{content:""; position:absolute; width:1px; height:6px; background:var(--ink-2); top:-1.5px}
+.scalebar .ln:after{right:0}
+.north{position:absolute; right:var(--s4); top:var(--s6); font-family:var(--mono); font-size:11px; color:var(--ink-2); text-align:center}
+.north .arw{font-size:18px; line-height:1}
+
+.maptools{position:absolute; left:50%; transform:translateX(-50%); bottom:var(--s3); display:flex; gap:2px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:4px; box-shadow:var(--shadow)}
+.maptools button{border:0; background:transparent; color:var(--ink-2); font-size:12px; font-weight:500; padding:6px 13px; border-radius:var(--r-pill)}
+.maptools button:hover{background:var(--forest-tint); color:var(--accent)}
+.maptools button.on{background:var(--accent); color:#fff}
+
+/* toast */
+.toast{position:absolute; top:var(--s5); left:50%; transform:translateX(-50%); background:var(--forest-deep); color:var(--cream);
+  font-size:12.5px; padding:8px 16px; border-radius:var(--r-pill); box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; opacity:0; transition:opacity .4s}
+.toast.show{opacity:1}
+.toast .g{width:7px;height:7px;border-radius:50%;background:var(--sage)}
+
+/* ===== right rail ===== */
+.rail{background:var(--canvas); overflow-y:auto; padding:var(--s3)}
+.rpanel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); margin-bottom:var(--s3); overflow:hidden}
+.rpanel > .rh{display:flex; align-items:center; justify-content:space-between; padding:10px var(--s4); border-bottom:1px solid var(--hairline); background:var(--cream-2)}
+.rh .tt{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
+.rh .ct{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.rbody{padding:6px var(--s4) var(--s4)}
+
+/* task rows */
+.trow{display:flex; align-items:center; gap:var(--s3); padding:9px 0; border-bottom:1px solid var(--hairline); cursor:pointer; border-radius:var(--r-sm)}
+.trow:last-child{border-bottom:0}
+.trow:hover{background:var(--forest-tint); margin:0 -8px; padding-left:8px; padding-right:8px}
+.trow.sel{background:var(--accent-tint); margin:0 -8px; padding-left:8px; padding-right:8px}
+.trow .tid{font-family:var(--mono); font-size:11px; color:var(--ink-3); width:60px; flex:none}
+.trow .tinfo{flex:1; min-width:0}
+.trow .tname{font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.trow .tmeta{font-family:var(--mono); font-size:10px; color:var(--ink-3)}
+.chipst{font-family:var(--mono); font-size:10px; font-weight:500; padding:2px 7px; border-radius:var(--r-sm); border:1px solid; text-transform:uppercase; letter-spacing:.03em; white-space:nowrap; flex:none}
+.c-assigned{border-color:var(--info); color:var(--info); background:var(--info-bg)}
+.c-progress{border-color:var(--forest); color:var(--forest); background:var(--forest-tint)}
+.c-created{border-color:var(--rule); color:var(--ink-3); background:var(--paper)}
+
+/* resource rows */
+.rrow{display:flex; align-items:center; gap:var(--s3); padding:9px 0; border-bottom:1px solid var(--hairline); cursor:pointer}
+.rrow:last-child{border-bottom:0}
+.rrow:hover{background:var(--forest-tint); margin:0 -8px; padding-left:8px; padding-right:8px}
+.rrow.sel{background:var(--accent-tint); margin:0 -8px; padding-left:8px; padding-right:8px}
+.rrow .rn{font-size:13px; font-weight:500; flex:1}
+.rrow .rn small{font-family:var(--mono); font-size:10px; color:var(--ink-3); font-weight:400; display:block}
+.sync{display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:500; padding:3px 9px; border-radius:var(--r-pill); background:var(--paper); border:1px solid var(--hairline); white-space:nowrap; flex:none}
+.sync .ico{width:7px; height:7px; border-radius:50%; flex:none}
+.s-in{border-color:var(--forest-tint)} .s-in .ico{background:var(--forest)}
+.s-queued .ico{background:var(--caution)}
+.s-avail .ico{background:var(--neutral)}
+
+/* log rows */
+.railfilter{display:flex; gap:6px; padding:0 0 var(--s2)}
+.railfilter button{font-size:11px; font-weight:500; padding:4px 10px; border-radius:var(--r-pill); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2)}
+.railfilter button.on{background:var(--accent); color:#fff; border-color:var(--accent)}
+.lrow{display:flex; gap:var(--s3); padding:8px 0; border-bottom:1px solid var(--hairline); font-size:12.5px}
+.lrow:last-child{border-bottom:0}
+.lrow .lt{font-family:var(--mono); font-size:10px; color:var(--ink-3); width:42px; flex:none; padding-top:2px}
+.lrow .lc{width:4px; border-radius:2px; flex:none}
+.lc-clue{background:var(--critical)} .lc-decision{background:var(--forest)} .lc-comms{background:var(--info)} .lc-info{background:var(--neutral)}
+.lrow .lx{flex:1}
+.lrow .lx .cat{font-size:9px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3)}
+.lrow .lx .msg{color:var(--ink-2)}
+.lrow .lx .msg .mono{color:var(--ink)}
+
+/* load reveal */
+@media (prefers-reduced-motion:no-preference){
+  .reveal{opacity:0; transform:translateY(6px); animation:rise .45s ease forwards}
+  @keyframes rise{to{opacity:1; transform:none}}
+}
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand">
+    <span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span>
+    <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
+  </div>
+  <div class="right">
+    <span class="readytag"><span class="g"></span>COP · read from the spine in 0.8s</span>
+    <div class="domain">
+      <span class="lab">Domain</span>
+      <div class="seg" role="group" aria-label="Domain">
+        <button data-dom="land" aria-pressed="true">Land</button>
+        <button data-dom="marine" aria-pressed="false">Marine</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cop">
+  <!-- MAP -->
+  <div class="mapwrap">
+    <div class="basemap"></div>
+    <svg class="mapsvg" viewBox="0 0 600 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g id="lyr-area"><path class="area" d="M70,50 L545,66 L522,410 L92,392 Z"/></g>
+      <g id="lyr-sectors">
+        <polygon class="sector" data-sector="A" points="96,74 300,84 292,232 100,224"/>
+        <polygon class="sector" data-sector="B" points="316,238 512,250 500,392 306,380"/>
+      </g>
+      <g id="lyr-paths"><path class="path" d="M120,100 L270,110 L130,150 L262,160 L140,200 L256,210"/></g>
+      <g id="lyr-tracks"><path class="track" d="M340,270 L400,300 L370,340 L440,360 L410,388"/></g>
+    </svg>
+
+    <!-- pins -->
+    <div class="pin lkp" style="left:24%; top:26%" data-res=""><span class="mk"></span><span class="cap">LKP</span></div>
+    <div class="pin clue" style="left:33%; top:40%" data-res=""><span class="mk"></span><span class="cap">clue · footprint</span></div>
+    <div class="pin team" id="pin-r2" style="left:30%; top:33%" data-res="R2"><span class="mk"></span><span class="cap">ROMEO-2</span></div>
+    <div class="pin team" id="pin-r4" style="left:68%; top:70%" data-res="R4"><span class="mk"></span><span class="cap">ROMEO-4</span></div>
+
+    <!-- floating incident + progress -->
+    <div class="floatpanel mapinc reveal" style="animation-delay:.05s">
+      <div class="h"><span class="t">Operation</span><span class="pill p-active" style="font-size:11px"><span class="dot"></span>Active</span></div>
+      <div class="r"><span>Reference</span><span class="m">SAR-2607-042</span></div>
+      <div class="r"><span>Teams deployed</span><span class="m">2</span></div>
+      <div class="r"><span>Elapsed</span><span class="m" id="elapsed">02:41</span></div>
+      <div class="progress">
+        <div class="bar"><i></i></div>
+        <div class="lg"><span>area searched 38%</span><span>PoD 41%</span></div>
+      </div>
+    </div>
+
+    <!-- base layers -->
+    <div class="floatpanel layers reveal" style="animation-delay:.12s">
+      <div class="t">Layers</div>
+      <label><input type="checkbox" data-layer="lyr-area" checked>Operational area</label>
+      <label><input type="checkbox" data-layer="lyr-sectors" checked>Search sectors</label>
+      <label><input type="checkbox" data-layer="lyr-paths" checked>Search paths</label>
+      <label><input type="checkbox" data-layer="lyr-tracks" checked>Completed tracks</label>
+    </div>
+
+    <div class="north"><div class="arw">▲</div>N</div>
+
+    <!-- query readout -->
+    <div class="floatpanel mapquery reveal" style="animation-delay:.2s" id="query">
+      <span><span class="lb">Grid</span> <span id="qGrid">NZTM 1573290E 5180410N</span></span>
+      <span><span class="lb">Bearing</span> <span id="qBrg">247° · 1.8 km</span></span>
+    </div>
+    <div class="floatpanel scalebar reveal" style="animation-delay:.2s"><span class="ln"></span>1 km</div>
+
+    <!-- plan toolbar -->
+    <div class="maptools reveal" style="animation-delay:.28s" role="group" aria-label="Map tools">
+      <button class="on" data-tool="select">Select</button>
+      <button data-tool="area">Area</button>
+      <button data-tool="sector">Sector</button>
+      <button data-tool="path">Path</button>
+      <button data-tool="point">Point</button>
+    </div>
+
+    <div class="toast" id="toast"><span class="g"></span>Common operating picture · one read of the spine, not many systems</div>
+  </div>
+
+  <!-- RIGHT RAIL -->
+  <div class="rail">
+    <div class="rpanel reveal" style="animation-delay:.1s">
+      <div class="rh"><span class="tt">Active tasks</span><span class="ct">3 open</span></div>
+      <div class="rbody">
+        <div class="trow" data-sector="A" data-res="R2">
+          <span class="tid">TASK-012</span>
+          <span class="tinfo"><span class="tname">Sector A hasty search</span><span class="tmeta">ROMEO-2 · sector A</span></span>
+          <span class="chipst c-progress">In progress</span>
+        </div>
+        <div class="trow" data-sector="B" data-res="R4">
+          <span class="tid">TASK-014</span>
+          <span class="tinfo"><span class="tname">Sector B sweep</span><span class="tmeta">ROMEO-4 · sector B</span></span>
+          <span class="chipst c-assigned">Assigned</span>
+        </div>
+        <div class="trow" data-sector="" data-res="">
+          <span class="tid">TASK-015</span>
+          <span class="tinfo"><span class="tname">Road-end containment</span><span class="tmeta">unassigned</span></span>
+          <span class="chipst c-created">Created</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rpanel reveal" style="animation-delay:.16s">
+      <div class="rh"><span class="tt">Resources</span><span class="ct">4 on scene</span></div>
+      <div class="rbody">
+        <div class="rrow" data-res="R2"><span class="rn">ROMEO-2 <small>ground team · sector A</small></span><span class="sync s-in"><span class="ico"></span>Signed in</span></div>
+        <div class="rrow" data-res="R4"><span class="rn">ROMEO-4 <small>ground team · sector B</small></span><span class="sync s-in"><span class="ico"></span>Signed in</span></div>
+        <div class="rrow" data-res=""><span class="rn">K9-1 <small>dog team · staging</small></span><span class="sync s-queued"><span class="ico"></span>At staging</span></div>
+        <div class="rrow" data-res=""><span class="rn">Heli-1 <small>air · Wanaka</small></span><span class="sync s-avail"><span class="ico"></span>Available</span></div>
+      </div>
+    </div>
+
+    <div class="rpanel reveal" style="animation-delay:.22s">
+      <div class="rh"><span class="tt">Event log</span><span class="ct">by status</span></div>
+      <div class="rbody">
+        <div class="railfilter" role="group" aria-label="Filter log">
+          <button class="on" data-f="all">All</button>
+          <button data-f="clue">Clues</button>
+          <button data-f="decision">Decisions</button>
+          <button data-f="comms">Comms</button>
+        </div>
+        <div class="lrow" data-cat="clue"><span class="lt">1443</span><span class="lc lc-clue"></span><span class="lx"><span class="cat">Clue</span><div class="msg">Footprint, NW heading near creek fork. <span class="mono">NZTM 1573290E 5180410N</span></div></span></div>
+        <div class="lrow" data-cat="decision"><span class="lt">1439</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Prioritise sector A on hasty; hold sector B for daylight.</div></span></div>
+        <div class="lrow" data-cat="comms"><span class="lt">1435</span><span class="lc lc-comms"></span><span class="lx"><span class="cat">Comms</span><div class="msg">ROMEO-2 on task, <span class="mono">CH.62</span>. Signal good.</div></span></div>
+        <div class="lrow" data-cat="info"><span class="lt">1431</span><span class="lc lc-info"></span><span class="lx"><span class="cat">Information</span><div class="msg">MetService: cloud lowering to 900m after 1600.</div></span></div>
+        <div class="lrow" data-cat="decision"><span class="lt">1422</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Stand up SAR-2607-042. Cat I, land. IC assigned.</div></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+
+  // domain switch
+  function setDomain(dom){
+    root.setAttribute('data-domain',dom);
+    document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-dom')===dom?'true':'false');});
+    document.getElementById('qGrid').textContent = dom==='marine' ? '43°31.8\u2032S 172°45.1\u2032E' : 'NZTM 1573290E 5180410N';
+  }
+  document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){setDomain(b.getAttribute('data-dom'));});});
+
+  // cross-reference: click a task -> highlight its sector + team pin
+  function clearHot(){
+    document.querySelectorAll('.sector.hot').forEach(function(s){s.classList.remove('hot');});
+    document.querySelectorAll('.pin.hot').forEach(function(p){p.classList.remove('hot');});
+    document.querySelectorAll('.trow.sel,.rrow.sel').forEach(function(r){r.classList.remove('sel');});
+  }
+  function highlight(sector,res,rowEl){
+    clearHot();
+    if(rowEl) rowEl.classList.add('sel');
+    if(sector){var s=document.querySelector('.sector[data-sector="'+sector+'"]'); if(s) s.classList.add('hot');}
+    if(res){var p=document.querySelector('.pin[data-res="'+res+'"]'); if(p) p.classList.add('hot');
+      var rr=document.querySelector('.rrow[data-res="'+res+'"]'); if(rr) rr.classList.add('sel');}
+  }
+  document.querySelectorAll('.trow').forEach(function(row){
+    row.addEventListener('click',function(){
+      var sel=row.classList.contains('sel');
+      if(sel){clearHot();return;}
+      highlight(row.getAttribute('data-sector'), row.getAttribute('data-res'), row);
+    });
+  });
+  document.querySelectorAll('.rrow').forEach(function(row){
+    row.addEventListener('click',function(){
+      var res=row.getAttribute('data-res'); if(!res){clearHot();return;}
+      if(row.classList.contains('sel')){clearHot();return;}
+      // find matching task sector
+      var t=document.querySelector('.trow[data-res="'+res+'"]');
+      highlight(t?t.getAttribute('data-sector'):'', res, null);
+      row.classList.add('sel'); if(t) t.classList.add('sel');
+    });
+  });
+  document.querySelectorAll('.sector').forEach(function(s){
+    s.addEventListener('click',function(){
+      var sec=s.getAttribute('data-sector');
+      var t=document.querySelector('.trow[data-sector="'+sec+'"]');
+      if(t){highlight(sec, t.getAttribute('data-res'), t);} 
+    });
+  });
+
+  // base-layer toggles
+  document.querySelectorAll('.layers input').forEach(function(cb){
+    cb.addEventListener('change',function(){
+      document.getElementById(cb.getAttribute('data-layer')).classList.toggle('layer-hidden', !cb.checked);
+    });
+  });
+
+  // plan toolbar (visual only)
+  document.querySelectorAll('.maptools button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.maptools button').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');
+    });
+  });
+
+  // log filter
+  document.querySelectorAll('.railfilter button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.railfilter button').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      var f=b.getAttribute('data-f');
+      document.querySelectorAll('.lrow').forEach(function(r){
+        r.style.display = (f==='all'||r.getAttribute('data-cat')===f) ? 'flex' : 'none';
+      });
+    });
+  });
+
+  // map query readout follows pointer over the map
+  var mapwrap=document.querySelector('.mapwrap');
+  mapwrap.addEventListener('mousemove',function(e){
+    var r=mapwrap.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+    var E=1572800+Math.round(x*1400), N=5180900-Math.round(y*1200);
+    var marine=root.getAttribute('data-domain')==='marine';
+    document.getElementById('qGrid').textContent = marine
+      ? (43+ (31+y*3).toFixed(1)/60).toFixed(0)+'°'+(31+y*3).toFixed(1)+'\u2032S '+(172+ (37+x*10).toFixed(1)/60).toFixed(0)+'°'+(37+x*10).toFixed(1)+'\u2032E'
+      : 'NZTM '+E+'E '+N+'N';
+    var brg=Math.round(x*360); document.getElementById('qBrg').textContent=brg+'° · '+(0.5+y*3).toFixed(1)+' km';
+  });
+
+  // render toast
+  var toast=document.getElementById('toast');
+  setTimeout(function(){toast.classList.add('show');},600);
+  setTimeout(function(){toast.classList.remove('show');},4200);
+
+  // elapsed ticks
+  var base=161; // 02:41
+  setInterval(function(){base++; var m=Math.floor(base/60),s=base%60; document.getElementById('elapsed').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;},1000);
+})();
+</script>
+</body>
+</html>

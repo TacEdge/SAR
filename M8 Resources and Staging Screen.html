@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — M8 Resources &amp; Staging</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  --critical:#A6352B; --critical-bg:#F6E4DF;
+  --caution:#A9741B; --caution-bg:#F5EBD6;
+  --info:#35606E; --info-bg:#E0EAEC;
+  --neutral:#83836F; --neutral-bg:#E9E7DC;
+  --land:var(--forest); --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased}
+button{font-family:inherit; cursor:pointer}
+.mono{font-family:var(--mono)}
+
+/* app bar */
+.appbar{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between; padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
+.appbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
+.appbar .mark{font-weight:700; font-size:15px}
+.appbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
+.appbar .inc{display:flex; align-items:center; gap:var(--s3); margin-left:var(--s5); padding-left:var(--s5); border-left:1px solid rgba(255,255,255,.18)}
+.appbar .inc .ref{font-family:var(--mono); font-size:13px; color:var(--cream)}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill)}
+.pill .dot{width:7px; height:7px; border-radius:50%}
+.p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
+.field-accountability{display:flex; align-items:center; gap:9px; font-size:12px; color:var(--cream); font-family:var(--mono)}
+.field-accountability .fdot{width:9px; height:9px; border-radius:50%; background:#8FBF6F; box-shadow:0 0 0 3px rgba(143,191,111,.25)}
+.field-accountability b{color:#CFE0B8; font-weight:600}
+
+/* page */
+.page{max-width:1240px; margin:0 auto; padding:var(--s5) var(--s5) var(--s6)}
+.head h1{font-size:24px; font-weight:700; margin:0}
+.head p{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:78ch}
+.grid{display:grid; grid-template-columns:1fr 336px; gap:var(--s5); align-items:start; margin-top:var(--s5)}
+
+.panel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden; margin-bottom:var(--s5)}
+.panel .ph{display:flex; justify-content:space-between; align-items:center; padding:11px var(--s4); background:var(--cream-2); border-bottom:1px solid var(--hairline)}
+.ph .t{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
+.ph .c{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+
+/* register */
+.colhead{display:flex; gap:var(--s3); padding:8px var(--s4); font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); border-bottom:1px solid var(--hairline)}
+.colhead .c-res{flex:1} .colhead .c-state{width:104px} .colhead .c-task{width:92px} .colhead .c-time{width:78px; text-align:right} .colhead .c-act{width:96px; text-align:right}
+.res{display:flex; align-items:center; gap:var(--s3); padding:11px var(--s4); border-bottom:1px solid var(--hairline)}
+.res:last-child{border-bottom:0}
+.res.sel{background:var(--accent-tint)}
+.rmain{flex:1; min-width:0}
+.rn{font-size:14px; font-weight:600}
+.rcap{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.rloc{font-family:var(--mono); font-size:10px; color:var(--ink-3); margin-top:2px}
+.statechip{width:104px; flex:none; font-size:11px; font-weight:600; padding:4px 0; border-radius:var(--r-pill); border:1px solid; text-align:center; text-transform:uppercase; letter-spacing:.03em}
+.s-available{border-color:var(--rule); color:var(--ink-3); background:var(--paper)}
+.s-staging{border-color:var(--caution); color:var(--caution); background:var(--caution-bg)}
+.s-deployed{border-color:var(--forest); color:var(--forest); background:var(--forest-tint)}
+.s-returned{border-color:var(--info); color:var(--info); background:var(--info-bg)}
+.s-signedout{border-color:var(--rule); color:var(--ink-3); background:var(--neutral-bg)}
+.rtask{width:92px; flex:none; font-family:var(--mono); font-size:11px; color:var(--ink-2)}
+.rtime{width:78px; flex:none; font-family:var(--mono); font-size:13px; text-align:right}
+.rtime.live{color:var(--forest); font-weight:500}
+.rtime.done{color:var(--ink-3)}
+.ract{width:96px; flex:none; text-align:right}
+.ract button{font-size:12px; font-weight:600; padding:6px 12px; border-radius:var(--r-sm); border:1px solid var(--rule); background:var(--paper); color:var(--accent)}
+.ract button:hover{background:var(--forest-tint); border-color:var(--accent)}
+.ract button.out{color:var(--ink-3)}
+.ract .doneflag{font-family:var(--mono); font-size:10px; color:var(--ink-3)}
+
+/* reconciliation */
+.recon .big{padding:var(--s4); border-bottom:1px solid var(--hairline)}
+.recon .field-now{display:flex; align-items:center; gap:var(--s3); background:var(--forest-tint); border:1px solid var(--forest); border-radius:var(--r-md); padding:14px var(--s4)}
+.recon .field-now .fn{font-family:var(--mono); font-size:32px; font-weight:600; color:var(--forest); line-height:1}
+.recon .field-now .fx{font-size:12.5px; color:var(--forest)}
+.recon .field-now .fx b{display:block; font-size:13px}
+.recon .field-now.clear{background:var(--cream-2); border-color:var(--hairline)}
+.recon .field-now.clear .fn{color:var(--ink-3)}
+.recon .field-now.clear .fx{color:var(--ink-2)}
+.counts{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--hairline)}
+.count{background:var(--paper); padding:12px var(--s4)}
+.count .cn{font-family:var(--mono); font-size:20px; font-weight:600}
+.count .cl{font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); margin-top:2px}
+.hourbar{padding:var(--s4); border-top:1px solid var(--hairline); display:flex; justify-content:space-between; align-items:baseline}
+.hourbar .hl{font-size:12px; color:var(--ink-2)}
+.hourbar .hv{font-family:var(--mono); font-size:20px; font-weight:600; color:var(--ink)}
+.reconbtn{padding:var(--s4)}
+.reconbtn button{width:100%; font-size:14px; font-weight:600; padding:12px; border-radius:var(--r-sm); border:1px solid var(--accent); background:var(--paper); color:var(--accent)}
+.reconbtn button:hover{background:var(--accent); color:#fff}
+.reconbtn .note{font-size:11px; color:var(--ink-3); margin-top:8px; text-align:center}
+
+/* staging */
+.stagerow{display:flex; align-items:center; gap:var(--s3); padding:10px var(--s4); border-bottom:1px solid var(--hairline)}
+.stagerow:last-child{border-bottom:0}
+.stagerow .sn{flex:1; font-size:13px; font-weight:500}
+.stagerow .sn small{font-family:var(--mono); font-size:10px; color:var(--ink-3); font-weight:400; display:block}
+.stagerow button{font-size:11px; font-weight:600; padding:5px 11px; border-radius:var(--r-sm); border:1px solid var(--forest); background:var(--forest-tint); color:var(--forest)}
+.stageempty{padding:20px var(--s4); font-size:12.5px; color:var(--ink-3); text-align:center}
+
+@media (max-width:960px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand">
+    <span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span>
+    <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
+  </div>
+  <div class="field-accountability"><span class="fdot"></span><span id="fieldHdr"><b>3 in the field</b> · accounted for</span></div>
+</div>
+
+<div class="page">
+  <div class="head">
+    <h1>Resources &amp; staging</h1>
+    <p>Who is here, who is in the field, and who has signed out. Sign resources in on arrival and out on departure, so the operation always knows everyone is accounted for, and the deployed hours reconcile at close-out.</p>
+  </div>
+
+  <div class="grid">
+    <!-- REGISTER -->
+    <div class="panel">
+      <div class="ph"><span class="t">Resource register</span><span class="c" id="regCount"></span></div>
+      <div class="colhead">
+        <span class="c-res">Resource</span><span class="c-state" style="width:104px; flex:none">State</span>
+        <span class="c-task" style="width:92px; flex:none">Task</span><span class="c-time" style="width:78px; flex:none">On task</span>
+        <span class="c-act" style="width:96px; flex:none">&nbsp;</span>
+      </div>
+      <div id="register"></div>
+    </div>
+
+    <!-- RECONCILIATION + STAGING -->
+    <div>
+      <div class="panel recon">
+        <div class="ph"><span class="t">Reconciliation</span><span class="c" id="clock">14:52</span></div>
+        <div class="big">
+          <div class="field-now" id="fieldNow">
+            <span class="fn" id="fieldN">3</span>
+            <span class="fx"><b id="fieldLabel">in the field</b><span id="fieldSub">Every deployed team accounted for.</span></span>
+          </div>
+        </div>
+        <div class="counts">
+          <div class="count"><div class="cn" id="c-onscene">6</div><div class="cl">On scene</div></div>
+          <div class="count"><div class="cn" id="c-staging">2</div><div class="cl">At staging</div></div>
+          <div class="count"><div class="cn" id="c-returned">1</div><div class="cl">Returned</div></div>
+          <div class="count"><div class="cn" id="c-signedout">0</div><div class="cl">Signed out</div></div>
+        </div>
+        <div class="hourbar"><span class="hl">Total deployed hours</span><span class="hv" id="totalHours">0:00</span></div>
+        <div class="reconbtn">
+          <button id="reconBtn">Reconcile for close-out</button>
+          <div class="note" id="reconNote">Totals carry to M9 close-out as deployment hours and cost.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph"><span class="t">Staging</span><span class="c">ready to deploy</span></div>
+        <div id="staging"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach = Array.prototype.forEach; }
+(function(){
+  // secs = seconds on task so far (for deployed: ticks; for returned: fixed)
+  var R=[
+    {id:'IMT',cap:'Command · 3 pax',state:'deployed',task:'Command',loc:'ICP',signin:'13:22',secs:5400},
+    {id:'ROMEO-2',cap:'Ground team · 4 pax',state:'deployed',task:'TASK-012',loc:'Sector A',signin:'13:38',secs:4440},
+    {id:'ROMEO-4',cap:'Ground team · 4 pax',state:'deployed',task:'TASK-014',loc:'Sector B',signin:'13:52',secs:3600},
+    {id:'K9-1',cap:'Dog team · 1 dog',state:'staging',task:'',loc:'Staging',signin:'14:05',secs:0},
+    {id:'MEDIC-1',cap:'Medic · S. Patel',state:'staging',task:'',loc:'Staging',signin:'14:10',secs:0},
+    {id:'ROMEO-1',cap:'Ground team · 4 pax',state:'returned',task:'TASK-009',loc:'Staging',signin:'13:15',secs:6300},
+    {id:'Heli-1',cap:'Air · Squirrel',state:'available',task:'',loc:'Wanaka',signin:'',secs:0}
+  ];
+  var LABEL={available:'Available',staging:'At staging',deployed:'Deployed',returned:'Returned',signedout:'Signed out'};
+  var reconciled=false;
+
+  function hms(s){ var h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return h+':'+(m<10?'0':'')+m; }
+
+  function nextAction(state){
+    return {available:{to:'staging',label:'Sign in'},staging:{to:'deployed',label:'Deploy'},
+            deployed:{to:'returned',label:'Return'},returned:{to:'signedout',label:'Sign out'},
+            signedout:null}[state];
+  }
+
+  function render(){
+    document.getElementById('regCount').textContent=R.length+' resources';
+    document.getElementById('register').innerHTML=R.map(function(r){
+      var act=nextAction(r.state);
+      var timeCls = r.state==='deployed'?'live':(r.state==='returned'?'done':'');
+      var timeVal = (r.state==='deployed'||r.state==='returned')?hms(r.secs):'—';
+      var actHtml = act ? '<button data-id="'+r.id+'" class="'+(r.state==='returned'?'out':'')+'">'+act.label+'</button>'
+                        : '<span class="doneflag">out '+(r.signout||'')+'</span>';
+      return '<div class="res" data-id="'+r.id+'">'+
+        '<span class="rmain"><div class="rn">'+r.id+'</div><div class="rcap">'+r.cap+'</div><div class="rloc">'+r.loc+(r.signin?' · in '+r.signin:'')+'</div></span>'+
+        '<span class="statechip s-'+r.state+'">'+LABEL[r.state]+'</span>'+
+        '<span class="rtask">'+(r.task||'—')+'</span>'+
+        '<span class="rtime '+timeCls+'">'+timeVal+'</span>'+
+        '<span class="ract">'+actHtml+'</span></div>';
+    }).join('');
+    document.querySelectorAll('.ract button').forEach(function(b){
+      b.addEventListener('click',function(){
+        var r=R.filter(function(x){return x.id===b.getAttribute('data-id');})[0];
+        var act=nextAction(r.state); if(!act) return;
+        if(r.state==='staging'){ r.signin=r.signin||nowClock(); }
+        if(act.to==='signedout'){ r.signout=nowClock(); }
+        if(act.to==='deployed' && !r.task){ r.task='TASK-016'; }
+        r.state=act.to;
+        var row=document.querySelector('.res[data-id="'+r.id+'"]'); if(row) row.classList.add('sel');
+        setTimeout(function(){ if(row) row.classList.remove('sel'); },500);
+        render(); recompute();
+      });
+    });
+    renderStaging();
+  }
+
+  function renderStaging(){
+    var s=R.filter(function(r){return r.state==='staging';});
+    var el=document.getElementById('staging');
+    if(!s.length){ el.innerHTML='<div class="stageempty">No resources at staging.</div>'; return; }
+    el.innerHTML=s.map(function(r){
+      return '<div class="stagerow"><span class="sn">'+r.id+'<small>'+r.cap+'</small></span><button data-id="'+r.id+'">Deploy</button></div>';
+    }).join('');
+    el.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        var r=R.filter(function(x){return x.id===b.getAttribute('data-id');})[0];
+        if(!r.task) r.task='TASK-016'; r.state='deployed'; render(); recompute();
+      });
+    });
+  }
+
+  function recompute(){
+    var deployed=R.filter(function(r){return r.state==='deployed';}).length;
+    var staging=R.filter(function(r){return r.state==='staging';}).length;
+    var returned=R.filter(function(r){return r.state==='returned';}).length;
+    var signedout=R.filter(function(r){return r.state==='signedout';}).length;
+    var onscene=deployed+staging+returned;
+    document.getElementById('c-onscene').textContent=onscene;
+    document.getElementById('c-staging').textContent=staging;
+    document.getElementById('c-returned').textContent=returned;
+    document.getElementById('c-signedout').textContent=signedout;
+    document.getElementById('fieldN').textContent=deployed;
+    var fn=document.getElementById('fieldNow');
+    if(deployed>0){ fn.classList.remove('clear');
+      document.getElementById('fieldLabel').textContent = deployed===1?'in the field':'in the field';
+      document.getElementById('fieldSub').textContent='Every deployed team accounted for.';
+      document.getElementById('fieldHdr').innerHTML='<b>'+deployed+' in the field</b> · accounted for';
+    } else { fn.classList.add('clear');
+      document.getElementById('fieldLabel').textContent='in the field';
+      document.getElementById('fieldSub').textContent = onscene===0 ? 'All resources signed out.' : 'No teams currently deployed.';
+      document.getElementById('fieldHdr').innerHTML= onscene===0 ? '<b>0 in the field</b> · all signed out' : '<b>0 in the field</b>';
+    }
+    // total deployed hours (deployed + returned)
+    var totalSecs=R.filter(function(r){return r.state==='deployed'||r.state==='returned';}).reduce(function(a,r){return a+r.secs;},0);
+    document.getElementById('totalHours').textContent=hms(totalSecs);
+    // recon button state
+    var allDone = onscene===0 && signedout>0;
+    var btn=document.getElementById('reconBtn');
+    if(allDone && reconciled){ btn.textContent='Reconciled ✓'; btn.disabled=true; }
+  }
+
+  function pad(n){return (n<10?'0':'')+n;}
+  function nowClock(){ var d=new Date(); return pad(d.getHours())+':'+pad(d.getMinutes()); }
+
+  document.getElementById('reconBtn').addEventListener('click',function(){
+    reconciled=true;
+    var onscene=R.filter(function(r){return r.state==='deployed'||r.state==='staging'||r.state==='returned';}).length;
+    if(onscene>0){ document.getElementById('reconNote').textContent='Still '+onscene+' on scene. Sign out returned resources to fully reconcile — but hours can carry to close-out now.'; }
+    else { document.getElementById('reconNote').textContent='All accounted for and signed out. Deployment hours locked and carried to M9 close-out.'; }
+    recompute();
+  });
+
+  // tick deployed resources
+  setInterval(function(){
+    R.forEach(function(r){ if(r.state==='deployed') r.secs+=1; });
+    // update only the live time cells + totals (cheap)
+    R.forEach(function(r){
+      if(r.state==='deployed'){ var row=document.querySelector('.res[data-id="'+r.id+'"] .rtime'); if(row) row.textContent=hms(r.secs); }
+    });
+    var totalSecs=R.filter(function(r){return r.state==='deployed'||r.state==='returned';}).reduce(function(a,r){return a+r.secs;},0);
+    document.getElementById('totalHours').textContent=hms(totalSecs);
+  },1000);
+
+  render(); recompute();
+})();
+</script>
+</body>
+</html>

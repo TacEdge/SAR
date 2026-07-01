@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — M6 Forms Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  --critical:#A6352B; --critical-bg:#F6E4DF;
+  --caution:#A9741B; --caution-bg:#F5EBD6;
+  --info:#35606E; --info-bg:#E0EAEC;
+  --neutral:#83836F; --neutral-bg:#E9E7DC;
+  --land:var(--forest); --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased}
+button{font-family:inherit; cursor:pointer}
+.mono{font-family:var(--mono)}
+
+/* app bar */
+.appbar{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between; padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
+.appbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
+.appbar .mark{font-weight:700; font-size:15px}
+.appbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
+.appbar .inc{display:flex; align-items:center; gap:var(--s3); margin-left:var(--s5); padding-left:var(--s5); border-left:1px solid rgba(255,255,255,.18)}
+.appbar .inc .ref{font-family:var(--mono); font-size:13px; color:var(--cream)}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill)}
+.pill .dot{width:7px; height:7px; border-radius:50%}
+.p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
+.right{display:flex; align-items:center; gap:var(--s5)}
+.domain{display:flex; align-items:center; gap:var(--s2)}
+.domain .lab{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sage)}
+.seg{display:inline-flex; border:1px solid rgba(255,255,255,.28); border-radius:var(--r-pill); overflow:hidden}
+.seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; background:transparent; color:#CFD6C2; border:0; padding:5px 13px}
+.seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
+
+/* layout */
+.wrap{display:grid; grid-template-columns:246px 1fr 316px; height:calc(100vh - 52px); min-height:600px}
+
+/* form nav */
+.nav{background:var(--canvas); border-right:1px solid var(--hairline); overflow-y:auto; padding:var(--s4) var(--s3)}
+.nav .nh{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive); padding:0 var(--s2) var(--s2)}
+.nav .grp{margin-bottom:var(--s4)}
+.nav .gt{font-size:10px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); padding:var(--s2) var(--s2) 6px}
+.nav .f{display:flex; align-items:center; gap:9px; padding:7px var(--s2); border-radius:var(--r-sm); font-size:13px; color:var(--ink-2); cursor:pointer}
+.nav .f:hover{background:var(--forest-tint)}
+.nav .f.on{background:var(--accent-tint); color:var(--accent); font-weight:600}
+.nav .f .sd{width:8px; height:8px; border-radius:50%; flex:none}
+.sd.done{background:var(--forest)} .sd.prog{background:var(--caution)} .sd.draft{background:var(--neutral)} .sd.none{background:var(--rule)} .sd.active{background:var(--accent); box-shadow:0 0 0 3px var(--accent-tint)}
+
+/* form editor */
+.editor{overflow-y:auto; padding:var(--s5) var(--s6)}
+.fhead{display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s4); margin-bottom:var(--s2)}
+.fhead h1{font-size:23px; font-weight:700; margin:0}
+.fhead .sub{font-family:var(--mono); font-size:12px; color:var(--ink-3); margin-top:4px}
+.vbadge{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:4px 11px; border-radius:var(--r-pill); text-transform:uppercase; letter-spacing:.04em}
+.v-land{background:var(--forest-tint); color:var(--forest)} .v-marine{background:var(--info-bg); color:var(--info)}
+.editnote{display:flex; align-items:center; gap:var(--s3); margin:var(--s4) 0; padding:12px var(--s4); background:var(--info-bg); border:1px solid #cfe0e4; border-radius:var(--r-md); font-size:13px; color:var(--info)}
+html[data-domain="marine"] .editnote{background:var(--info-bg)}
+.editnote .ai{font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.06em; background:var(--info); color:#fff; padding:2px 7px; border-radius:var(--r-sm); flex:none}
+.editnote b{color:#25505c}
+
+.concurrent{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-3)}
+.avatars{display:flex}
+.avatars .av{width:24px; height:24px; border-radius:50%; background:var(--sage); color:var(--forest-deep); font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; border:2px solid var(--paper); margin-left:-6px}
+.avatars .av:first-child{margin-left:0}
+
+.scalekey{font-size:12px; color:var(--ink-3); margin:var(--s4) 0 var(--s3)}
+.scalekey b{color:var(--ink-2)}
+
+/* factor rows */
+.factors{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
+.factor{display:flex; align-items:center; gap:var(--s4); padding:12px var(--s5); border-bottom:1px solid var(--hairline)}
+.factor:last-child{border-bottom:0}
+.factor .fl{flex:1}
+.factor .fname{font-size:14px; font-weight:500}
+.factor .fadj{font-family:var(--mono); font-size:10px; color:var(--caution); margin-left:8px; display:none}
+.factor.adj .fadj{display:inline}
+.scoreseg{display:inline-flex; gap:4px}
+.scoreseg button{width:38px; height:38px; border-radius:var(--r-sm); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2); font-family:var(--mono); font-size:15px; font-weight:500; position:relative}
+.scoreseg button:hover{border-color:var(--accent)}
+.scoreseg button[aria-pressed="true"]{background:var(--accent); color:#fff; border-color:var(--accent)}
+.scoreseg button.ai:after{content:"AI"; position:absolute; top:-8px; right:-6px; font-family:var(--ui); font-size:8px; font-weight:700; letter-spacing:.04em; background:var(--info); color:#fff; padding:1px 4px; border-radius:3px}
+.scoreseg button[aria-pressed="true"].ai:after{background:var(--forest-deep)}
+
+/* score panel */
+.scorepanel{background:var(--cream-2); border-left:1px solid var(--hairline); overflow-y:auto; padding:var(--s5) var(--s5)}
+.scorecard{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:var(--s5); position:sticky; top:0}
+.scorecard .sl{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+.scorecard .total{font-family:var(--mono); font-size:56px; font-weight:600; line-height:1; margin:6px 0 2px; color:var(--band)}
+.scorecard .of{font-family:var(--mono); font-size:12px; color:var(--ink-3)}
+.bandpill{display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:700; padding:8px 14px; border-radius:var(--r-md); margin-top:var(--s4); color:var(--band); background:var(--bandbg); border:1px solid var(--band)}
+.bandpill .bd{width:9px; height:9px; border-radius:50%; background:var(--band)}
+
+/* gauge */
+.gauge{margin-top:var(--s4)}
+.gauge .track{display:flex; height:12px; border-radius:var(--r-pill); overflow:hidden; border:1px solid var(--hairline)}
+.gauge .track span{display:block; height:100%}
+.gauge .g-em{background:rgba(166,53,43,.55)} .gauge .g-me{background:rgba(169,116,27,.5)} .gauge .g-ev{background:rgba(43,71,33,.45)}
+.gauge .marker{position:relative; height:0}
+.gauge .marker .mk{position:absolute; top:-2px; transform:translateX(-50%); width:2px; height:20px; background:var(--ink)}
+.gauge .marker .mk:after{content:""; position:absolute; top:-6px; left:-4px; border:5px solid transparent; border-top-color:var(--ink)}
+.gauge .glabels{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--ink-3); margin-top:16px}
+
+.guidance{margin-top:var(--s5); font-size:13px; color:var(--ink-2); border-top:1px solid var(--hairline); padding-top:var(--s4)}
+.guidance .gh{font-size:10px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--olive); margin-bottom:6px}
+.aiverified{display:flex; align-items:center; gap:8px; margin-top:var(--s4); padding:10px 12px; background:var(--forest-tint); border-radius:var(--r-sm); font-size:12px; color:var(--forest)}
+.aiverified svg{width:15px;height:15px; flex:none}
+
+.factact{display:flex; gap:8px; margin-top:var(--s5)}
+.btn{font-size:13px; font-weight:600; padding:10px 18px; border-radius:var(--r-sm); border:1px solid transparent}
+.btn-primary{background:var(--accent); color:#fff} .btn-primary:hover{background:var(--forest-deep)}
+.btn-ghost{background:var(--paper); color:var(--olive); border-color:var(--rule)} .btn-ghost:hover{background:var(--forest-tint); color:var(--forest)}
+
+@media (max-width:1080px){ .wrap{grid-template-columns:1fr; height:auto} .nav,.scorepanel{border:0} .scorecard{position:relative} }
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand">
+    <span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span>
+    <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
+  </div>
+  <div class="right">
+    <span class="mono" style="font-size:11px; color:var(--sage)">Forms · structured records, not PDFs</span>
+    <div class="domain">
+      <span class="lab">Domain</span>
+      <div class="seg" role="group" aria-label="Domain">
+        <button data-dom="land" aria-pressed="true">Land</button>
+        <button data-dom="marine" aria-pressed="false">Marine</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- FORM NAV -->
+  <div class="nav">
+    <div class="nh">Forms</div>
+    <div class="grp"><div class="gt">Subject &amp; intelligence</div>
+      <div class="f"><span class="sd done"></span>Initial Missing Person Report</div>
+      <div class="f"><span class="sd done"></span>Missing Person Summary</div>
+      <div class="f"><span class="sd prog"></span>Information Collection Plan</div>
+      <div class="f"><span class="sd draft"></span>Scenario Recording</div>
+    </div>
+    <div class="grp"><div class="gt">Search urgency</div>
+      <div class="f on"><span class="sd active"></span>Search Urgency Assessment</div>
+    </div>
+    <div class="grp"><div class="gt">Planning</div>
+      <div class="f"><span class="sd draft"></span>Incident Action Plan</div>
+      <div class="f"><span class="sd none"></span>Communications Plan</div>
+      <div class="f"><span class="sd none"></span>Medical Plan</div>
+    </div>
+    <div class="grp"><div class="gt">Field &amp; casualty</div>
+      <div class="f"><span class="sd done"></span>Team Assignment</div>
+      <div class="f"><span class="sd none"></span>Found Item</div>
+      <div class="f"><span class="sd none"></span>Casualty Assessment</div>
+    </div>
+    <div class="grp"><div class="gt">Outward &amp; debrief</div>
+      <div class="f"><span class="sd none"></span>SITREP</div>
+      <div class="f"><span class="sd none"></span>Team Debrief</div>
+      <div class="f"><span class="sd none"></span>Handover</div>
+    </div>
+  </div>
+
+  <!-- FORM EDITOR -->
+  <div class="editor">
+    <div class="fhead">
+      <div>
+        <h1>Search Urgency Assessment</h1>
+        <div class="sub"><span id="fref">FORMS-6</span> · structured record · shares the log field set</div>
+      </div>
+      <span class="vbadge v-land" id="vbadge">Land</span>
+    </div>
+
+    <div class="concurrent"><span>Editing now:</span><div class="avatars"><span class="av">IC</span><span class="av">IN</span></div><span>IC and Intel — multiple users, one record (UI-10)</span></div>
+
+    <div class="editnote">
+      <span class="ai">AI</span>
+      <div><b>Values suggested from the missing-person intake.</b> Confirm or adjust each factor. The score is assistance, it never decides for you.</div>
+    </div>
+
+    <div class="scalekey">Score each factor <b id="scaleLo">1 (most urgent)</b> to <b id="scaleHi">4</b>. The total bands the response.</div>
+
+    <div class="factors" id="factors"></div>
+
+    <div class="factact">
+      <button class="btn btn-primary">Mark complete</button>
+      <button class="btn btn-ghost">Save draft</button>
+    </div>
+    <div style="height:24px"></div>
+  </div>
+
+  <!-- SCORE PANEL -->
+  <div class="scorepanel">
+    <div class="scorecard" id="scorecard">
+      <div class="sl">Urgency score</div>
+      <div class="total" id="total">18</div>
+      <div class="of" id="ofRange">of 11–41</div>
+      <div class="bandpill" id="bandpill"><span class="bd"></span><span id="bandName">Requires emergency response</span></div>
+      <div class="gauge">
+        <div class="track" id="gtrack"></div>
+        <div class="marker"><span class="mk" id="marker" style="left:23%"></span></div>
+        <div class="glabels" id="glabels"></div>
+      </div>
+      <div class="guidance">
+        <div class="gh">Response</div>
+        <div id="guidance">A low total means high urgency. This scenario sits at the emergency threshold: launch now, do not wait to refine.</div>
+        <div class="aiverified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>AI-assisted, human-verified. You set every value.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach = Array.prototype.forEach; }
+(function(){
+  var root=document.documentElement;
+  var C={crit:'var(--critical)',critbg:'var(--critical-bg)',caut:'var(--caution)',cautbg:'var(--caution-bg)',for:'var(--forest)',forbg:'var(--forest-tint)'};
+
+  var DATA={
+    land:{ref:'FORMS-6',variant:'Land',min:11,max:41,scaleHi:'4',
+      factors:[
+        {k:'Number of missing persons',max:3,ai:2},
+        {k:'Age',max:4,ai:1},
+        {k:'Medical conditions',max:4,ai:1},
+        {k:'Fitness',max:3,ai:2},
+        {k:'Experience',max:4,ai:2},
+        {k:'Reliability',max:4,ai:2},
+        {k:'Clothing',max:3,ai:2},
+        {k:'Equipment',max:4,ai:2},
+        {k:'Weather',max:4,ai:1},
+        {k:'Terrain hazards',max:4,ai:1},
+        {k:'Length of time missing',max:4,ai:2}
+      ],
+      bands:[
+        {n:'Requires emergency response',lo:11,hi:18,c:C.crit,bg:C.critbg,g:'A low total means high urgency. This scenario sits at the emergency threshold: launch now, do not wait to refine.'},
+        {n:'Measured response',lo:19,hi:27,c:C.caut,bg:C.cautbg,g:'A measured response. Plan deliberately, commit resources, but the clock is less immediate.'},
+        {n:'Evaluate and investigate',lo:28,hi:41,c:C.for,bg:C.forbg,g:'Lower urgency. Continue to evaluate and investigate before a full field commitment.'}
+      ]},
+    marine:{ref:'FORMS-7',variant:'Marine',min:6,max:19,scaleHi:'3–4',
+      factors:[
+        {k:'Method / type of alert',max:3,ai:1},
+        {k:'Weather',max:3,ai:1},
+        {k:'Medical issues',max:3,ai:2},
+        {k:'Vessel / equipment suitability',max:3,ai:1},
+        {k:'Time of day',max:3,ai:2},
+        {k:'Location',max:4,ai:1}
+      ],
+      bands:[
+        {n:'Distress — emergency response',lo:6,hi:7,c:C.crit,bg:C.critbg,g:'Distress. Launch an emergency response now.'},
+        {n:'Alert — measured response',lo:8,hi:15,c:C.caut,bg:C.cautbg,g:'Alert phase. Mount a measured response and keep developing the picture.'},
+        {n:'Uncertainty — evaluate',lo:16,hi:19,c:C.for,bg:C.forbg,g:'Uncertainty phase. Evaluate and investigate before committing assets.'}
+      ]}
+  };
+
+  var dom='land', vals=[];
+
+  function initVals(){ vals=DATA[dom].factors.map(function(f){return f.ai;}); }
+
+  function renderFactors(){
+    var d=DATA[dom];
+    document.getElementById('factors').innerHTML=d.factors.map(function(f,i){
+      var btns='';
+      for(var s=1;s<=f.max;s++){
+        btns+='<button data-i="'+i+'" data-v="'+s+'" aria-pressed="'+(vals[i]===s?'true':'false')+'"'+(f.ai===s?' class="ai"':'')+'>'+s+'</button>';
+      }
+      var adj = vals[i]!==f.ai;
+      return '<div class="factor'+(adj?' adj':'')+'" data-row="'+i+'"><div class="fl"><span class="fname">'+f.k+'</span><span class="fadj">· adjusted from '+f.ai+'</span></div><div class="scoreseg">'+btns+'</div></div>';
+    }).join('');
+    document.querySelectorAll('.scoreseg button').forEach(function(b){
+      b.addEventListener('click',function(){
+        var i=+b.getAttribute('data-i'), v=+b.getAttribute('data-v'); vals[i]=v;
+        var seg=b.parentNode; seg.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed', x===b?'true':'false');});
+        var row=document.querySelector('.factor[data-row="'+i+'"]');
+        row.classList.toggle('adj', v!==DATA[dom].factors[i].ai);
+        compute();
+      });
+    });
+  }
+
+  function bandFor(total){ var bs=DATA[dom].bands; for(var i=0;i<bs.length;i++){ if(total<=bs[i].hi) return bs[i]; } return bs[bs.length-1]; }
+
+  function compute(){
+    var d=DATA[dom], total=vals.reduce(function(a,b){return a+b;},0);
+    var b=bandFor(total);
+    var card=document.getElementById('scorecard');
+    card.style.setProperty('--band', b.c); card.style.setProperty('--bandbg', b.bg);
+    document.getElementById('total').textContent=total;
+    document.getElementById('ofRange').textContent='of '+d.min+'–'+d.max;
+    document.getElementById('bandName').textContent=b.n;
+    document.getElementById('guidance').textContent=b.g;
+    // marker position
+    var pos=(total-d.min)/(d.max-d.min); pos=Math.max(0,Math.min(1,pos));
+    document.getElementById('marker').style.left=(pos*100).toFixed(1)+'%';
+  }
+
+  function renderGauge(){
+    var d=DATA[dom], span=d.max-d.min;
+    var seg=d.bands.map(function(b,i){
+      var w=((b.hi-(i===0?d.min-1:d.bands[i-1].hi))/span*100);
+      var cls=i===0?'g-em':(i===1?'g-me':'g-ev');
+      return '<span class="'+cls+'" style="flex:0 0 '+w+'%"></span>';
+    }).join('');
+    document.getElementById('gtrack').innerHTML=seg;
+    document.getElementById('glabels').innerHTML='<span>'+d.min+'</span><span>most urgent ← → least</span><span>'+d.max+'</span>';
+  }
+
+  function setDomain(nd){
+    dom=nd; root.setAttribute('data-domain',nd);
+    document.querySelectorAll('.seg button').forEach(function(x){x.setAttribute('aria-pressed', x.getAttribute('data-dom')===nd?'true':'false');});
+    document.getElementById('fref').textContent=DATA[nd].ref;
+    var vb=document.getElementById('vbadge'); vb.textContent=DATA[nd].variant; vb.className='vbadge '+(nd==='marine'?'v-marine':'v-land');
+    document.getElementById('scaleHi').textContent=DATA[nd].scaleHi;
+    initVals(); renderFactors(); renderGauge(); compute();
+  }
+  document.querySelectorAll('.seg button').forEach(function(b){ b.addEventListener('click',function(){ setDomain(b.getAttribute('data-dom')); }); });
+
+  initVals(); renderFactors(); renderGauge(); compute();
+})();
+</script>
+</body>
+</html>

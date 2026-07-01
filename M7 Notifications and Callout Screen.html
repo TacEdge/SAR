@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — M7 Notifications &amp; Callout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  --critical:#A6352B; --critical-bg:#F6E4DF;
+  --caution:#A9741B; --caution-bg:#F5EBD6;
+  --info:#35606E; --info-bg:#E0EAEC;
+  --neutral:#83836F; --neutral-bg:#E9E7DC;
+  --land:var(--forest); --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased}
+button{font-family:inherit; cursor:pointer}
+.mono{font-family:var(--mono)}
+
+/* app bar */
+.appbar{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between; padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
+.appbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
+.appbar .mark{font-weight:700; font-size:15px}
+.appbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
+.appbar .inc{display:flex; align-items:center; gap:var(--s3); margin-left:var(--s5); padding-left:var(--s5); border-left:1px solid rgba(255,255,255,.18)}
+.appbar .inc .ref{font-family:var(--mono); font-size:13px; color:var(--cream)}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill)}
+.pill .dot{width:7px; height:7px; border-radius:50%}
+.p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
+.appbar .note{font-size:11px; color:var(--sage); font-family:var(--mono)}
+
+/* page */
+.page{max-width:1240px; margin:0 auto; padding:var(--s5) var(--s5) var(--s6)}
+.head h1{font-size:24px; font-weight:700; margin:0}
+.head p{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:78ch}
+.grid{display:grid; grid-template-columns:1fr 350px; gap:var(--s5); align-items:start; margin-top:var(--s5)}
+
+.panel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden; margin-bottom:var(--s5)}
+.panel .ph{display:flex; justify-content:space-between; align-items:center; padding:11px var(--s4); background:var(--cream-2); border-bottom:1px solid var(--hairline)}
+.ph .t{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
+.ph .c{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.pb{padding:var(--s5)}
+
+/* composer */
+.rcount{display:flex; align-items:center; gap:var(--s3); padding:12px var(--s4); background:var(--forest-tint); border:1px solid var(--accent); border-radius:var(--r-sm); margin-bottom:var(--s4)}
+.rcount .n{font-family:var(--mono); font-size:22px; font-weight:600; color:var(--forest)}
+.rcount .lab{font-size:13px; color:var(--forest)}
+.rcount .quick{margin-left:auto; display:flex; gap:6px}
+.rcount .quick button{font-size:11px; font-weight:500; padding:5px 10px; border-radius:var(--r-pill); border:1px solid var(--accent); background:var(--paper); color:var(--accent)}
+.field{margin-bottom:var(--s4)}
+.field > label{display:block; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--olive); margin-bottom:var(--s2)}
+.field textarea{width:100%; font-family:var(--ui); font-size:14px; padding:11px 13px; background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-sm); color:var(--ink); resize:vertical}
+.field textarea:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+.sendrow{display:flex; align-items:center; gap:var(--s4)}
+.channels{display:inline-flex; border:1px solid var(--rule); border-radius:var(--r-sm); overflow:hidden}
+.channels button{font-size:12.5px; font-weight:500; padding:9px 14px; border:0; background:var(--paper); color:var(--ink-2)}
+.channels button:not(:last-child){border-right:1px solid var(--rule)}
+.channels button[aria-pressed="true"]{background:var(--forest-tint); color:var(--accent); font-weight:600}
+.btn-send{font-size:15px; font-weight:600; padding:12px 22px; border-radius:var(--r-sm); border:0; background:var(--accent); color:#fff; display:inline-flex; align-items:center; gap:9px}
+.btn-send:hover{background:var(--forest-deep)}
+.btn-send:disabled{background:var(--neutral-bg); color:var(--ink-3); cursor:not-allowed}
+.btn-send svg{width:16px;height:16px}
+.sendnote{font-size:12px; color:var(--ink-3)}
+
+/* response board */
+.summary{display:flex; gap:var(--s2); padding:var(--s4); flex-wrap:wrap; border-bottom:1px solid var(--hairline)}
+.stat{flex:1; min-width:90px; background:var(--cream-2); border:1px solid var(--hairline); border-radius:var(--r-sm); padding:10px 12px}
+.stat .sn{font-family:var(--mono); font-size:22px; font-weight:600; line-height:1}
+.stat .sl{font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); margin-top:3px}
+.stat.resp .sn{color:var(--forest)} .stat.pend .sn{color:var(--caution)} .stat.un .sn{color:var(--ink-3)} .stat.note .sn{color:var(--info)}
+.rrow{display:flex; align-items:center; gap:var(--s3); padding:11px var(--s4); border-bottom:1px solid var(--hairline)}
+.rrow:last-child{border-bottom:0}
+.rav{width:32px; height:32px; border-radius:50%; background:var(--sage); color:var(--forest-deep); font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:none}
+.rinfo{flex:1; min-width:0}
+.rn{font-size:14px; font-weight:600}
+.rcap{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.reta{font-family:var(--mono); font-size:12px; color:var(--forest); width:78px; text-align:right; flex:none}
+.rstate{font-size:11px; font-weight:600; padding:4px 10px; border-radius:var(--r-pill); border:1px solid; white-space:nowrap; flex:none; width:104px; text-align:center}
+.st-notified{border-color:var(--rule); color:var(--ink-3); background:var(--paper)}
+.st-responding{border-color:var(--forest); color:var(--forest); background:var(--forest-tint)}
+.st-unavailable{border-color:var(--rule); color:var(--ink-3); background:var(--neutral-bg)}
+.emptyboard{padding:40px var(--s4); text-align:center; color:var(--ink-3)}
+.emptyboard b{display:block; color:var(--ink-2); margin-bottom:4px}
+.pulse{animation:pl .5s ease}
+@keyframes pl{from{background:var(--accent-tint)}to{background:transparent}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}}
+
+/* roster */
+.rfilter{display:flex; gap:5px; flex-wrap:wrap; padding:var(--s3) var(--s4) 0}
+.rfilter button{font-size:11px; font-weight:500; padding:4px 10px; border-radius:var(--r-pill); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2)}
+.rfilter button.on{background:var(--accent); color:#fff; border-color:var(--accent)}
+.roster{padding:var(--s3) 0}
+.crow{display:flex; align-items:center; gap:var(--s3); padding:9px var(--s4); cursor:pointer}
+.crow:hover{background:var(--cream-2)}
+.cbox{width:18px; height:18px; border-radius:var(--r-sm); border:1.5px solid var(--rule); flex:none; display:flex; align-items:center; justify-content:center}
+.cbox svg{width:11px; height:11px; color:#fff; opacity:0}
+.crow.sel .cbox{background:var(--accent); border-color:var(--accent)} .crow.sel .cbox svg{opacity:1}
+.cx{flex:1; min-width:0}
+.cn{font-size:13px; font-weight:500}
+.cc{font-family:var(--mono); font-size:10px; color:var(--ink-3)}
+.cavail{width:8px; height:8px; border-radius:50%; flex:none}
+.cavail.on{background:var(--forest)} .cavail.off{background:var(--rule)}
+
+/* comms record */
+.crec{padding:6px var(--s4) var(--s4)}
+.lrow{display:flex; gap:var(--s3); padding:8px 0; border-bottom:1px solid var(--hairline); font-size:12.5px}
+.lrow:last-child{border-bottom:0}
+.lt{font-family:var(--mono); font-size:10px; color:var(--ink-3); width:34px; flex:none; padding-top:2px}
+.lbar{width:3px; border-radius:2px; background:var(--info); flex:none}
+.lx{flex:1; color:var(--ink-2)} .lx .mono{color:var(--ink)}
+
+@media (max-width:960px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand">
+    <span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span>
+    <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
+  </div>
+  <span class="note">One callout · every reply on the record</span>
+</div>
+
+<div class="page">
+  <div class="head">
+    <h1>Notifications &amp; callout</h1>
+    <p>Call out the people you need from one list, across the channels they use, and watch replies land in one place. Every message sent and received is written to the record.</p>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: composer + board -->
+    <div>
+      <div class="panel">
+        <div class="ph"><span class="t">New callout</span><span class="c" id="chanSummary">app · SMS</span></div>
+        <div class="pb">
+          <div class="rcount">
+            <span class="n" id="recipN">6</span>
+            <span class="lab">recipients selected</span>
+            <span class="quick">
+              <button data-q="ground">All ground</button>
+              <button data-q="all">Select all</button>
+              <button data-q="clear">Clear</button>
+            </span>
+          </div>
+          <div class="field">
+            <label for="msg">Message</label>
+            <textarea id="msg" rows="3">SAR callout — SAR-2607-042. Overdue tramper, Kepler Track. Muster at Te Anau SAR base. Reply with availability and ETA.</textarea>
+          </div>
+          <div class="sendrow">
+            <div class="channels" role="group" aria-label="Channels">
+              <button aria-pressed="true" data-ch="app">App</button>
+              <button aria-pressed="true" data-ch="sms">SMS</button>
+              <button aria-pressed="false" data-ch="email">Email</button>
+            </div>
+            <button class="btn-send" id="sendBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Send callout</button>
+            <span class="sendnote" id="sendNote"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph"><span class="t">Responses</span><span class="c" id="boardCount">not sent</span></div>
+        <div class="summary" id="summary" style="display:none">
+          <div class="stat note"><div class="sn" id="s-notified">0</div><div class="sl">Notified</div></div>
+          <div class="stat resp"><div class="sn" id="s-responding">0</div><div class="sl">Responding</div></div>
+          <div class="stat pend"><div class="sn" id="s-pending">0</div><div class="sl">Pending</div></div>
+          <div class="stat un"><div class="sn" id="s-unavail">0</div><div class="sl">Unavailable</div></div>
+        </div>
+        <div id="board"><div class="emptyboard"><b>No callout sent yet.</b>Select recipients, then send. Replies appear here as they come in.</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: roster + comms record -->
+    <div>
+      <div class="panel">
+        <div class="ph"><span class="t">Contact roster</span><span class="c" id="rosterCount"></span></div>
+        <div class="rfilter" role="group" aria-label="Filter roster">
+          <button class="on" data-f="all">All</button>
+          <button data-f="Ground">Ground</button>
+          <button data-f="Dog">Dog</button>
+          <button data-f="Water">Water</button>
+          <button data-f="Medic">Medic</button>
+          <button data-f="Agency">Agency</button>
+        </div>
+        <div class="roster" id="roster"></div>
+      </div>
+
+      <div class="panel">
+        <div class="ph"><span class="t">Comms record</span><span class="c">feeds the log</span></div>
+        <div class="crec" id="crec"><div style="font-size:12.5px; color:var(--ink-3); padding:8px 0">Nothing sent yet. The callout and every reply will be recorded here and in the incident log.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach = Array.prototype.forEach; }
+(function(){
+  var CT=[
+    {id:'rt',n:'R. Tāne',cap:'Ground',skills:'Bushcraft · Nav',avail:true,sel:true,outcome:'responding',eta:12},
+    {id:'jm',n:'J. Mills',cap:'Ground',skills:'Team leader',avail:true,sel:true,outcome:'responding',eta:18},
+    {id:'kr',n:'K. Rewi',cap:'Dog',skills:'K9 · air-scent',avail:true,sel:true,outcome:'responding',eta:25},
+    {id:'sp',n:'S. Patel',cap:'Medic',skills:'Advanced care',avail:true,sel:true,outcome:'responding',eta:15},
+    {id:'ah',n:'A. Hunt',cap:'Ground',skills:'Nav · rope',avail:false,sel:true,outcome:'unavailable',eta:0},
+    {id:'mf',n:'M. Fox',cap:'Water',skills:'Swiftwater',avail:true,sel:true,outcome:'pending',eta:22},
+    {id:'lc',n:'L. Chen',cap:'Air',skills:'Air liaison',avail:false,sel:false,outcome:'pending',eta:0},
+    {id:'tw',n:'T. Wiremu',cap:'Ground',skills:'Bushcraft',avail:true,sel:false,outcome:'responding',eta:20},
+    {id:'cg',n:'Coastguard',cap:'Agency',skills:'Marine unit',avail:true,sel:false,outcome:'responding',eta:30},
+    {id:'ls',n:'LandSAR regional',cap:'Agency',skills:'Coordination',avail:true,sel:false,outcome:'responding',eta:0}
+  ];
+  var STLABEL={notified:'Notified',responding:'Responding',unavailable:'Unavailable',pending:'Notified'};
+  var filter='all', channels={app:true,sms:true,email:false}, sent=false, board={};
+
+  function initials(n){ var p=n.replace(/[^A-Za-zĀāĒēĪīŌōŪū .]/g,'').split(' '); return (p[0][0]+(p[1]?p[1][0]:'')).toUpperCase(); }
+  function selCount(){ return CT.filter(function(c){return c.sel;}).length; }
+
+  function renderRoster(){
+    var list=CT.filter(function(c){ return filter==='all'||c.cap===filter; });
+    document.getElementById('rosterCount').textContent=CT.length+' contacts';
+    document.getElementById('roster').innerHTML=list.map(function(c){
+      return '<div class="crow'+(c.sel?' sel':'')+'" data-id="'+c.id+'">'+
+        '<span class="cbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>'+
+        '<span class="cx"><div class="cn">'+c.n+'</div><div class="cc">'+c.cap+' · '+c.skills+'</div></span>'+
+        '<span class="cavail '+(c.avail?'on':'off')+'" title="'+(c.avail?'on call':'off')+'"></span></div>';
+    }).join('');
+    document.querySelectorAll('.crow').forEach(function(row){
+      row.addEventListener('click',function(){
+        var c=CT.filter(function(x){return x.id===row.getAttribute('data-id');})[0];
+        c.sel=!c.sel; renderRoster(); updateRecip();
+      });
+    });
+  }
+  function updateRecip(){
+    document.getElementById('recipN').textContent=selCount();
+    document.getElementById('sendBtn').disabled = selCount()===0 || !document.getElementById('msg').value.trim();
+  }
+
+  function chanText(){ var a=[]; if(channels.app)a.push('app'); if(channels.sms)a.push('SMS'); if(channels.email)a.push('email'); return a.join(' · ')||'no channel'; }
+
+  function renderBoard(){
+    var ids=Object.keys(board);
+    if(!ids.length){ document.getElementById('board').innerHTML='<div class="emptyboard"><b>No callout sent yet.</b>Select recipients, then send. Replies appear here as they come in.</div>'; return; }
+    document.getElementById('board').innerHTML=ids.map(function(id){
+      var c=CT.filter(function(x){return x.id===id;})[0]; var st=board[id];
+      var stateCls = st==='responding'?'st-responding':(st==='unavailable'?'st-unavailable':'st-notified');
+      var eta = (st==='responding'&&c.eta) ? ('ETA '+c.eta+'m') : '';
+      return '<div class="rrow" data-id="'+id+'">'+
+        '<span class="rav">'+initials(c.n)+'</span>'+
+        '<span class="rinfo"><div class="rn">'+c.n+'</div><div class="rcap">'+c.cap+' · '+c.skills+'</div></span>'+
+        '<span class="reta">'+eta+'</span>'+
+        '<span class="rstate '+stateCls+'">'+STLABEL[st]+'</span></div>';
+    }).join('');
+  }
+  function renderSummary(){
+    var v=Object.keys(board).map(function(k){return board[k];});
+    document.getElementById('s-notified').textContent=v.length;
+    document.getElementById('s-responding').textContent=v.filter(function(s){return s==='responding';}).length;
+    document.getElementById('s-pending').textContent=v.filter(function(s){return s==='notified';}).length;
+    document.getElementById('s-unavail').textContent=v.filter(function(s){return s==='unavailable';}).length;
+    document.getElementById('boardCount').textContent=v.length+' notified';
+  }
+  var comms=[];
+  function addComms(t,txt){ comms.unshift({t:t,txt:txt}); renderComms(); }
+  function renderComms(){
+    if(!comms.length) return;
+    document.getElementById('crec').innerHTML=comms.map(function(e){
+      return '<div class="lrow"><span class="lt">'+e.t+'</span><span class="lbar"></span><span class="lx">'+e.txt+'</span></div>';
+    }).join('');
+  }
+
+  document.getElementById('sendBtn').addEventListener('click',function(){
+    var sel=CT.filter(function(c){return c.sel;}); if(!sel.length) return;
+    sent=true;
+    document.getElementById('summary').style.display='flex';
+    board={}; sel.forEach(function(c){ board[c.id]='notified'; });
+    renderBoard(); renderSummary();
+    document.getElementById('sendNote').textContent='Sent to '+sel.length+' via '+chanText()+'.';
+    addComms('1452','Callout sent · <span class="mono">'+sel.length+' recipients</span> · '+chanText());
+    // simulate replies
+    sel.forEach(function(c,i){
+      setTimeout(function(){
+        if(c.outcome==='pending') return; // no reply yet
+        board[c.id]=c.outcome;
+        renderBoard(); renderSummary();
+        var row=document.querySelector('.rrow[data-id="'+c.id+'"]'); if(row) row.classList.add('pulse');
+        var msg = c.outcome==='responding' ? (c.n+' responding'+(c.eta?' · <span class="mono">ETA '+c.eta+'m</span>':'')) : (c.n+' unavailable');
+        addComms('145'+(3+(i%6)), msg);
+      }, 700 + i*650);
+    });
+  });
+
+  document.querySelectorAll('.channels button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var ch=b.getAttribute('data-ch'), on=b.getAttribute('aria-pressed')==='true';
+      channels[ch]=!on; b.setAttribute('aria-pressed', on?'false':'true');
+      document.getElementById('chanSummary').textContent=chanText();
+    });
+  });
+  document.querySelectorAll('.rfilter button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.rfilter button').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); filter=b.getAttribute('data-f'); renderRoster();
+    });
+  });
+  document.querySelectorAll('.rcount .quick button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var q=b.getAttribute('data-q');
+      CT.forEach(function(c){ if(q==='all')c.sel=true; else if(q==='clear')c.sel=false; else if(q==='ground')c.sel=(c.cap==='Ground'); });
+      renderRoster(); updateRecip();
+    });
+  });
+  document.getElementById('msg').addEventListener('input',updateRecip);
+
+  renderRoster(); updateRecip();
+})();
+</script>
+</body>
+</html>

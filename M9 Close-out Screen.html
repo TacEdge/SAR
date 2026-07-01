@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — M9 Close-out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  --critical:#A6352B; --critical-bg:#F6E4DF;
+  --caution:#A9741B; --caution-bg:#F5EBD6;
+  --info:#35606E; --info-bg:#E0EAEC;
+  --neutral:#83836F; --neutral-bg:#E9E7DC;
+  --land:var(--forest); --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+*{box-sizing:border-box}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased}
+button{font-family:inherit; cursor:pointer}
+.mono{font-family:var(--mono)}
+
+/* app bar */
+.appbar{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between; padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
+.appbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
+.appbar .mark{font-weight:700; font-size:15px}
+.appbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
+.appbar .inc{display:flex; align-items:center; gap:var(--s3); margin-left:var(--s5); padding-left:var(--s5); border-left:1px solid rgba(255,255,255,.18)}
+.appbar .inc .ref{font-family:var(--mono); font-size:13px; color:var(--cream)}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill)}
+.pill .dot{width:7px; height:7px; border-radius:50%}
+.p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
+.p-completed{background:var(--neutral-bg); color:var(--ink-2)} .p-completed .dot{background:var(--ink-3)}
+.appbar .note{font-size:11px; color:var(--sage); font-family:var(--mono)}
+
+/* page */
+.page{max-width:1240px; margin:0 auto; padding:var(--s5) var(--s5) var(--s6)}
+.head h1{font-size:24px; font-weight:700; margin:0}
+.head p{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:78ch}
+.grid{display:grid; grid-template-columns:1fr 340px; gap:var(--s5); align-items:start; margin-top:var(--s5)}
+
+/* report document */
+.doc{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden; min-height:520px}
+.docband{padding:var(--s4) var(--s5); background:var(--cream-2); border-bottom:1px solid var(--hairline); display:flex; justify-content:space-between; align-items:center}
+.docband.confirmed{background:var(--forest); border-color:var(--forest-deep)}
+.docband .dt{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
+.docband.confirmed .dt{color:var(--sage)}
+.docband .seal{display:none; align-items:center; gap:9px; color:var(--cream)}
+.docband.confirmed .seal{display:flex}
+.docband.confirmed .dt2{display:none}
+.docband .seal svg{width:16px;height:16px; color:var(--sage)}
+.docband .seal .st{font-size:13px; font-weight:700}
+.docband .seal .sm{font-family:var(--mono); font-size:11px; color:var(--sage)}
+
+/* empty state */
+.docempty{display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:90px var(--s5); color:var(--ink-3)}
+.docempty .ico{width:56px; height:56px; border-radius:50%; background:var(--forest-tint); color:var(--forest); display:flex; align-items:center; justify-content:center; margin-bottom:var(--s4)}
+.docempty .ico svg{width:28px;height:28px}
+.docempty b{font-size:16px; color:var(--ink-2); margin-bottom:6px}
+.docempty span{font-size:13px; max-width:44ch}
+
+/* report body */
+.report{padding:var(--s6) var(--s6) var(--s5)}
+.report.show{animation:fade .5s ease}
+@keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.report.show{animation:none}}
+.rtitle{font-size:22px; font-weight:700; margin:0 0 2px}
+.rmeta{font-family:var(--mono); font-size:12px; color:var(--ink-3); margin-bottom:var(--s5); display:flex; gap:14px; flex-wrap:wrap}
+.rmeta .out{color:var(--forest); font-weight:600}
+.sec{margin-bottom:var(--s5); padding-bottom:var(--s5); border-bottom:1px solid var(--hairline)}
+.sec:last-child{border-bottom:0; margin-bottom:0}
+.sechead{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:var(--s3)}
+.sechead h3{font-size:15px; font-weight:700; color:var(--forest); margin:0}
+.src{font-family:var(--mono); font-size:10px; color:var(--olive); background:var(--forest-tint); padding:2px 8px; border-radius:var(--r-sm); white-space:nowrap}
+.sec p{margin:0; font-size:13.5px; color:var(--ink)}
+.tl{list-style:none; margin:0; padding:0}
+.tl li{display:flex; gap:var(--s3); padding:4px 0; font-size:13px}
+.tl li .tt{font-family:var(--mono); font-size:11px; color:var(--ink-3); width:38px; flex:none}
+.kv{display:grid; grid-template-columns:1fr 1fr; gap:8px 20px}
+.kv .k{font-size:13px; color:var(--ink-2)} .kv .k b{color:var(--ink); font-family:var(--mono)}
+.chips{display:flex; gap:6px; flex-wrap:wrap}
+.chip{font-size:11px; font-weight:500; padding:3px 10px; border-radius:var(--r-pill); background:var(--forest-tint); color:var(--forest)}
+.chip.done:before{content:"✓ "}
+
+/* control rail */
+.cpanel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden; margin-bottom:var(--s4)}
+.cpanel .ch{padding:11px var(--s4); background:var(--cream-2); border-bottom:1px solid var(--hairline); font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive)}
+.cb{padding:var(--s4)}
+.src-list{margin-bottom:var(--s4)}
+.src-item{display:flex; align-items:center; gap:10px; padding:6px 0; font-size:13px; color:var(--ink-3)}
+.src-item .sbox{width:18px;height:18px;border-radius:50%; border:1.5px solid var(--rule); flex:none; display:flex; align-items:center; justify-content:center}
+.src-item .sbox svg{width:11px;height:11px; color:#fff; opacity:0}
+.src-item.pulled{color:var(--ink)} .src-item.pulled .sbox{background:var(--forest); border-color:var(--forest)} .src-item.pulled .sbox svg{opacity:1}
+.btn{width:100%; font-size:14px; font-weight:600; padding:12px; border-radius:var(--r-sm); border:1px solid transparent; display:flex; align-items:center; justify-content:center; gap:8px}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--accent); color:#fff} .btn-primary:hover{background:var(--forest-deep)}
+.btn-primary:disabled{background:var(--neutral-bg); color:var(--ink-3); cursor:not-allowed}
+.btn-outline{background:var(--paper); color:var(--accent); border-color:var(--accent)} .btn-outline:hover{background:var(--forest-tint)}
+.btn-outline:disabled{color:var(--ink-3); border-color:var(--rule); cursor:not-allowed; background:var(--paper)}
+.cnote{font-size:11px; color:var(--ink-3); margin-top:8px; text-align:center}
+.gentime{font-family:var(--mono); font-size:11px; color:var(--forest); text-align:center; margin-top:8px; display:none}
+.gentime.show{display:block}
+
+.field label{display:block; font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--olive); margin-bottom:6px}
+.field select{width:100%; font-family:var(--ui); font-size:14px; padding:10px 12px; border:1px solid var(--rule); border-radius:var(--r-sm); background:var(--paper); color:var(--ink)}
+.field select:focus{outline:2px solid var(--accent); outline-offset:1px}
+
+/* destinations */
+.dest{opacity:.5}
+.dest.active{opacity:1}
+.destrow{display:flex; align-items:center; gap:10px; padding:9px var(--s4); border-bottom:1px solid var(--hairline); font-size:13px}
+.destrow:last-child{border-bottom:0}
+.destrow .di{width:28px;height:28px;border-radius:var(--r-sm); background:var(--forest-tint); color:var(--forest); display:flex; align-items:center; justify-content:center; flex:none}
+.destrow .di svg{width:15px;height:15px}
+.destrow .dn{flex:1} .destrow .dn small{display:block; font-family:var(--mono); font-size:10px; color:var(--ink-3)}
+.destrow .dtick{color:var(--forest); opacity:0} .dest.active .destrow .dtick{opacity:1}
+.destrow .dtick svg{width:16px;height:16px}
+
+.statusbtns{display:flex; gap:8px}
+.statusbtns button{flex:1; font-size:12.5px; font-weight:500; padding:9px; border-radius:var(--r-sm); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2)}
+.statusbtns button.cur{background:var(--forest-tint); color:var(--forest); border-color:var(--forest); font-weight:600}
+.statusbtns button:disabled{opacity:.5; cursor:not-allowed}
+
+@media (max-width:960px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand">
+    <span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span>
+    <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active" id="statusPill"><span class="dot"></span>Active</span></span>
+  </div>
+  <span class="note">Zero re-entry · assembled from the record</span>
+</div>
+
+<div class="page">
+  <div class="head">
+    <h1>Close-out</h1>
+    <p>The whole operation, assembled from the record into one report. Nothing is re-keyed. Review, approve, and it becomes the confirmed outward record that feeds handover, debrief, the coroner, and the national picture.</p>
+  </div>
+
+  <div class="grid">
+    <!-- REPORT DOCUMENT -->
+    <div class="doc">
+      <div class="docband" id="docband">
+        <span class="dt2 dt" id="docLabel">Draft close-out report</span>
+        <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span><span class="st">Confirmed outward record</span> <span class="sm" id="sealMeta"></span></span></span>
+      </div>
+      <div id="docContent">
+        <div class="docempty">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h2"/></svg></span>
+          <b>Ready to assemble</b>
+          <span>Everything from stand-up to reconciliation is already on the record. Generate to assemble the close-out report, nothing needs re-keying.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROL RAIL -->
+    <div>
+      <div class="cpanel">
+        <div class="ch">Assemble</div>
+        <div class="cb">
+          <div class="src-list" id="srcList">
+            <div class="src-item" data-src="incident"><span class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Incident &amp; setup <span style="margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--ink-3)">M1</span></div>
+            <div class="src-item" data-src="log"><span class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Timeline &amp; decisions <span style="margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--ink-3)">M5</span></div>
+            <div class="src-item" data-src="tasks"><span class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Tasks &amp; coverage <span style="margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--ink-3)">M3</span></div>
+            <div class="src-item" data-src="res"><span class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Resources &amp; hours <span style="margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--ink-3)">M8</span></div>
+            <div class="src-item" data-src="forms"><span class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Forms completed <span style="margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--ink-3)">M6</span></div>
+          </div>
+          <button class="btn btn-primary" id="genBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Generate close-out report</button>
+          <div class="gentime" id="genTime"></div>
+          <div class="cnote">Pulled from the live record. Nothing re-keyed.</div>
+        </div>
+      </div>
+
+      <div class="cpanel">
+        <div class="ch">Outcome</div>
+        <div class="cb">
+          <div class="field"><label for="outcome">Operation outcome</label>
+            <select id="outcome">
+              <option value="found-safe" selected>Subject found safe</option>
+              <option value="found-injured">Subject found, casualty evacuated</option>
+              <option value="stood-down">Stood down, subject self-recovered</option>
+              <option value="suspended">Suspended, pending resumption</option>
+              <option value="handover">Handover to another agency</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="cpanel">
+        <div class="ch">Approve</div>
+        <div class="cb">
+          <button class="btn btn-outline" id="approveBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Review &amp; confirm as outward record</button>
+          <div class="cnote" id="approveNote">Generate the report first. IC sign-off confirms it.</div>
+        </div>
+      </div>
+
+      <div class="cpanel">
+        <div class="ch">Outward record feeds</div>
+        <div class="dest" id="dest">
+          <div class="destrow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></span><span class="dn">Handover pack<small>next duty coordinator</small></span><span class="dtick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span></div>
+          <div class="destrow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><span class="dn">Coroner-ready record<small>trusted, non-destructible</small></span><span class="dtick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span></div>
+          <div class="destrow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.87"/></svg></span><span class="dn">Team debrief<small>FORMS-21 / 22</small></span><span class="dtick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span></div>
+          <div class="destrow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span><span class="dn">ODC emit<small>national picture · M10</small></span><span class="dtick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span></div>
+        </div>
+      </div>
+
+      <div class="cpanel">
+        <div class="ch">Incident status</div>
+        <div class="cb">
+          <div class="statusbtns">
+            <button class="cur" data-st="Active" disabled>Active</button>
+            <button data-st="Completed" id="stCompleted" disabled>Completed</button>
+            <button data-st="Stood-down" id="stStood" disabled>Stood down</button>
+          </div>
+          <div class="cnote">Set on confirmation of the outward record.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach = Array.prototype.forEach; }
+(function(){
+  var genBtn=document.getElementById('genBtn'), approveBtn=document.getElementById('approveBtn');
+  var generated=false, confirmed=false;
+  var OUTCOME={'found-safe':'Subject found safe','found-injured':'Subject found, casualty evacuated','stood-down':'Stood down, subject self-recovered','suspended':'Suspended, pending resumption','handover':'Handover to another agency'};
+
+  function pad(n){return (n<10?'0':'')+n;}
+  function nowClock(){var d=new Date();return pad(d.getHours())+pad(d.getMinutes());}
+
+  function reportHTML(){
+    var oc=OUTCOME[document.getElementById('outcome').value];
+    return '<div class="report show">'+
+      '<h2 class="rtitle">Search &amp; Rescue Operation Report</h2>'+
+      '<div class="rmeta"><span>SAR-2607-042</span><span>Overdue tramper · Kepler Track</span><span>Land · Category I</span><span class="out">Outcome: '+oc+'</span></div>'+
+
+      '<div class="sec"><div class="sechead"><h3>Incident</h3><span class="src">Incident · M1</span></div>'+
+        '<div class="kv"><div class="k">Stood up <b>1422</b></div><div class="k">Closed <b>'+nowClock()+'</b></div>'+
+        '<div class="k">Duration <b>2h 25m</b></div><div class="k">Controller <b>IC · A. Reid</b></div></div></div>'+
+
+      '<div class="sec"><div class="sechead"><h3>Summary</h3><span class="src">From the log · M5</span></div>'+
+        '<p>Overdue tramper reported on the Kepler Track, last seen Luxmore Hut. Search urgency assessed as emergency response. Two ground teams tasked to sectors A and B; a footprint clue at 1449 narrowed the search north-west. Subject located safe in sector B at 1547 and walked out with ROMEO-4. Operation closed at '+nowClock()+'.</p></div>'+
+
+      '<div class="sec"><div class="sechead"><h3>Timeline</h3><span class="src">From the log · M5</span></div>'+
+        '<ul class="tl">'+
+        '<li><span class="tt">1422</span>Stand-up. Category I, land. IC assigned.</li>'+
+        '<li><span class="tt">1431</span>Weather: cloud lowering to 900 m after 1600.</li>'+
+        '<li><span class="tt">1438</span>Search urgency assessed, emergency response.</li>'+
+        '<li><span class="tt">1443</span>TASK-014 sector B sweep assigned (reassigned ROMEO-2 → ROMEO-4).</li>'+
+        '<li><span class="tt">1449</span>Clue: footprint, NW heading near creek fork.</li>'+
+        '<li><span class="tt">1547</span>Subject located safe, sector B.</li>'+
+        '</ul></div>'+
+
+      '<div class="sec"><div class="sechead"><h3>Tasks &amp; search coverage</h3><span class="src">From tasking · M3</span></div>'+
+        '<div class="kv" style="margin-bottom:10px"><div class="k">Tasks issued <b>3</b></div><div class="k">Area searched <b>2.1 km²</b></div>'+
+        '<div class="k">Sectors <b>A, B</b></div><div class="k">Cumulative PoD <b>68%</b></div></div>'+
+        '<div class="chips"><span class="chip done">TASK-012 Sector A</span><span class="chip done">TASK-014 Sector B</span><span class="chip done">TASK-015 Containment</span></div></div>'+
+
+      '<div class="sec"><div class="sechead"><h3>Resources &amp; deployed hours</h3><span class="src">From resources · M8</span></div>'+
+        '<div class="kv"><div class="k">Resources <b>6</b></div><div class="k">Deployed hours <b>14.2</b></div>'+
+        '<div class="k">Reconciled <b>yes</b></div><div class="k">All signed out <b>yes</b></div></div></div>'+
+
+      '<div class="sec"><div class="sechead"><h3>Forms completed</h3><span class="src">From forms · M6</span></div>'+
+        '<div class="chips"><span class="chip done">Initial MP Report</span><span class="chip done">MP Summary</span><span class="chip done">Search Urgency</span><span class="chip done">Team Assignments</span><span class="chip done">Debrief</span></div></div>'+
+
+      '<div class="sec"><div class="sechead"><h3>Outcome &amp; recommendations</h3><span class="src">Close-out</span></div>'+
+        '<p><b>'+oc+'.</b> No injuries. Team debrief scheduled. Recommend review of the sector B daylight-hold decision against the clue timeline. Outward record confirmed and available for handover, debrief, and national reporting.</p></div>'+
+    '</div>';
+  }
+
+  genBtn.addEventListener('click',function(){
+    if(generated){ return; }
+    genBtn.disabled=true; genBtn.innerHTML='Assembling…';
+    var items=document.querySelectorAll('.src-item'), i=0;
+    var iv=setInterval(function(){
+      if(i<items.length){ items[i].classList.add('pulled'); i++; }
+      else{
+        clearInterval(iv);
+        document.getElementById('docContent').innerHTML=reportHTML();
+        var gt=document.getElementById('genTime'); gt.textContent='Assembled in 1.4s · 6 sources'; gt.classList.add('show');
+        genBtn.innerHTML='Regenerate';
+        genBtn.disabled=false;
+        generated=true;
+        approveBtn.disabled=false;
+        document.getElementById('approveNote').textContent='Report assembled. Confirm to lock it as the outward record.';
+      }
+    }, 220);
+  });
+
+  document.getElementById('outcome').addEventListener('change',function(){
+    if(generated && !confirmed){ document.getElementById('docContent').innerHTML=reportHTML(); }
+  });
+
+  approveBtn.addEventListener('click',function(){
+    if(!generated || confirmed) return;
+    confirmed=true;
+    var t=nowClock();
+    document.getElementById('docband').classList.add('confirmed');
+    document.getElementById('sealMeta').textContent='locked · '+t+' · IC A. Reid';
+    approveBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Confirmed as outward record';
+    approveBtn.disabled=true;
+    document.getElementById('approveNote').textContent='Locked at '+t+'. Non-destructible from here.';
+    document.getElementById('dest').classList.add('active');
+    // status drive
+    var isStood=document.getElementById('outcome').value==='suspended';
+    var pill=document.getElementById('statusPill');
+    document.querySelectorAll('.statusbtns button').forEach(function(b){b.classList.remove('cur');});
+    if(document.getElementById('outcome').value==='handover' || document.getElementById('outcome').value==='suspended'){
+      document.getElementById('stStood').classList.add('cur');
+      pill.className='pill p-completed'; pill.innerHTML='<span class="dot"></span>Stood down';
+    } else {
+      document.getElementById('stCompleted').classList.add('cur');
+      pill.className='pill p-completed'; pill.innerHTML='<span class="dot"></span>Completed';
+    }
+  });
+})();
+</script>
+</body>
+</html>
