@@ -125,6 +125,14 @@ button{font-family:inherit; cursor:pointer}
 
 /* ===== right rail ===== */
 .rail{background:var(--canvas); overflow-y:auto; padding:var(--s3)}
+/* retractable side panel: collapse the rail column to give the map the full width */
+.cop.railhidden{grid-template-columns:minmax(0,1fr)}
+.cop.railhidden .rail{display:none}
+.railtoggle{position:absolute; top:50%; right:0; transform:translateY(-50%); z-index:6;
+  width:22px; height:54px; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); color:var(--ink-2); border:1px solid var(--hairline); border-right:0;
+  border-radius:var(--r-md) 0 0 var(--r-md); box-shadow:var(--shadow); cursor:pointer; font-size:15px; line-height:1}
+.railtoggle:hover{background:var(--forest-tint); color:var(--forest)}
 .rpanel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); margin-bottom:var(--s3); overflow:hidden}
 .rpanel > .rh{display:flex; align-items:center; justify-content:space-between; padding:10px var(--s4); border-bottom:1px solid var(--hairline); background:var(--cream-2)}
 .rh .tt{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
@@ -189,6 +197,7 @@ button{font-family:inherit; cursor:pointer}
   .cop{grid-template-columns:minmax(0,1fr); height:auto; min-height:0}
   .mapwrap{height:46vh; min-height:300px; border-right:0; border-bottom:1px solid var(--hairline)}
   .rail{height:auto; overflow:visible}
+  .railtoggle{display:none}
   .mapinc,.layers,.north,.maptools,.mapquery{display:none}
 }
 </style>
@@ -264,6 +273,9 @@ button{font-family:inherit; cursor:pointer}
     </div>
 
     <div class="toast" id="toast" role="status"><span class="g"></span><span class="tx">Common operating picture · one read of the spine, not many systems</span><button class="x" id="toastX" type="button" aria-label="Dismiss">×</button></div>
+
+    <!-- retract the side panel to expose more map -->
+    <button class="railtoggle" id="railToggle" type="button" aria-expanded="true" aria-label="Hide the side panel" title="Hide the side panel">›</button>
   </div>
 
   <!-- RIGHT RAIL -->
@@ -479,6 +491,19 @@ button{font-family:inherit; cursor:pointer}
     var toR=Math.PI/180, y=Math.sin((lo2-lo1)*toR)*Math.cos(la2*toR);
     var x=Math.cos(la1*toR)*Math.sin(la2*toR)-Math.sin(la1*toR)*Math.cos(la2*toR)*Math.cos((lo2-lo1)*toR);
     return (Math.atan2(y,x)/toR+360)%360;
+  }
+
+  /* ---- retract the side panel back and forth to expose more map ---- */
+  var cop=document.querySelector('.cop'), railToggle=document.getElementById('railToggle');
+  if(railToggle){
+    railToggle.addEventListener('click',function(){
+      var hidden=cop.classList.toggle('railhidden');
+      railToggle.textContent = hidden ? '‹' : '›';
+      railToggle.setAttribute('aria-expanded', hidden ? 'false' : 'true');
+      var lab = hidden ? 'Show the side panel' : 'Hide the side panel';
+      railToggle.setAttribute('aria-label', lab); railToggle.title = lab;
+      if(ctrl && ctrl.resize){ ctrl.resize(); setTimeout(ctrl.resize, 60); }  // let the map fill the new width
+    });
   }
 
   /* ---- layers panel: loads collapsed to its header; layers stay on ---- */
