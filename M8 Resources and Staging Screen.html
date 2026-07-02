@@ -121,7 +121,17 @@ button{font-family:inherit; cursor:pointer}
   .appbar .mark,.appbar .sub,.domain{display:none}
   .page{padding-left:14px; padding-right:14px}
   .grid{grid-template-columns:minmax(0,1fr)}
-  
+  /* restack each register row as a card; the card labels make the column header redundant */
+  .colhead{display:none}
+  .res{display:grid; grid-template-columns:1fr auto; grid-template-areas:"name state" "task time" "act act"; column-gap:12px; row-gap:8px; align-items:center; padding:12px var(--s4)}
+  .res .rmain{grid-area:name; min-width:0}
+  .res .statechip{grid-area:state; width:auto; justify-self:end; padding:5px 12px}
+  .res .rtask{grid-area:task; width:auto; justify-self:start; text-align:left}
+  .res .rtime{grid-area:time; width:auto; justify-self:end}
+  .res .ract{grid-area:act; width:auto; text-align:left}
+  .res .ract button{width:100%; min-height:44px}
+  /* 44px touch targets */
+  .reconbtn button,.stagerow button{min-height:44px}
 }
 </style>
 </head>

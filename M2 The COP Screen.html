@@ -193,6 +193,14 @@ button{font-family:inherit; cursor:pointer}
   body{padding-bottom:64px}
   .appbar .inc{margin-left:0; padding-left:0; border-left:0}
   .appbar .mark,.appbar .sub,.domain{display:none}
+  /* 44px touch targets */
+  .maplibregl-ctrl button{width:44px; height:44px}
+  .tiltctl button{min-height:44px; display:inline-flex; align-items:center}
+  .railfilter button{min-height:44px; display:inline-flex; align-items:center}
+  .toast .x{width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; padding:0; margin-left:0; font-size:20px}
+  /* micro-text: raise operational labels (pin/callsign, task & resource meta, status chips, log times & categories, scale) to >=10.5px */
+  .pin .cap,.trow .tmeta,.chipst,.rrow .rn small,.lrow .lt,.lrow .lx .cat,.maplibregl-ctrl-scale{font-size:10.5px}
+  .sarop-offchip,.sarop-cred{font-size:10.5px !important}
   .readytag{display:none}
   .cop{grid-template-columns:minmax(0,1fr); height:auto; min-height:0}
   .mapwrap{height:46vh; min-height:300px; border-right:0; border-bottom:1px solid var(--hairline)}

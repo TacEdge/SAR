@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M4 Field Capture — mobile</title>
+<style>
+  :root{ --frame:#11150E; --cream:#FCF2E8; --sage:#B2B594; }
+  *{box-sizing:border-box}
+  html,body{height:100%; margin:0}
+  body{background:radial-gradient(120% 120% at 50% 0%, #3c4a30 0%, #222a1c 60%, #171d13 100%);
+    font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    padding:28px 16px 40px; min-height:100%}
+  .cap{color:var(--cream); text-align:center; margin-bottom:20px}
+  .cap .c{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--sage)}
+  .cap .n{font-size:20px; font-weight:700; margin-top:4px; letter-spacing:.01em}
+  .cap .h{font-size:12.5px; color:#c9d2bd; margin-top:6px}
+  /* frame is 416px wide with 13px padding, so the iframe is a true 390px phone viewport */
+  .phone{width:416px; max-width:100%; height:min(870px, calc(100vh - 150px)); min-height:560px;
+    background:var(--frame); border-radius:48px; padding:13px;
+    box-shadow:0 2px 0 rgba(255,255,255,.06) inset, 0 34px 90px rgba(0,0,0,.55); position:relative}
+  .phone::before{content:""; position:absolute; top:20px; left:50%; transform:translateX(-50%);
+    width:128px; height:26px; background:var(--frame); border-radius:0 0 16px 16px; z-index:2}
+  .screen{width:100%; height:100%; border-radius:35px; overflow:hidden; background:#EDEBE1}
+  iframe{width:100%; height:100%; border:0; display:block}
+  .note{color:#aeb7a3; font-size:11.5px; margin-top:18px; max-width:416px; text-align:center; line-height:1.5}
+</style>
+</head>
+<body>
+  <div class="cap">
+    <div class="c">M4 · SAROP Workspace</div>
+    <div class="n">Field Capture</div>
+    <div class="h">Mobile view — true 390&nbsp;px phone viewport</div>
+  </div>
+  <div class="phone"><div class="screen">
+    <iframe src="../M4%20Field%20Capture%20Screen.html" title="M4 Field Capture mobile view" loading="eager"></iframe>
+  </div></div>
+  <div class="note">Rendered at a true 390&nbsp;px phone width. Scroll inside the frame. Resize this window freely — the phone layout does not change.</div>
+</body>
+</html>

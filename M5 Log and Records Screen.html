@@ -150,6 +150,10 @@ button{font-family:inherit; cursor:pointer}
   body{padding-bottom:96px}
   .appbar .inc{margin-left:0; padding-left:0; border-left:0}
   .appbar .mark,.appbar .sub,.domain{display:none}
+  /* 44px touch targets */
+  .filters button,.dact button{min-height:44px; display:inline-flex; align-items:center; justify-content:center}
+  /* micro-text: raise operational labels (category, timestamps & IDs, detail keys, history, file meta) to >=10.5px */
+  .entry .ecat,.entry .estamp,.entry .struckmark,.catbadge,.drow .dk,.hist .ht,.hline .hby,.struckbox .lab,.recfile .fm{font-size:10.5px}
   .page{padding-left:14px; padding-right:14px}
   .grid{grid-template-columns:minmax(0,1fr)}
   
