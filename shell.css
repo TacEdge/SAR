@@ -110,7 +110,7 @@ html[data-domain="marine"] .landing .begin:hover{background:#274b57}
   body.navopen .navback{display:block; opacity:1; pointer-events:auto}
 
   /* top-right cluster: clear, touchable menu + the brand mark at the far corner */
-  .navcluster{display:flex; align-items:center; gap:4px; position:fixed; z-index:180; top:7px; right:8px;
+  .navcluster{display:flex; align-items:center; gap:4px; position:fixed; z-index:180; top:64px; right:8px;
     background:var(--forest); border:1px solid rgba(255,255,255,.16); border-radius:var(--r-pill);
     padding:3px 8px 3px 3px; box-shadow:0 2px 12px rgba(30,40,25,.45)}
   .navhandle{width:44px; height:44px; display:flex; align-items:center; justify-content:center; padding:0;
