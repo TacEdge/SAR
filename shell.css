@@ -29,42 +29,36 @@ body{margin:0; background:var(--canvas); color:var(--ink);
   -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; overflow:hidden}
 button{font-family:inherit}
 
-/* ===== top bar (mirrors the screens' app bar) ===== */
-.topbar{background:var(--forest); color:var(--cream); flex:none;
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 var(--s5); height:52px; border-bottom:3px solid var(--accent)}
-.topbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
-.topbar .mark{font-weight:700; letter-spacing:.02em; font-size:15px}
-.topbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage);
-  letter-spacing:.06em; text-transform:uppercase}
-.topbar .right{display:flex; align-items:center; gap:var(--s5)}
-
-/* guided-path Prev / Next */
-.walk{display:flex; align-items:center; gap:var(--s2)}
-.walk .step{font-family:var(--mono); font-size:11px; color:var(--sage);
-  letter-spacing:.06em; text-transform:uppercase; min-width:52px; text-align:center}
-.walk button{font-size:12px; font-weight:600; letter-spacing:.04em;
-  background:transparent; color:#CFD6C2; border:1px solid rgba(255,255,255,.28);
-  border-radius:var(--r-sm); padding:6px 13px; cursor:pointer}
-.walk button:hover:not(:disabled){background:rgba(255,255,255,.10); color:var(--cream)}
-.walk button:disabled{opacity:.35; cursor:not-allowed}
-
-/* domain toggle (mirrors the screens' .seg) */
-.domain{display:flex; align-items:center; gap:var(--s2)}
-.domain .lab{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sage)}
-.seg{display:inline-flex; border:1px solid rgba(255,255,255,.28);
-  border-radius:var(--r-pill); overflow:hidden}
-.seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
-  background:transparent; color:#CFD6C2; border:0; padding:5px 13px; cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
-
-/* ===== body: nav + stage ===== */
+/* ===== body: nav + stage. The only top bar is each screen's own app bar. ===== */
 .body{flex:1; display:flex; min-height:0}
 
 .nav{flex:none; width:248px; background:var(--paper); border-right:1px solid var(--hairline);
-  overflow-y:auto; padding:var(--s4) 0}
-.nav .navhead{padding:0 var(--s5) var(--s3); font-size:11px; font-weight:600;
+  display:flex; flex-direction:column; min-height:0}
+
+/* module paging (Prev / Next), in the sidebar */
+.pager{display:flex; align-items:center; gap:var(--s2); flex:none;
+  padding:var(--s3) var(--s4); border-bottom:1px solid var(--hairline)}
+.pager .step{font-family:var(--mono); font-size:11px; color:var(--ink-3);
+  letter-spacing:.06em; min-width:42px; text-align:center}
+.pager button{flex:1; font-size:12px; font-weight:600; letter-spacing:.02em;
+  background:var(--paper); color:var(--ink-2); border:1px solid var(--rule);
+  border-radius:var(--r-sm); padding:6px 8px; cursor:pointer}
+.pager button:hover:not(:disabled){background:var(--forest-tint); color:var(--forest); border-color:var(--sage)}
+.pager button:disabled{opacity:.4; cursor:not-allowed}
+
+.nav .navhead{flex:none; padding:var(--s4) var(--s5) var(--s3); font-size:11px; font-weight:600;
   letter-spacing:.12em; text-transform:uppercase; color:var(--olive)}
+#navList{flex:1; overflow-y:auto; padding-bottom:var(--s3)}
+
+/* global domain toggle, pinned to the foot of the sidebar */
+.navfoot{flex:none; display:flex; align-items:center; justify-content:space-between; gap:var(--s3);
+  padding:var(--s3) var(--s5); border-top:1px solid var(--hairline); background:var(--cream-2)}
+.navfoot .lab{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
+.seg{display:inline-flex; border:1px solid var(--rule); border-radius:var(--r-pill);
+  overflow:hidden; background:var(--paper)}
+.seg button{font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  background:transparent; color:var(--ink-2); border:0; padding:5px 12px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent); color:#fff}
 .nav .navitem{display:flex; gap:var(--s3); align-items:flex-start; width:100%;
   text-align:left; background:transparent; border:0; cursor:pointer;
   padding:10px var(--s5); border-left:3px solid transparent; color:var(--ink)}

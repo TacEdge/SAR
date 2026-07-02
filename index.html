@@ -22,33 +22,24 @@
 </head>
 <body>
 
-<!-- top bar: identity, module paging, global domain toggle -->
-<div class="topbar">
-  <div class="brand">
-    <span class="mark">TacEdge SAR</span>
-    <span class="sub">SAROP Workspace</span>
-  </div>
-  <div class="right">
-    <div class="walk" role="group" aria-label="Previous and next module">
+<div class="body">
+  <!-- left navigation: paging, module list, global domain toggle.
+       The single top bar is each screen's own app bar. -->
+  <nav class="nav" aria-label="Modules">
+    <div class="pager" role="group" aria-label="Previous and next module">
       <button id="prevBtn" type="button" disabled>‹ Prev</button>
       <span class="step" id="stepLabel">—</span>
       <button id="nextBtn" type="button" disabled>Next ›</button>
     </div>
-    <div class="domain">
+    <div class="navhead">Modules</div>
+    <div id="navList"></div>
+    <div class="navfoot">
       <span class="lab">Domain</span>
       <div class="seg" role="group" aria-label="Domain">
         <button data-dom="land" aria-pressed="true">Land</button>
         <button data-dom="marine" aria-pressed="false">Marine</button>
       </div>
     </div>
-  </div>
-</div>
-
-<div class="body">
-  <!-- left navigation, module list -->
-  <nav class="nav" aria-label="Modules">
-    <div class="navhead">Modules</div>
-    <div id="navList"></div>
   </nav>
 
   <!-- central stage: iframe + landing panel -->

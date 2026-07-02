@@ -43,6 +43,7 @@
   var current    = -1;
   var domain     = 'land';
   var driveToken = 0; // bumped on each navigation to cancel stale drive loops
+  var domainSyncBlockUntil = 0; // pause screen->shell domain sync just after navigating
 
   // ---- build the left nav ----
   var navItems = SCREENS.map(function(s, i){
@@ -148,9 +149,30 @@
     prevBtn.disabled = (i === 0);
     nextBtn.disabled = (i === SCREENS.length - 1);
     var tok = ++driveToken;
+    domainSyncBlockUntil = Date.now() + 1600; // let the drive settle before syncing back
     driveDomain(SCREENS[i].file, tok);
     connectScreen(SCREENS[i].file, tok);
   }
+
+  // Keep the sidebar toggle in step with the active screen's own Land / Marine
+  // control, and carry the choice across modules. We read the screen's
+  // data-domain (same-origin, no listener added) and mirror it; a short block
+  // window after each navigation stops us from reading the new screen's default
+  // before the drive has applied the remembered choice.
+  setInterval(function(){
+    if(current < 0 || Date.now() < domainSyncBlockUntil) return;
+    try {
+      var doc = frame.contentDocument;
+      var d = doc && doc.documentElement && doc.documentElement.getAttribute('data-domain');
+      if((d === 'land' || d === 'marine') && d !== domain){
+        domain = d;
+        document.documentElement.setAttribute('data-domain', domain);
+        document.querySelectorAll('.seg button').forEach(function(x){
+          x.setAttribute('aria-pressed', x.getAttribute('data-dom') === domain ? 'true' : 'false');
+        });
+      }
+    } catch(e){}
+  }, 500);
 
   // also re-apply on load where it does fire (webfonts present), as a backstop
   frame.addEventListener('load', function(){ if(current >= 0) applyDomain(); });
