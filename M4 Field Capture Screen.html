@@ -171,9 +171,14 @@ button{font-family:inherit; cursor:pointer}
 .mapleg{display:flex; gap:12px; font-size:11px; color:var(--muted)}
 .mapleg .lg{display:inline-flex; align-items:center; gap:5px}
 .mapleg .lgdot{width:11px; height:11px; border-radius:50%; border:3px solid var(--c); background:transparent}
-.here{display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:600; padding:11px 16px; border-radius:var(--r-pill); background:var(--brand); color:#fff; border:0}
+.mapbar{flex-wrap:wrap}
+.here{display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:14px; font-weight:600; padding:11px 16px; border-radius:var(--r-pill); background:var(--brand); color:#fff; border:0}
 .here svg{width:17px; height:17px}
 .phone[data-theme="night"] .here{color:var(--app)}
+/* markup point-capture toggle: outline variant, filled while armed */
+.here.alt{background:transparent; color:var(--brand); border:1.5px solid var(--brand)}
+.here.alt.on{background:var(--brand); color:#fff}
+.phone[data-theme="night"] .here.alt:not(.on){color:var(--brand); background:transparent}
 
 /* capture sheet: map-driven capture, same flow as the tiles */
 .sheet{position:absolute; inset:0; z-index:60; background:rgba(10,14,8,.42); display:flex; align-items:flex-end}
@@ -353,6 +358,7 @@ body.mdopen .mdrawer{transform:none}
               <span class="lg"><i class="lgdot" style="--c:var(--warn)"></i>Queued</span>
               <span class="lg"><i class="lgdot" style="--c:var(--ok)"></i>Synced</span>
             </div>
+            <button class="here alt" id="dropBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>Drop point</button>
             <button class="here" id="hereBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22"/></svg>Capture here</button>
           </div>
         </div>
@@ -401,6 +407,7 @@ body.mdopen .mdrawer{transform:none}
 </div>
 
 <script src="vendor/maplibre/maplibre-gl.js"></script>
+<script src="vendor/tacedge-markup.js"></script>
 <script src="vendor/sarop-map.js"></script>
 <script>
 (function(){
@@ -538,7 +545,7 @@ body.mdopen .mdrawer{transform:none}
   })();
 
   /* ---- the map: reuse the COP component, scoped to the operator's picture ---- */
-  var mapCtrl=null, SECTORB=SaropMap.sector('B');
+  var mapCtrl=null, opMarkup=null, pendingMarkupId=null, SECTORB=SaropMap.sector('B');
   function ensureMap(){
     if(mapCtrl){ mapCtrl.resize(); return; }
     mapCtrl=SaropMap.create({
@@ -560,6 +567,21 @@ body.mdopen .mdrawer{transform:none}
       onDone:function(map){
         try{ map.fitBounds([[167.629,-45.405],[167.653,-45.390]], {padding:26, duration:0}); }catch(e){}
         map.on('click', function(e){ openSheet(e.lngLat.lng, e.lngLat.lat); });
+        /* point capture via the TacEdge markup tooling behind the adapter:
+           "Drop point" arms the point tool; the placed point opens the same
+           capture sheet, and the capture pipeline renders the final marker. */
+        opMarkup = SaropMap.attachMarkup(mapCtrl, {
+          kindStyles:{ point:{ markerColor:'#35606E' } },
+          onChange:function(ev,row){
+            if(ev==='create' && row.type==='marker'){
+              var c=row.geojson.coordinates;
+              pendingMarkupId=row._id;
+              openSheet(c[0], c[1]);
+            }
+          },
+          onToolChange:function(){ syncDropBtn(); }   // one-shot placement re-arms Select
+        });
+        syncDropBtn();
         setTimeout(function(){ map.resize(); },150);
       }
     });
@@ -592,13 +614,32 @@ body.mdopen .mdrawer{transform:none}
   /* ---- capture sheet: the map is another way into the same capture flow ---- */
   var sheet=document.getElementById('sheet'), pendingCoord=null;
   function openSheet(lng,lat){ pendingCoord={lng:lng,lat:lat}; document.getElementById('sheetCoord').textContent=SaropMap.fmtNZTM(lng,lat); sheet.hidden=false; }
-  function closeSheet(){ sheet.hidden=true; pendingCoord=null; }
+  function closeSheet(){
+    sheet.hidden=true; pendingCoord=null;
+    // a markup-placed point is transient: the capture pipeline owns the final
+    // marker, so the tooling's point is removed on confirm and cancel alike
+    if(pendingMarkupId && opMarkup){ opMarkup.removeFeature(pendingMarkupId); }
+    pendingMarkupId=null;
+  }
   document.getElementById('sheetCancel').addEventListener('click',closeSheet);
   sheet.addEventListener('click',function(e){ if(e.target===sheet) closeSheet(); });
   document.querySelectorAll('.sheetopts button').forEach(function(b){
     b.addEventListener('click',function(){ var k=b.getAttribute('data-k'), c=pendingCoord; closeSheet(); addCapture(k, c); });
   });
   document.getElementById('hereBtn').addEventListener('click',function(){ openSheet(G.R4[0], G.R4[1]); });
+
+  /* ---- Drop point: arm/disarm the markup point tool ---- */
+  var dropBtn=document.getElementById('dropBtn');
+  function syncDropBtn(){
+    var on=!!(opMarkup && opMarkup.getTool()==='point');
+    dropBtn.classList.toggle('on', on);
+    dropBtn.setAttribute('aria-pressed', on?'true':'false');
+  }
+  dropBtn.addEventListener('click',function(){
+    if(!opMarkup) return;
+    opMarkup.setTool(opMarkup.getTool()==='point' ? 'select' : 'point');
+    syncDropBtn();
+  });
 
   updateBar();
 })();
