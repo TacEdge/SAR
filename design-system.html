@@ -320,6 +320,7 @@ footer .mono{font-family:var(--mono); font-size:12px}
     <span class="dom-badge dom-marine">Marine</span>
     <span class="note" style="margin:0"><b>The one config that recolours the chrome.</b> The M1 land / marine flag drives the whole product; the accent follows it, forest for land, slate-blue for marine. Toggle it in the header.</span>
   </div>
+  <p class="note"><b>The rule, applied identically on all nine screens.</b> Every screen defines <span class="mono">--accent:var(--forest)</span> with <span class="mono">--accent-tint:var(--forest-tint)</span> at <span class="mono">:root</span>, and a single <span class="mono">html[data-domain="marine"]</span> override swapping in <span class="mono">--marine</span> / <span class="mono">--info-bg</span>. The <span class="mono">data-domain</span> attribute is set by the workspace shell (and by each screen's own land / marine control where present), so the accent is deliberate domain theming, never a per-screen choice. Any accented affordance uses <span class="mono">var(--accent)</span>, never a hard-coded forest or marine.</p>
 </section>
 
 <!-- 2 TYPE -->

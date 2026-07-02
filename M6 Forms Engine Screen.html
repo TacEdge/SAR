@@ -77,6 +77,12 @@ input,textarea,select{font-family:inherit}
 .vbadge{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:4px 11px; border-radius:var(--r-pill); text-transform:uppercase; letter-spacing:.04em; white-space:nowrap}
 .v-land{background:var(--forest-tint); color:var(--forest)} .v-marine{background:var(--info-bg); color:var(--info)}
 .v-cap{background:var(--neutral-bg); color:var(--ink-2)} .v-fieldcap{background:var(--caution-bg); color:var(--caution)}
+/* mode indicator: reuses the vbadge pill so the pane declares fill-vs-build at a glance */
+.modeline{display:flex; align-items:center; gap:var(--s3); flex-wrap:wrap; margin-bottom:8px}
+.v-mode{background:var(--forest-tint); color:var(--forest)}
+.v-mode .mdot{width:7px; height:7px; border-radius:50%; background:var(--forest); flex:none}
+.mgt{font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--ink-3); background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-pill); padding:3px 12px; cursor:not-allowed; opacity:.75}
+.nav .navcap{font-size:11px; line-height:1.4; color:var(--ink-3); padding:0 var(--s2) 8px}
 
 .metastrip{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 var(--s5)}
 .chipm{font-size:11px; color:var(--ink-2); background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:3px 10px}
@@ -217,6 +223,7 @@ input,textarea,select{font-family:inherit}
 <div class="wrap">
   <div class="nav">
     <div class="nh">Forms</div>
+    <div class="navcap">This operation's IMS form set, with each form's completion state.</div>
     <div class="prog" id="navprog"></div>
     <div id="navlist"></div>
     <div class="navkey">
@@ -547,7 +554,12 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
     else if(f.fieldcap){ badge='<span class="vbadge v-fieldcap">Field · M4</span>'; }
     else { badge='<span class="vbadge v-cap">IMT</span>'; }
 
-    var head='<div class="fhead"><div><h1>'+f.title+'</h1>'+
+    var head='<div class="fhead"><div>'+
+      '<div class="modeline">'+
+        '<span class="vbadge v-mode"><span class="mdot"></span>Filling · live record</span>'+
+        '<button type="button" class="mgt" disabled aria-disabled="true" title="Template management is out of scope for this prototype. Every form here is completed as a live operational record, not designed.">Manage templates</button>'+
+      '</div>'+
+      '<h1>'+f.title+'</h1>'+
       '<div class="sub">'+refText+' · structured record · shares the log field set</div></div>'+badge+'</div>';
 
     var meta='<div class="metastrip">'+

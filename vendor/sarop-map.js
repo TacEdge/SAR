@@ -80,7 +80,8 @@ window.SaropMap = (function(){
     }
     map.on('error', function(){ /* swallow tile / DEM errors so offline never throws */ });
 
-    var ctrl = { map: map, online: !!opts.online, terrain: terrain, baseBefore: null, _inited: false };
+    var ctrl = { map: map, online: !!opts.online, terrain: terrain, baseBefore: null,
+                 _inited: false, _satSeen: false, _satErr: 0, basemapOnline: null };
 
     // add / remove the satellite raster and terrain with connectivity
     ctrl.setOnline = function(on){
@@ -96,20 +97,103 @@ window.SaropMap = (function(){
           if(map.getLayer('sat')) map.removeLayer('sat');
         }
       } catch(e){}
+      armDetect();
     };
     ctrl.setBaseColor = function(c){ try { map.setPaintProperty('base','background-color', c); } catch(e){} };
     ctrl.resize = function(){ try { map.resize(); } catch(e){} };
+    ctrl.setBasemapState = function(st){ setBasemapState(st); };   // force credit/offline-chip state (also driven automatically)
+
+    /* ---- offline-safe cartographic grid, tiled over the terrain-toned 'base'.
+       A screen-space background (like 'base'), so it stays put and reads as a
+       deliberate offline chart rather than a blank canvas. The satellite raster
+       is inserted above it, so the grid only shows when imagery is absent. ---- */
+    function addGrid(){
+      try {
+        if(typeof document === 'undefined' || map.getLayer('grid')) return;
+        var n = 64, c = document.createElement('canvas'); c.width = c.height = n;
+        var g = c.getContext('2d');
+        g.strokeStyle = 'rgba(90,102,72,0.22)'; g.lineWidth = 1; g.strokeRect(0.5, 0.5, n - 1, n - 1);
+        g.strokeStyle = 'rgba(90,102,72,0.11)'; g.beginPath();
+        g.moveTo(n / 2 + 0.5, 0); g.lineTo(n / 2 + 0.5, n);
+        g.moveTo(0, n / 2 + 0.5); g.lineTo(n, n / 2 + 0.5); g.stroke();
+        if(!map.hasImage('sarop-grid')) map.addImage('sarop-grid', g.getImageData(0, 0, n, n));
+        map.addLayer({ id:'grid', type:'background', paint:{ 'background-pattern':'sarop-grid' } });
+      } catch(e){}
+    }
+
+    /* ---- state-aware credit + offline chip. Replaces MapLibre's attribution
+       control so the line only lists providers actually rendering: Esri (+ the
+       Terrarium DEM when terrain is on) online, nothing offline, where a mono
+       chip declares the offline basemap instead. ---- */
+    function applyAttrib(){
+      if(!ctrl._att) return;
+      var st = ctrl.basemapOnline;
+      if(st === true){
+        ctrl._att.chip.style.display = 'none';
+        ctrl._att.cred.textContent = 'Imagery © Esri, Maxar' + (terrain ? ' · Elevation: Terrarium (AWS)' : '');
+        ctrl._att.cred.style.display = '';
+      } else if(st === false){
+        ctrl._att.chip.style.display = 'inline-flex';
+        ctrl._att.cred.textContent = '';
+        ctrl._att.cred.style.display = 'none';
+      } else { // pending: show neither until connectivity resolves
+        ctrl._att.chip.style.display = 'none';
+        ctrl._att.cred.textContent = '';
+        ctrl._att.cred.style.display = 'none';
+      }
+    }
+    function setBasemapState(st){ ctrl.basemapOnline = st; applyAttrib(); }
+    function netOffline(){ try { return typeof navigator !== 'undefined' && navigator.onLine === false; } catch(e){ return false; } }
+    function armDetect(){
+      if(!ctrl.online || netOffline()){ setBasemapState(false); return; }
+      if(ctrl._satSeen){ setBasemapState(true); return; }
+      setBasemapState(true);                 // optimistic; flips to offline on repeated tile failure
+      setTimeout(function(){ if(ctrl.online && !ctrl._satSeen && ctrl._satErr >= 2 && !netOffline()) setBasemapState(false); }, 3000);
+    }
+    function AttribCtrl(){}
+    AttribCtrl.prototype.onAdd = function(){
+      var c = document.createElement('div');
+      c.className = 'maplibregl-ctrl sarop-attrib';
+      c.setAttribute('style', 'display:flex; align-items:center; gap:6px; background:none; box-shadow:none; margin:0 6px 4px 0; pointer-events:none');
+      var chip = document.createElement('span');
+      chip.className = 'sarop-offchip';
+      chip.textContent = 'Offline basemap · operational overlays live';
+      chip.setAttribute('style', 'display:none; align-items:center; font-family:var(--mono,monospace); font-size:10px; letter-spacing:.02em; color:var(--cream,#FCF2E8); background:rgba(30,51,23,.92); padding:3px 9px; border-radius:999px');
+      var cred = document.createElement('span');
+      cred.className = 'sarop-cred';
+      cred.setAttribute('style', 'font-family:var(--mono,monospace); font-size:10px; color:var(--ink-3,#7C8270); background:rgba(251,250,246,.82); padding:2px 7px; border-radius:4px');
+      c.appendChild(chip); c.appendChild(cred);
+      ctrl._att = { chip: chip, cred: cred };
+      applyAttrib();
+      this._c = c; return c;
+    };
+    AttribCtrl.prototype.onRemove = function(){ if(this._c && this._c.parentNode) this._c.parentNode.removeChild(this._c); };
 
     function ready(){
       if(ctrl._inited) return; ctrl._inited = true;
+      addGrid();                                          // cartographic grid sits just above 'base'
       if(opts.controls){
         map.addControl(new maplibregl.NavigationControl({ visualizePitch: terrain, showCompass: opts.rotate !== false }), opts.controlPos || 'top-left');
         map.addControl(new maplibregl.ScaleControl({ unit:'metric' }), 'bottom-right');
-        map.addControl(new maplibregl.AttributionControl({ compact:true }), 'bottom-right');
+        map.addControl(new AttribCtrl(), 'bottom-right');
       }
-      if(opts.onReady) opts.onReady(map, ctrl);         // consumer adds overlays over 'base'
-      var layers = map.getStyle().layers || [];          // insert 'sat' beneath those overlays
-      for(var i=0;i<layers.length;i++){ if(layers[i].id!=='base'){ ctrl.baseBefore = layers[i].id; break; } }
+      if(opts.onReady) opts.onReady(map, ctrl);           // consumer adds overlays over 'base' / 'grid'
+      var layers = map.getStyle().layers || [];           // insert 'sat' beneath overlays but above base + grid
+      for(var i=0;i<layers.length;i++){ var id=layers[i].id; if(id!=='base' && id!=='grid'){ ctrl.baseBefore = id; break; } }
+      // detect real connectivity: a loaded sat tile confirms online; repeated errors or navigator.onLine=false fall back
+      map.on('data', function(e){
+        if(e && e.sourceId==='sat' && e.tile && e.tile.state==='loaded'){ ctrl._satSeen=true; if(ctrl.online && !netOffline()) setBasemapState(true); }
+      });
+      map.on('error', function(e){
+        if(!ctrl.online || ctrl._satSeen) return;
+        // only the imagery source decides the basemap state; a DEM failure just drops 3D, not the picture
+        var sid = e && e.sourceId;
+        if(sid==='sat' || sid==null){ ctrl._satErr++; if(netOffline() || ctrl._satErr>=2) setBasemapState(false); }
+      });
+      try {
+        window.addEventListener('offline', function(){ setBasemapState(false); });
+        window.addEventListener('online',  function(){ ctrl._satErr=0; armDetect(); });
+      } catch(e){}
       ctrl.setOnline(ctrl.online);
       if(terrain){ try { map.setSky({'sky-color':'#9fc0d6','sky-horizon-blend':0.6,'horizon-color':'#dfe6d8','horizon-fog-blend':0.6,'fog-color':'#e4e9dd','fog-ground-blend':0.4}); } catch(e){} }
       if(opts.onDone) opts.onDone(map, ctrl);

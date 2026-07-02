@@ -14,11 +14,15 @@
   --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
   --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
   --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
-  --critical:#A6352B; --caution:#A9741B; --info:#35606E; --neutral:#83836F;
+  --critical:#A6352B; --caution:#A9741B; --info:#35606E; --info-bg:#E0EAEC; --neutral:#83836F;
+  --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
   --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
   --r-sm:6px; --r-md:12px; --r-pill:999px;
 }
+/* domain accent: Land = forest, Marine = marine, driven by the shell's data-domain (same rule as M1-M3, M5-M9) */
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
 *{box-sizing:border-box}
 body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); -webkit-font-smoothing:antialiased}
 button{font-family:inherit; cursor:pointer}
@@ -44,6 +48,7 @@ button{font-family:inherit; cursor:pointer}
 /* about card */
 .about{max-width:300px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:22px; margin-top:20px}
 .about h2{font-size:15px; margin:0 0 4px; color:var(--forest)}
+.about .framing{font-size:13px; font-weight:600; line-height:1.4; color:var(--forest); background:var(--forest-tint); border:1px solid var(--rule); border-radius:var(--r-sm); padding:10px 12px; margin:0 0 12px}
 .about .lede{font-size:13px; color:var(--ink-2); margin:0 0 16px}
 .about h3{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--olive); margin:16px 0 8px}
 .about ul{margin:0; padding:0; list-style:none}
@@ -314,6 +319,7 @@ button{font-family:inherit; cursor:pointer}
   <!-- ABOUT -->
   <div class="about">
     <h2>The field surface</h2>
+    <p class="framing">This is the searcher's phone, shown here for the walkthrough. Field capture happens on the device, in the field, not on this desktop page.</p>
     <p class="lede">Where a searcher captures what they find. Large targets, one column, and the offline state always visible.</p>
     <h3>What it proves (F4)</h3>
     <ul>
