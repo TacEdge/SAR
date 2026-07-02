@@ -136,6 +136,12 @@ button{font-family:inherit; cursor:pointer}
 .opmapwrap .maptip{position:absolute; left:10px; top:10px; z-index:2; font-size:11px; font-weight:600; padding:6px 10px; border-radius:var(--r-pill); background:var(--card); color:var(--muted); border:1px solid var(--cardline); box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .phone[data-signal="offline"] .opmapwrap .maptip::before{content:"Offline · "; color:var(--warn)}
 
+/* 2D / 3D tilt toggle, thumb-sized and theme-aware */
+.optilt{position:absolute; left:10px; bottom:10px; z-index:2; display:flex; background:var(--card); border:1px solid var(--cardline); border-radius:var(--r-pill); padding:3px; box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.optilt button{border:0; background:transparent; color:var(--muted); font-size:13px; font-weight:700; letter-spacing:.02em; padding:8px 15px; border-radius:var(--r-pill)}
+.optilt button.on{background:var(--brand); color:#fff}
+.phone[data-theme="night"] .optilt button.on{color:var(--app)}
+
 /* thumb-sized, theme-aware map controls */
 .opmapwrap .maplibregl-ctrl-group{background:var(--card); border:1px solid var(--cardline); box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .opmapwrap .maplibregl-ctrl-group button{width:40px; height:40px}
@@ -259,6 +265,10 @@ button{font-family:inherit; cursor:pointer}
           <div class="opmapwrap">
             <div id="opmap"></div>
             <div class="maptip">Tap the map to capture here</div>
+            <div class="optilt" role="group" aria-label="Map tilt">
+              <button data-tilt="2d" class="on">2D</button>
+              <button data-tilt="3d">3D</button>
+            </div>
           </div>
           <div class="mapbar">
             <div class="mapleg">
@@ -457,8 +467,8 @@ button{font-family:inherit; cursor:pointer}
       // The basemap behaves like a pre-cached layer: satellite always loads
       // (with the styled base as the fallback if tiles can't be reached), so it
       // is visible in both states. The Signal toggle governs capture sync only.
-      container:'opmap', online:true, terrain:false, controls:true, rotate:false,
-      maxPitch:0, controlPos:'top-right', zoom:14, center:[167.641,-45.3975],
+      container:'opmap', online:true, terrain:true, controls:true, rotate:true,
+      controlPos:'top-right', zoom:14, pitch:0, center:[167.641,-45.3975],
       baseColor:THEME_BASE[phone.getAttribute('data-theme')],
       onReady:function(map){
         map.addSource('opsector',{type:'geojson',data:SECTORB});
@@ -490,6 +500,16 @@ button{font-family:inherit; cursor:pointer}
   }
   document.getElementById('tabCapture').addEventListener('click',function(){ selectTab('capture'); });
   document.getElementById('tabMap').addEventListener('click',function(){ selectTab('map'); });
+
+  /* ---- 2D / 3D tilt (reuses the COP map's 3D terrain) ---- */
+  document.querySelectorAll('.optilt button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.optilt button').forEach(function(x){x.classList.toggle('on', x===b);});
+      if(!mapCtrl) return;
+      if(b.getAttribute('data-tilt')==='3d'){ mapCtrl.map.easeTo({pitch:60, duration:800}); }
+      else { mapCtrl.map.easeTo({pitch:0, bearing:0, duration:700}); }
+    });
+  });
 
   /* ---- capture sheet: the map is another way into the same capture flow ---- */
   var sheet=document.getElementById('sheet'), pendingCoord=null;
