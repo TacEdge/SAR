@@ -56,12 +56,33 @@ component and surface specifications. The shell and every screen use these exact
 tokens (no drift). It is deployed alongside the prototype (open
 `design-system.html`) but is intentionally not a screen in the walkthrough nav.
 
+## The map component
+
+`vendor/sarop-map.js` is the single map component, reused by both the COP (M2)
+and Field Capture (M4). It wraps MapLibre GL with the incident's area-of-operation
+geodata, the Esri satellite + Terrarium terrain base, and an always-present
+offline-safe background so the map is never blank. `setOnline(false)` drops the
+satellite/terrain and leaves the vector picture fully usable with no tile fetch,
+which is how M4 stays usable offline. Note: this static prototype does not bundle
+real tiles for true offline imagery (that needs a connected build step or a
+service worker); offline degrades gracefully to the styled base with all vector
+data still rendering.
+
 ## Screens
 
-Seven of the nine `M*.html` screen files are loaded byte-for-byte as originally
-found. The shell files (`index.html`, `shell.css`, `shell.js`), the design system
-and this README were added. Two screens were changed on request:
+Six of the nine `M*.html` screen files are loaded byte-for-byte as originally
+found. The shell files (`index.html`, `shell.css`, `shell.js`), the design system,
+the shared map component and this README were added. Three screens were changed
+on request:
 
+- `M4 Field Capture Screen.html` gained an operator map. A Capture / Map tab pair
+  keeps capture-first; the Map tab reuses the COP map component scoped to the
+  operator's own picture: the assigned task geometry (Sector B, TASK-014), the own
+  track, and the on-device captures, with each marker carrying its sync state
+  (Captured / Queued / Synced) exactly as the list chips do. Tapping the map (or
+  "Capture here") opens the same capture flow pre-filled with the coordinate, so
+  entries land in the same on-device queue. The map is fully usable with Signal =
+  Offline, and respects the Day / Night theme.
 - `M2 The COP Screen.html` now shows real satellite imagery with a 2D / 3D tilt.
   Its abstract base map was replaced with a MapLibre GL map over Esri World
   Imagery (an open basemap, no API key), draped over real terrain from the free
