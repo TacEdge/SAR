@@ -163,9 +163,41 @@ html[data-domain="marine"] .btn-primary:hover{background:#274b57}
 @media (max-width:860px){ .grid{grid-template-columns:minmax(0,1fr)} .clock .tgt{display:none} }
 
 /* ===== phone: single column, wrapping app bar ===== */
+/* ===== mobile app bar + module drawer (shown at max-width:560px) ===== */
+.mbar{display:none; align-items:center; gap:10px; position:fixed; top:0; left:0; right:0; z-index:70; height:56px; padding:0 10px 0 14px; background:var(--forest); color:var(--cream); border-bottom:3px solid var(--accent)}
+.mbar-mark{width:30px; height:30px; border-radius:7px; flex:none; object-fit:cover; display:block}
+.mbar-inc{display:flex; align-items:center; gap:8px; min-width:0; flex:1}
+.mbar-ref{font-family:var(--mono); font-size:13px; color:var(--cream); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0}
+.mbar-pill{display:inline-flex; align-items:center; gap:6px; flex:none; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill); background:var(--forest-tint); color:var(--forest); white-space:nowrap}
+.mbar-pill .mbar-dot{width:7px; height:7px; border-radius:50%; background:var(--forest)}
+.mbar-menu{flex:none; width:44px; height:44px; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; background:rgba(252,242,232,.06); border:1px solid rgba(252,242,232,.28); border-radius:11px}
+.mbar-menu:active{background:rgba(252,242,232,.14)}
+.mbar-glyph{display:flex; flex-direction:column; gap:4px; width:18px}
+.mbar-glyph i{display:block; height:2px; width:18px; background:var(--cream); border-radius:2px}
+.mbar-glyph i:last-child{width:70%}
+.mscrim{display:none; position:fixed; inset:0; z-index:80; background:rgba(10,14,8,.45); opacity:0; pointer-events:none; transition:opacity .25s ease}
+body.mdopen .mscrim{opacity:1; pointer-events:auto}
+.mdrawer{display:none; flex-direction:column; position:fixed; top:0; right:0; z-index:90; height:100%; width:min(300px,84vw); background:var(--paper); box-shadow:0 0 40px rgba(30,40,25,.35); transform:translateX(100%); transition:transform .25s ease}
+body.mdopen .mdrawer{transform:none}
+.mdrawer-head{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 8px 10px 16px; border-bottom:1px solid var(--hairline)}
+.mdrawer-lbl{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+.mdrawer-close{width:44px; height:44px; flex:none; display:flex; align-items:center; justify-content:center; padding:0; background:none; border:0; color:var(--ink-2); cursor:pointer; border-radius:var(--r-sm)}
+.mdrawer-close:active{background:var(--cream-2)}
+.mdrawer-close svg{width:20px; height:20px}
+.mdrawer-list{overflow-y:auto}
+.mrow{display:flex; align-items:center; gap:12px; min-height:48px; padding:9px 16px; text-decoration:none; color:var(--ink); border-bottom:1px solid var(--hairline)}
+.mrow-id{font-family:var(--mono); font-size:12.5px; font-weight:600; color:var(--forest); width:26px; flex:none}
+.mrow-nm{font-size:14.5px; font-weight:600; flex:1; min-width:0}
+.mrow-dot{width:9px; height:9px; border-radius:50%; background:var(--sage); flex:none}
+.mrow.on{background:var(--forest-tint)}
+.mrow.on .mrow-dot{background:var(--forest)}
+@media (prefers-reduced-motion:reduce){ .mscrim,.mdrawer{transition:none} }
 @media (max-width:560px){
-  .appbar{flex-wrap:wrap; height:auto; min-height:52px; padding:8px 12px; gap:6px 12px; position:fixed; left:0; right:0; bottom:0; top:auto; z-index:60; border-bottom:0; border-top:3px solid var(--accent)}
-  body{padding-bottom:64px}
+  .appbar{display:none}
+  .mbar{display:flex}
+  .mscrim{display:block}
+  .mdrawer{display:flex}
+  body{padding-top:59px}
   .appbar .inc{margin-left:0; padding-left:0; border-left:0}
   .appbar .mark,.appbar .sub,.domain{display:none}
   /* 44px touch targets */
@@ -177,6 +209,29 @@ html[data-domain="marine"] .btn-primary:hover{background:#274b57}
 </style>
 </head>
 <body>
+<div class="mbar">
+  <img class="mbar-mark" src="assets/tacedge-mark.png" alt="TacEdge" width="348" height="319">
+  <span class="mbar-inc"><span class="mbar-ref">SAR-2607-042</span><span class="mbar-pill"><span class="mbar-dot"></span>Active</span></span>
+  <button class="mbar-menu" type="button" id="mbarMenu" aria-label="Open modules menu" aria-expanded="false" aria-controls="modDrawer"><span class="mbar-glyph"><i></i><i></i></span></button>
+</div>
+<div class="mscrim" id="modScrim"></div>
+<nav class="mdrawer" id="modDrawer" aria-label="Modules">
+  <div class="mdrawer-head">
+    <span class="mdrawer-lbl">Modules &middot; SAR-2607-042</span>
+    <button class="mdrawer-close" type="button" id="modClose" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="mdrawer-list">
+    <a class="mrow on" href="M1%20Stand-up%20Screen.html" aria-current="page"><span class="mrow-id">M1</span><span class="mrow-nm">Stand-up</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M2%20The%20COP%20Screen.html"><span class="mrow-id">M2</span><span class="mrow-nm">The COP</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M3%20Tasking%20Screen.html"><span class="mrow-id">M3</span><span class="mrow-nm">Tasking</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M4%20Field%20Capture%20Screen.html"><span class="mrow-id">M4</span><span class="mrow-nm">Field Capture</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M5%20Log%20and%20Records%20Screen.html"><span class="mrow-id">M5</span><span class="mrow-nm">Log & Records</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M6%20Forms%20Engine%20Screen.html"><span class="mrow-id">M6</span><span class="mrow-nm">Forms Engine</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M7%20Notifications%20and%20Callout%20Screen.html"><span class="mrow-id">M7</span><span class="mrow-nm">Notifications & Callout</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M8%20Resources%20and%20Staging%20Screen.html"><span class="mrow-id">M8</span><span class="mrow-nm">Resources & Staging</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M9%20Close-out%20Screen.html"><span class="mrow-id">M9</span><span class="mrow-nm">Close-out</span><span class="mrow-dot"></span></a>
+  </div>
+</nav>
 
 <div class="appbar">
   <div class="brand"><span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span></div>
@@ -408,6 +463,16 @@ html[data-domain="marine"] .btn-primary:hover{background:#274b57}
   });
 
   refresh();
+})();
+</script>
+<script>
+(function(){
+  var mb=document.getElementById('mbarMenu'), sc=document.getElementById('modScrim'), cl=document.getElementById('modClose');
+  function setOpen(o){ document.body.classList.toggle('mdopen',o); if(mb) mb.setAttribute('aria-expanded', o?'true':'false'); }
+  if(mb) mb.addEventListener('click',function(){ setOpen(!document.body.classList.contains('mdopen')); });
+  if(sc) sc.addEventListener('click',function(){ setOpen(false); });
+  if(cl) cl.addEventListener('click',function(){ setOpen(false); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
 })();
 </script>
 </body>
