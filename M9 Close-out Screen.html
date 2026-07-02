@@ -136,7 +136,8 @@ button{font-family:inherit; cursor:pointer}
 
 /* ===== phone: single column, wrapping app bar ===== */
 @media (max-width:560px){
-  .appbar{flex-wrap:wrap; height:auto; min-height:52px; padding:8px 12px; gap:6px 12px}
+  .appbar{flex-wrap:wrap; height:auto; min-height:52px; padding:8px 12px; gap:6px 12px; position:fixed; left:0; right:0; bottom:0; top:auto; z-index:60; border-bottom:0; border-top:3px solid var(--accent)}
+  body{padding-bottom:80px}
   .appbar .inc{margin-left:0; padding-left:0; border-left:0}
   .appbar .mark,.appbar .sub,.domain{display:none}
   .page{padding-left:14px; padding-right:14px}
