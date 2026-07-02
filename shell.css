@@ -87,11 +87,10 @@ button{font-family:inherit}
 html[data-domain="marine"] .landing .begin:hover{background:#274b57}
 
 /* ===== mobile: the shell sidebar hides and the module fills the screen.
-   Each module carries its own top app bar and module drawer, so the shell
-   needs no floating trigger here. The shell offsets the module for the iOS
-   safe area, because env() insets are 0 inside the module iframe. ===== */
+   Each module carries its own top app bar and module drawer, and handles the
+   iOS safe area itself (env() insets do propagate into the module iframe), so
+   the shell must NOT add its own offset or the inset would be double-counted. ===== */
 @media (max-width:760px){
-  body{padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); background:var(--forest)}
   .nav{position:fixed; z-index:200; top:0; left:0; height:100%; width:min(86vw,320px);
     transform:translateX(-100%); box-shadow:0 0 40px rgba(30,40,25,.35)}
   .stage{width:100%}
