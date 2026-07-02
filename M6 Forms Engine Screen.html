@@ -27,7 +27,8 @@
 }
 html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
 *{box-sizing:border-box}
-body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased}
+html,body{height:100%}
+body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased; display:flex; flex-direction:column}
 button{font-family:inherit; cursor:pointer}
 input,textarea,select{font-family:inherit}
 .mono{font-family:var(--mono)}
@@ -50,7 +51,11 @@ input,textarea,select{font-family:inherit}
 .seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
 
 /* layout */
-.wrap{display:grid; grid-template-columns:250px 1fr 320px; height:calc(100vh - 52px); min-height:600px}
+/* page heading band, consistent with the other modules (M1, M3, M5, M7-M9) */
+.pagehd{flex:none; padding:var(--s5) var(--s6) var(--s4); border-bottom:1px solid var(--hairline); background:var(--canvas)}
+.head h1{font-size:24px; font-weight:700; margin:0}
+.head p{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:80ch}
+.wrap{flex:1; min-height:0; display:grid; grid-template-columns:250px 1fr 320px}
 
 /* form nav */
 .nav{background:var(--canvas); border-right:1px solid var(--hairline); overflow-y:auto; padding:var(--s4) var(--s3)}
@@ -83,8 +88,16 @@ input,textarea,select{font-family:inherit}
 .v-mode .mdot{width:7px; height:7px; border-radius:50%; background:var(--forest); flex:none}
 .mgt{font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--ink-3); background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-pill); padding:3px 12px; cursor:not-allowed; opacity:.75}
 .nav .navcap{font-size:11px; line-height:1.4; color:var(--ink-3); padding:0 var(--s2) 8px}
+/* status pills — the product's status language (mirrors M2's .chipst), in place of a bare colour-dot legend */
+.fst{font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:.03em; text-transform:uppercase; padding:2px 7px; border-radius:var(--r-sm); border:1px solid; white-space:nowrap; flex:none}
+.st-done{color:var(--forest); background:var(--forest-tint); border-color:var(--forest)}
+.st-prog{color:var(--caution); background:var(--caution-bg); border-color:var(--caution)}
+.st-draft{color:var(--neutral); background:var(--neutral-bg); border-color:var(--neutral)}
+.st-none{color:var(--ink-3); background:var(--paper); border-color:var(--rule)}
+.nav .f .fttl{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.nav .f .cfg{margin-left:0}
 
-.metastrip{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 var(--s5)}
+.metastrip{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:6px 0 var(--s5)}
 .chipm{font-size:11px; color:var(--ink-2); background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:3px 10px}
 .chipm b{color:var(--ink); font-weight:600}
 
@@ -187,7 +200,7 @@ input,textarea,select{font-family:inherit}
 .feednote.field{background:var(--caution-bg); color:var(--caution)}
 .feednote .fh{font-weight:700; display:block; margin-bottom:3px}
 
-@media (max-width:1080px){ .wrap{grid-template-columns:minmax(0,1fr); height:auto} .nav,.side{border:0} .fgrid{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:1080px){ html,body{height:auto} body{display:block} .wrap{grid-template-columns:minmax(0,1fr); height:auto} .nav,.side{border:0} .fgrid{grid-template-columns:minmax(0,1fr)} }
 
 /* ===== phone: single column, wrapping app bar ===== */
 @media (max-width:560px){
@@ -220,18 +233,19 @@ input,textarea,select{font-family:inherit}
   </div>
 </div>
 
+<div class="pagehd">
+  <div class="head">
+    <h1>Forms</h1>
+    <p>Every IMS form for the operation as a structured record, not a PDF. Complete each once; it feeds the log, the COP and field briefings, and stays timestamped and attributed.</p>
+  </div>
+</div>
+
 <div class="wrap">
   <div class="nav">
-    <div class="nh">Forms</div>
-    <div class="navcap">This operation's IMS form set, with each form's completion state.</div>
+    <div class="nh">Form set</div>
+    <div class="navcap">This operation's IMS forms, each with its completion status.</div>
     <div class="prog" id="navprog"></div>
     <div id="navlist"></div>
-    <div class="navkey">
-      <div class="k"><span class="sd done"></span>Complete</div>
-      <div class="k"><span class="sd prog"></span>In progress</div>
-      <div class="k"><span class="sd draft"></span>Draft</div>
-      <div class="k"><span class="sd none"></span>Not started</div>
-    </div>
   </div>
 
   <div class="editor" id="editor"></div>
@@ -427,7 +441,9 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       html+='<div class="grp"><div class="gt">'+g+'</div>';
       items.forEach(function(f){
         var cfg = (f.kind==='urgency'||f.kind==='debrief') ? '<span class="cfg">L / M</span>' : '';
-        html+='<div class="f'+(f.id===cur?' on':'')+'" data-id="'+f.id+'"><span class="sd '+f.status+'"></span>'+f.title+cfg+'</div>';
+        html+='<div class="f'+(f.id===cur?' on':'')+'" data-id="'+f.id+'" title="'+f.title+' · '+STLABEL[f.status]+'">'+
+          '<span class="fttl">'+f.title+'</span>'+cfg+
+          '<span class="fst st-'+f.status+'">'+STLABEL[f.status]+'</span></div>';
       });
       html+='</div>';
     });
@@ -563,7 +579,8 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       '<div class="sub">'+refText+' · structured record · shares the log field set</div></div>'+badge+'</div>';
 
     var meta='<div class="metastrip">'+
-      '<span class="chipm"><b>Completed on</b> · '+f.cap+'</span>'+
+      '<span class="fst st-'+f.status+'">'+STLABEL[f.status]+'</span>'+
+      '<span class="chipm"><b>Captured by</b> · '+f.cap+'</span>'+
       '<span class="chipm">'+f.feeds+'</span>'+
       (isPair?'<span class="chipm"><b>Config pair</b> · land / marine variants on the domain flag</span>':'')+
       '</div>';
