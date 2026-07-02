@@ -5,10 +5,17 @@
    the same component serves the desktop COP and the offline field cut.
 
    Base layers:
-   - 'base'  : an always-present background fill (offline-safe). The map
-               is never blank; vector overlays always render over it.
-   - 'sat'   : Esri World Imagery raster, added only when online.
-   - terrain : AWS Terrarium DEM, applied only when online AND opts.terrain.
+   - 'base'    : an always-present background fill (offline-safe). The map
+                 is never blank; vector overlays always render over it.
+   - 'basemap' : the online raster basemap, added only when online. With a
+                 LINZ API key set below this is a LINZ Basemaps layer
+                 (topo-raster or aerial, Web Mercator); without a key it
+                 falls back to Esri World Imagery as before.
+   - terrain   : AWS Terrarium DEM, applied only when online AND opts.terrain.
+
+   Markup: SaropMap.attachMarkup(ctrl, opts) wires the TacEdge drawing/
+   editing tooling (vendor/tacedge-markup.js) onto a created map. Modules
+   only ever talk to the returned handle — never to the engine directly.
 
    Consumers add their own overlays in opts.onReady(map, ctrl); the
    component keeps 'sat' beneath those overlays and toggles it with
@@ -20,6 +27,32 @@ window.SaropMap = (function(){
 
   var ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   var DEM  = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
+
+  /* ============================================================
+     LINZ Basemaps configuration (extracted from the TacEdge
+     Coordination platform's basemap resolver).
+
+     >>> SET THE API KEY HERE — this is the single place it lives. <<<
+     Get a free key at https://basemaps.linz.govt.nz (menu → API keys).
+     The nine module files never see the key; they only call the
+     SaropMap adapter. While the placeholder below is unchanged the
+     map falls back to the previous Esri World Imagery basemap.
+
+     Projection: Web Mercator (EPSG:3857) — same scheme the
+     Coordination platform uses. NZTM2000Quad tiles exist for aerial
+     but MapLibre GL renders Web Mercator, so 3857 is used throughout.
+     ============================================================ */
+  var LINZ_API_KEY = 'PUT-YOUR-LINZ-API-KEY-HERE';
+
+  var LINZ_TILES = {
+    // 'Topo Gridless Maps' — the combined Topo50/Topo250 raster tileset.
+    'linz-topo':   { url: 'https://basemaps.linz.govt.nz/v1/tiles/topo-raster/EPSG:3857/{z}/{x}/{y}.webp?api=', maxzoom: 15 },
+    'linz-aerial': { url: 'https://basemaps.linz.govt.nz/v1/tiles/aerial/EPSG:3857/{z}/{x}/{y}.webp?api=',      maxzoom: 20 }
+  };
+  var LINZ_ATTRIB = 'Basemap © Toitū Te Whenua Land Information New Zealand (CC BY 4.0)';
+  function hasLinzKey(){
+    return !!LINZ_API_KEY && LINZ_API_KEY.indexOf('PUT-YOUR') !== 0;
+  }
 
   /* ---- area of operation geodata (lng/lat), near Luxmore Hut / Kepler Track ---- */
   var geo = {
@@ -52,6 +85,21 @@ window.SaropMap = (function(){
   function create(opts){
     opts = opts || {};
     var terrain = opts.terrain !== false;
+
+    /* Raster basemap sources. 'sat' (Esri) is always defined so the key-less
+       fallback keeps working; the LINZ sources are added only when a key is
+       set. The active basemap renders through the single 'basemap' layer. */
+    var sources = {
+      sat: { type:'raster', tiles:[ESRI], tileSize:256, maxzoom:18, attribution:'Imagery © Esri, Maxar, Earthstar Geographics' },
+      dem: { type:'raster-dem', tiles:[DEM], tileSize:256, maxzoom:14, encoding:'terrarium', attribution:'Elevation: Terrarium (AWS Open Data)' }
+    };
+    if(hasLinzKey()){
+      for(var lk in LINZ_TILES){
+        sources[lk] = { type:'raster', tiles:[LINZ_TILES[lk].url + LINZ_API_KEY], tileSize:256,
+                        maxzoom: LINZ_TILES[lk].maxzoom, attribution: LINZ_ATTRIB };
+      }
+    }
+
     var map = new maplibregl.Map({
       container: opts.container,
       center: opts.center || geo.CENTER,
@@ -65,10 +113,7 @@ window.SaropMap = (function(){
       attributionControl: false,
       style: {
         version: 8,
-        sources: {
-          sat: { type:'raster', tiles:[ESRI], tileSize:256, maxzoom:18, attribution:'Imagery © Esri, Maxar, Earthstar Geographics' },
-          dem: { type:'raster-dem', tiles:[DEM], tileSize:256, maxzoom:14, encoding:'terrarium', attribution:'Elevation: Terrarium (AWS Open Data)' }
-        },
+        sources: sources,
         layers: [ { id:'base', type:'background', paint:{ 'background-color': opts.baseColor || '#E7EAD9' } } ]
       }
     });
@@ -80,24 +125,59 @@ window.SaropMap = (function(){
     }
     map.on('error', function(){ /* swallow tile / DEM errors so offline never throws */ });
 
-    var ctrl = { map: map, online: !!opts.online, terrain: terrain, baseBefore: null,
-                 _inited: false, _satSeen: false, _satErr: 0, basemapOnline: null };
+    // Default basemap: LINZ topo when a key is set, else the Esri fallback.
+    var requestedBasemap = opts.basemap ||
+      (hasLinzKey() ? 'linz-topo' : 'satellite');
 
-    // add / remove the satellite raster and terrain with connectivity
+    var ctrl = { map: map, online: !!opts.online, terrain: terrain, baseBefore: null,
+                 _inited: false, _satSeen: false, _satErr: 0, basemapOnline: null,
+                 basemap: null };
+
+    function basemapSourceFor(name){
+      if(name === 'linz-topo' || name === 'linz-aerial'){
+        return hasLinzKey() ? name : 'sat';
+      }
+      return 'sat';
+    }
+    function normalizeBasemap(name){
+      if((name === 'linz-topo' || name === 'linz-aerial') && hasLinzKey()) return name;
+      return 'satellite';
+    }
+    ctrl.basemap = normalizeBasemap(requestedBasemap);
+    function basemapSource(){ return basemapSourceFor(ctrl.basemap); }
+
+    // add / remove the online raster basemap and terrain with connectivity
     ctrl.setOnline = function(on){
       ctrl.online = !!on;
       try {
         if(on){
-          if(!map.getLayer('sat')){
-            map.addLayer({ id:'sat', type:'raster', source:'sat', paint:{ 'raster-fade-duration':200 } }, ctrl.baseBefore || undefined);
+          if(!map.getLayer('basemap')){
+            map.addLayer({ id:'basemap', type:'raster', source:basemapSource(), paint:{ 'raster-fade-duration':200 } }, ctrl.baseBefore || undefined);
           }
           if(terrain){ try { map.setTerrain({ source:'dem', exaggeration: opts.exaggeration || 1.3 }); } catch(e){} }
         } else {
           try { map.setTerrain(null); } catch(e){}
-          if(map.getLayer('sat')) map.removeLayer('sat');
+          if(map.getLayer('basemap')) map.removeLayer('basemap');
         }
       } catch(e){}
       armDetect();
+    };
+
+    /* Switch the online basemap: 'linz-topo' | 'linz-aerial' | 'satellite'.
+       LINZ names silently fall back to 'satellite' when no key is set. */
+    ctrl.setBasemap = function(name){
+      var next = normalizeBasemap(name);
+      if(next === ctrl.basemap) return;
+      ctrl.basemap = next;
+      ctrl._satSeen = false; ctrl._satErr = 0;   // re-detect against the new source
+      try {
+        if(map.getLayer('basemap')) map.removeLayer('basemap');
+        if(ctrl.online){
+          map.addLayer({ id:'basemap', type:'raster', source:basemapSource(), paint:{ 'raster-fade-duration':200 } }, ctrl.baseBefore || undefined);
+        }
+      } catch(e){}
+      armDetect();
+      applyAttrib();
     };
     ctrl.setBaseColor = function(c){ try { map.setPaintProperty('base','background-color', c); } catch(e){} };
     ctrl.resize = function(){ try { map.resize(); } catch(e){} };
@@ -130,7 +210,12 @@ window.SaropMap = (function(){
       var st = ctrl.basemapOnline;
       if(st === true){
         ctrl._att.chip.style.display = 'none';
-        ctrl._att.cred.textContent = 'Imagery © Esri, Maxar' + (terrain ? ' · Elevation: Terrarium (AWS)' : '');
+        // Credit reflects the provider actually rendering: LINZ (CC BY 4.0)
+        // when a LINZ basemap is active, the Esri line on the fallback.
+        var cred = (ctrl.basemap === 'satellite')
+          ? 'Imagery © Esri, Maxar'
+          : LINZ_ATTRIB;
+        ctrl._att.cred.textContent = cred + (terrain ? ' · Elevation: Terrarium (AWS)' : '');
         ctrl._att.cred.style.display = '';
       } else if(st === false){
         ctrl._att.chip.style.display = 'inline-flex';
@@ -180,15 +265,15 @@ window.SaropMap = (function(){
       if(opts.onReady) opts.onReady(map, ctrl);           // consumer adds overlays over 'base' / 'grid'
       var layers = map.getStyle().layers || [];           // insert 'sat' beneath overlays but above base + grid
       for(var i=0;i<layers.length;i++){ var id=layers[i].id; if(id!=='base' && id!=='grid'){ ctrl.baseBefore = id; break; } }
-      // detect real connectivity: a loaded sat tile confirms online; repeated errors or navigator.onLine=false fall back
+      // detect real connectivity: a loaded basemap tile confirms online; repeated errors or navigator.onLine=false fall back
       map.on('data', function(e){
-        if(e && e.sourceId==='sat' && e.tile && e.tile.state==='loaded'){ ctrl._satSeen=true; if(ctrl.online && !netOffline()) setBasemapState(true); }
+        if(e && e.sourceId===basemapSource() && e.tile && e.tile.state==='loaded'){ ctrl._satSeen=true; if(ctrl.online && !netOffline()) setBasemapState(true); }
       });
       map.on('error', function(e){
         if(!ctrl.online || ctrl._satSeen) return;
-        // only the imagery source decides the basemap state; a DEM failure just drops 3D, not the picture
+        // only the active basemap source decides the state; a DEM failure just drops 3D, not the picture
         var sid = e && e.sourceId;
-        if(sid==='sat' || sid==null){ ctrl._satErr++; if(netOffline() || ctrl._satErr>=2) setBasemapState(false); }
+        if(sid===basemapSource() || sid==null){ ctrl._satErr++; if(netOffline() || ctrl._satErr>=2) setBasemapState(false); }
       });
       try {
         window.addEventListener('offline', function(){ setBasemapState(false); });
@@ -203,8 +288,107 @@ window.SaropMap = (function(){
     map.on('load', ready);
     (function poll(n){ if(ctrl._inited) return; if(map.isStyleLoaded()){ ready(); return; } if(n<80) setTimeout(function(){ poll(n+1); }, 80); })(0);
 
+    instances.ctrls.push(ctrl);   // debug/test registry (see `instances` below)
     return ctrl;
   }
 
-  return { geo:geo, sector:sector, create:create, fmtNZTM:fmtNZTM, lngLatToNZTM:lngLatToNZTM, ESRI:ESRI, DEM:DEM };
+  /* ============================================================
+     Markup — TacEdge drawing/editing tooling behind the adapter.
+
+     attachMarkup(ctrl, opts) wires vendor/tacedge-markup.js (the drawing
+     tool classes extracted from the TacEdge Coordination platform) onto a
+     SaropMap-created map. Modules speak SAROP tool names; the mapping to
+     engine tools lives here:
+
+       select → select        area   → polygon (kind:area)
+       sector → polygon (kind:sector)   path → linestring (kind:path)
+       point  → marker (kind:point)     text → text        erase → eraser
+
+     opts:
+       kindStyles : { kind: {strokeColor,strokeWidth,fillOpacity} } per-kind
+                    drawing styles (applied when that tool is selected)
+       onChange   : function(event, row) — 'create' | 'update' | 'delete'
+       onToolChange : function(kind) — fired when the engine auto-returns
+                    to 'select' (e.g. after a one-shot point placement)
+
+     Returns a handle: setTool, getTool, getFeatures, setFeatures, clear,
+     toGeoJSON, restyle, removeFeature, isEditing, saveEdits, cancelEdits,
+     setVisible, on, dispose. Returns null (with a console warning) when
+     vendor/tacedge-markup.js is not loaded — modules keep working without
+     drawing support.
+     ============================================================ */
+  /* Debug/test registry: created ctrls and markup handles, in creation order.
+     Console-inspection aid only — modules must not reach in here. */
+  var instances = { ctrls: [], markups: [] };
+
+  var MARKUP_TOOL_FOR_KIND = {
+    select:'select', area:'polygon', sector:'polygon', path:'linestring',
+    point:'marker', text:'text', erase:'eraser', circle:'circle'
+  };
+
+  function attachMarkup(ctrl, opts){
+    opts = opts || {};
+    if(typeof window.TacEdgeMarkup === 'undefined'){
+      try { console.warn('[SaropMap] attachMarkup: vendor/tacedge-markup.js is not loaded'); } catch(e){}
+      return null;
+    }
+    var kindStyles = opts.kindStyles || {};
+    var currentKind = 'select';
+    var handle;
+
+    var m = window.TacEdgeMarkup.createMarkup({
+      map: ctrl.map,
+      MarkerClass: maplibregl.Marker,
+      layerId: 'markup',
+      style: opts.style,
+      onChange: function(ev, row){
+        if(ev === 'tool'){
+          // engine auto-returned to select (one-shot tools like point)
+          if(row === 'select' && currentKind !== 'select'){
+            currentKind = 'select';
+            if(opts.onToolChange) opts.onToolChange('select');
+          }
+          return;
+        }
+        if(ev === 'create' || ev === 'update' || ev === 'delete'){
+          if(opts.onChange) opts.onChange(ev, row);
+        }
+      }
+    });
+
+    handle = {
+      setTool: function(kind){
+        currentKind = MARKUP_TOOL_FOR_KIND[kind] ? kind : 'select';
+        var st = kindStyles[currentKind];
+        if(st) m.setStyle(st);
+        var dp = currentKind === 'select' ? {} : { kind: currentKind };
+        // markerColor styles point markers (point features carry their style
+        // in properties.style, which default properties may override)
+        if(st && st.markerColor) dp.style = { iconColor: st.markerColor };
+        m.setDefaultProperties(dp);
+        m.setTool(MARKUP_TOOL_FOR_KIND[currentKind]);
+      },
+      getTool: function(){ return currentKind; },
+      isEditing: function(){ return m.isEditing(); },
+      saveEdits: function(){ m.saveEdits(); },
+      cancelEdits: function(){ m.cancelEdits(); },
+      getFeatures: function(){ return m.getFeatures(); },
+      setFeatures: function(list){ m.setFeatures(list); },
+      removeFeature: function(id){ m.removeFeature(id); },
+      restyle: function(fn){ m.restyle(fn); },
+      toGeoJSON: function(){ return m.toGeoJSON(); },
+      clear: function(){ m.clear(); },
+      setVisible: function(v){ m.setVisible(v); },
+      setStyle: function(st){ m.setStyle(st); },
+      setCircleRadius: function(meters){ m.setCircleRadius(meters); },
+      on: function(cb){ return m.on(cb); },
+      dispose: function(){ m.dispose(); }
+    };
+    instances.markups.push(handle);
+    return handle;
+  }
+
+  return { geo:geo, sector:sector, create:create, attachMarkup:attachMarkup,
+           fmtNZTM:fmtNZTM, lngLatToNZTM:lngLatToNZTM, ESRI:ESRI, DEM:DEM,
+           LINZ_ATTRIB:LINZ_ATTRIB, hasLinzKey:hasLinzKey, instances:instances };
 })();

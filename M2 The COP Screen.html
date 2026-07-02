@@ -239,7 +239,10 @@ body.mdopen .mdrawer{transform:none}
   .mapwrap{height:46vh; min-height:300px; border-right:0; border-bottom:1px solid var(--hairline)}
   .rail{height:auto; overflow:visible}
   .railtoggle{display:none}
-  .mapinc,.layers,.north,.maptools,.mapquery{display:none}
+  .mapinc,.layers,.north,.mapquery{display:none}
+  /* markup toolbar stays available on phones: 44px tap targets, wraps to fit */
+  .maptools{bottom:10px; max-width:calc(100% - 16px); flex-wrap:wrap; justify-content:center}
+  .maptools button{min-height:44px; min-width:44px; padding:6px 11px}
 }
 </style>
 </head>
@@ -334,6 +337,8 @@ body.mdopen .mdrawer{transform:none}
       <button data-tool="sector">Sector</button>
       <button data-tool="path">Path</button>
       <button data-tool="point">Point</button>
+      <button data-tool="text">Note</button>
+      <button data-tool="erase">Erase</button>
     </div>
 
     <div class="toast" id="toast" role="status"><span class="g"></span><span class="tx">Common operating picture · one read of the spine, not many systems</span><button class="x" id="toastX" type="button" aria-label="Dismiss">×</button></div>
@@ -395,6 +400,7 @@ body.mdopen .mdrawer{transform:none}
 </div>
 
 <script src="vendor/maplibre/maplibre-gl.js"></script>
+<script src="vendor/tacedge-markup.js"></script>
 <script src="vendor/sarop-map.js"></script>
 <script>
 (function(){
@@ -444,8 +450,29 @@ body.mdopen .mdrawer{transform:none}
     onDone:function(map){ wireMap(map); setTimeout(function(){ map.resize(); },200); }
   });
   var map=ctrl.map;
-  var TOOL='select', drawEngine=null;
+  var TOOL='select', markup=null;
   window.addEventListener('resize',function(){ map.resize(); });
+
+  /* ---- per-tool drawing styles for the markup tooling (domain-aware) ---- */
+  var KSTYLES={
+    area:  {strokeColor:accent(), strokeWidth:2,   fillOpacity:0.16},
+    sector:{strokeColor:accent(), strokeWidth:1.5, fillOpacity:0.14},
+    path:  {strokeColor:accent(), strokeWidth:2,   fillOpacity:0.16},
+    point: {markerColor:accent()},
+    text:  {},
+    erase: {}
+  };
+  function updateKindStyles(){
+    var a=accent();
+    KSTYLES.area.strokeColor=a; KSTYLES.sector.strokeColor=a;
+    KSTYLES.path.strokeColor=a; KSTYLES.point.markerColor=a;
+  }
+  function setToolUI(kind){
+    TOOL=kind;
+    document.querySelectorAll('.maptools button').forEach(function(x){
+      x.classList.toggle('on', x.getAttribute('data-tool')===kind);
+    });
+  }
 
   /* ---- domain switch (shell or in-screen toggle) ---- */
   function restyle(){
@@ -456,11 +483,14 @@ body.mdopen .mdrawer{transform:none}
     map.setPaintProperty('area-line','line-color',a);
     map.setPaintProperty('paths-line','line-color',a);
     map.setPaintProperty('track-line','line-color',trackCol());
-    if(map.getLayer('draw-fill')){
-      map.setPaintProperty('draw-fill','fill-color',a);
-      map.setPaintProperty('draw-line','line-color',a);
-      map.setPaintProperty('draw-pt','circle-color',a);
-      map.setPaintProperty('draw-vtx','circle-stroke-color',a);
+    updateKindStyles();
+    if(markup){
+      markup.restyle(function(row){
+        var p=row.properties||{}; var st=Object.assign({}, p.style||{});
+        st.strokeColor=a; st.fillColor=a;
+        if(row.type==='marker') st.iconColor=a;
+        p.style=st; return p;
+      });
     }
   }
   function setDomain(nd){
@@ -507,81 +537,24 @@ body.mdopen .mdrawer{transform:none}
       qBrg.textContent=Math.round(bearing(LKP[1],LKP[0], e.lngLat.lat, e.lngLat.lng))+'° · '+km.toFixed(1)+' km';
     });
 
-    /* ---- plan tools: Select inspects; Area / Sector / Path / Point draw on the map ---- */
-    var drawFC={type:'FeatureCollection',features:[]};   // committed geometry
-    var pending=null;                                     // in-progress {kind, coords[]}
-    map.addSource('draw',{type:'geojson',data:drawFC});
-    map.addLayer({id:'draw-fill',type:'fill',source:'draw',filter:['==',['geometry-type'],'Polygon'],
-      paint:{'fill-color':accent(),'fill-opacity':0.16}});
-    map.addLayer({id:'draw-line',type:'line',source:'draw',
-      filter:['any',['==',['geometry-type'],'LineString'],['==',['geometry-type'],'Polygon']],
-      layout:{'line-cap':'round','line-join':'round'},
-      paint:{'line-color':accent(),'line-width':2,'line-opacity':0.9}});
-    map.addLayer({id:'draw-pt',type:'circle',source:'draw',
-      filter:['all',['==',['geometry-type'],'Point'],['!=',['get','vtx'],true]],
-      paint:{'circle-radius':5,'circle-color':accent(),'circle-stroke-color':'#fff','circle-stroke-width':2}});
-    map.addLayer({id:'draw-vtx',type:'circle',source:'draw',filter:['==',['get','vtx'],true],
-      paint:{'circle-radius':3.5,'circle-color':'#fff','circle-stroke-color':accent(),'circle-stroke-width':2}});
-
-    function render(){
-      var feats=drawFC.features.slice();
-      if(pending){
-        var c=pending.coords;
-        if(c.length>=2) feats.push({type:'Feature',properties:{kind:pending.kind},geometry:{type:'LineString',coordinates:c}});
-        c.forEach(function(pt){ feats.push({type:'Feature',properties:{vtx:true},geometry:{type:'Point',coordinates:pt}}); });
-      }
-      map.getSource('draw').setData({type:'FeatureCollection',features:feats});
-    }
-    function finish(){
-      if(!pending){ return; }
-      var c=pending.coords, k=pending.kind;
-      if(k==='path' && c.length>=2){
-        drawFC.features.push({type:'Feature',properties:{kind:'path'},geometry:{type:'LineString',coordinates:c}});
-      } else if((k==='area'||k==='sector') && c.length>=3){
-        var ring=c.slice(); ring.push(c[0]);
-        drawFC.features.push({type:'Feature',properties:{kind:k},geometry:{type:'Polygon',coordinates:[ring]}});
-      }
-      pending=null; render();
-    }
-
-    drawEngine={
-      setTool:function(t){
-        if(t!==TOOL) finish();
-        TOOL=t;
-        map.getCanvas().style.cursor = (t==='select') ? '' : 'crosshair';
-        if(t==='select'){ try{ map.doubleClickZoom.enable(); }catch(e){} }
-        else { try{ map.doubleClickZoom.disable(); }catch(e){} }
-      }
-    };
+    /* ---- plan tools: Select inspects; Area / Sector / Path / Point / Note /
+       Erase are the real TacEdge markup tooling, wired through the SaropMap
+       adapter. Drawn shapes render as GL layers over the same basemap, so
+       tasks/sectors/overlays keep working online and offline. ---- */
+    markup = SaropMap.attachMarkup(ctrl, {
+      kindStyles: KSTYLES,
+      onToolChange: function(kind){ setToolUI(kind); }   // one-shot tools return to Select
+    });
 
     map.on('click',function(e){
-      if(TOOL==='select'){
-        var hits=map.queryRenderedFeatures(e.point,{layers:['sectors-fill']});
-        if(hits.length){
-          var sec=hits[0].properties.sector;
-          var t=document.querySelector('.trow[data-sector="'+sec+'"]');
-          if(t) highlight(sec, t.getAttribute('data-res'), t);
-        } else { clearHot(); }
-        return;
-      }
-      var ll=[e.lngLat.lng, e.lngLat.lat];
-      if(TOOL==='point'){
-        drawFC.features.push({type:'Feature',properties:{kind:'point'},geometry:{type:'Point',coordinates:ll}});
-        render();
-      } else {                                            // area / sector / path: collect vertices
-        if(!pending) pending={kind:TOOL,coords:[]};
-        pending.coords.push(ll);
-        render();
-      }
-    });
-    map.on('dblclick',function(){                          // finish a line / polygon (drop the duplicate vertex)
-      if(TOOL==='select'||TOOL==='point') return;
-      if(pending && pending.coords.length>1) pending.coords.pop();
-      finish();
-    });
-    document.addEventListener('keydown',function(ev){
-      if(ev.key==='Enter'){ finish(); }
-      else if(ev.key==='Escape'){ if(pending){ pending=null; render(); } }
+      if(TOOL!=='select') return;                         // drawing tools own the pointer
+      if(markup && markup.isEditing()) return;            // vertex editing in progress
+      var hits=map.queryRenderedFeatures(e.point,{layers:['sectors-fill']});
+      if(hits.length){
+        var sec=hits[0].properties.sector;
+        var t=document.querySelector('.trow[data-sector="'+sec+'"]');
+        if(t) highlight(sec, t.getAttribute('data-res'), t);
+      } else { clearHot(); }
     });
   }
 
@@ -603,12 +576,12 @@ body.mdopen .mdrawer{transform:none}
     });
   });
 
-  /* ---- plan toolbar: activates the matching draw / select tool ---- */
+  /* ---- plan toolbar: activates the matching markup / select tool ---- */
   document.querySelectorAll('.maptools button').forEach(function(b){
     b.addEventListener('click',function(){
-      document.querySelectorAll('.maptools button').forEach(function(x){x.classList.remove('on');});
-      b.classList.add('on');
-      if(drawEngine) drawEngine.setTool(b.getAttribute('data-tool'));
+      var kind=b.getAttribute('data-tool');
+      setToolUI(kind);
+      if(markup) markup.setTool(kind);
     });
   });
 
