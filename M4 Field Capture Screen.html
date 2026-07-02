@@ -358,12 +358,10 @@ button{font-family:inherit; cursor:pointer}
 
   function goOffline(){
     phone.setAttribute('data-signal','offline'); document.getElementById('sigText').textContent='Offline';
-    if(mapCtrl) mapCtrl.setOnline(false);
     updateBar();
   }
   function goOnline(){
     phone.setAttribute('data-signal','online'); document.getElementById('sigText').textContent='Online';
-    if(mapCtrl) mapCtrl.setOnline(true);
     var pending=Array.prototype.slice.call(document.querySelectorAll('.cap[data-sync="local"],.cap[data-sync="queued"]'));
     updateBar();
     pending.forEach(function(cap,i){
@@ -456,7 +454,10 @@ button{font-family:inherit; cursor:pointer}
   function ensureMap(){
     if(mapCtrl){ mapCtrl.resize(); return; }
     mapCtrl=SaropMap.create({
-      container:'opmap', online:isOnline(), terrain:false, controls:true, rotate:false,
+      // The basemap behaves like a pre-cached layer: satellite always loads
+      // (with the styled base as the fallback if tiles can't be reached), so it
+      // is visible in both states. The Signal toggle governs capture sync only.
+      container:'opmap', online:true, terrain:false, controls:true, rotate:false,
       maxPitch:0, controlPos:'top-right', zoom:14, center:[167.641,-45.3975],
       baseColor:THEME_BASE[phone.getAttribute('data-theme')],
       onReady:function(map){
