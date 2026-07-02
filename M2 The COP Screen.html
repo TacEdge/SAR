@@ -110,7 +110,7 @@ button{font-family:inherit; cursor:pointer}
 .north{position:absolute; right:var(--s4); top:var(--s6); font-family:var(--mono); font-size:11px; color:var(--ink-2); text-align:center}
 .north .arw{font-size:18px; line-height:1}
 
-.maptools{position:absolute; left:50%; transform:translateX(-50%); bottom:var(--s3); display:flex; gap:2px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:4px; box-shadow:var(--shadow)}
+.maptools{position:absolute; left:50%; transform:translateX(-50%); bottom:58px; display:flex; gap:2px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:4px; box-shadow:var(--shadow)}
 .maptools button{border:0; background:transparent; color:var(--ink-2); font-size:12px; font-weight:500; padding:6px 13px; border-radius:var(--r-pill)}
 .maptools button:hover{background:var(--forest-tint); color:var(--accent)}
 .maptools button.on{background:var(--accent); color:#fff}
@@ -380,6 +380,7 @@ button{font-family:inherit; cursor:pointer}
     onDone:function(map){ wireMap(map); setTimeout(function(){ map.resize(); },200); }
   });
   var map=ctrl.map;
+  var TOOL='select', drawEngine=null;
   window.addEventListener('resize',function(){ map.resize(); });
 
   /* ---- domain switch (shell or in-screen toggle) ---- */
@@ -391,6 +392,12 @@ button{font-family:inherit; cursor:pointer}
     map.setPaintProperty('area-line','line-color',a);
     map.setPaintProperty('paths-line','line-color',a);
     map.setPaintProperty('track-line','line-color',trackCol());
+    if(map.getLayer('draw-fill')){
+      map.setPaintProperty('draw-fill','fill-color',a);
+      map.setPaintProperty('draw-line','line-color',a);
+      map.setPaintProperty('draw-pt','circle-color',a);
+      map.setPaintProperty('draw-vtx','circle-stroke-color',a);
+    }
   }
   function setDomain(nd){
     root.setAttribute('data-domain',nd);
@@ -428,17 +435,89 @@ button{font-family:inherit; cursor:pointer}
     });
   });
   function wireMap(map){
-    map.on('click','sectors-fill',function(e){
-      var sec=e.features[0].properties.sector;
-      var t=document.querySelector('.trow[data-sector="'+sec+'"]');
-      if(t) highlight(sec, t.getAttribute('data-res'), t);
-    });
-    map.on('mouseenter','sectors-fill',function(){ map.getCanvas().style.cursor='pointer'; });
-    map.on('mouseleave','sectors-fill',function(){ map.getCanvas().style.cursor=''; });
+    map.on('mouseenter','sectors-fill',function(){ if(TOOL==='select') map.getCanvas().style.cursor='pointer'; });
+    map.on('mouseleave','sectors-fill',function(){ if(TOOL==='select') map.getCanvas().style.cursor=''; });
     map.on('mousemove',function(e){
       qGrid.textContent=fmt(e.lngLat.lat, e.lngLat.lng);
       var km=haversine(LKP[1],LKP[0], e.lngLat.lat, e.lngLat.lng);
       qBrg.textContent=Math.round(bearing(LKP[1],LKP[0], e.lngLat.lat, e.lngLat.lng))+'° · '+km.toFixed(1)+' km';
+    });
+
+    /* ---- plan tools: Select inspects; Area / Sector / Path / Point draw on the map ---- */
+    var drawFC={type:'FeatureCollection',features:[]};   // committed geometry
+    var pending=null;                                     // in-progress {kind, coords[]}
+    map.addSource('draw',{type:'geojson',data:drawFC});
+    map.addLayer({id:'draw-fill',type:'fill',source:'draw',filter:['==',['geometry-type'],'Polygon'],
+      paint:{'fill-color':accent(),'fill-opacity':0.16}});
+    map.addLayer({id:'draw-line',type:'line',source:'draw',
+      filter:['any',['==',['geometry-type'],'LineString'],['==',['geometry-type'],'Polygon']],
+      layout:{'line-cap':'round','line-join':'round'},
+      paint:{'line-color':accent(),'line-width':2,'line-opacity':0.9}});
+    map.addLayer({id:'draw-pt',type:'circle',source:'draw',
+      filter:['all',['==',['geometry-type'],'Point'],['!=',['get','vtx'],true]],
+      paint:{'circle-radius':5,'circle-color':accent(),'circle-stroke-color':'#fff','circle-stroke-width':2}});
+    map.addLayer({id:'draw-vtx',type:'circle',source:'draw',filter:['==',['get','vtx'],true],
+      paint:{'circle-radius':3.5,'circle-color':'#fff','circle-stroke-color':accent(),'circle-stroke-width':2}});
+
+    function render(){
+      var feats=drawFC.features.slice();
+      if(pending){
+        var c=pending.coords;
+        if(c.length>=2) feats.push({type:'Feature',properties:{kind:pending.kind},geometry:{type:'LineString',coordinates:c}});
+        c.forEach(function(pt){ feats.push({type:'Feature',properties:{vtx:true},geometry:{type:'Point',coordinates:pt}}); });
+      }
+      map.getSource('draw').setData({type:'FeatureCollection',features:feats});
+    }
+    function finish(){
+      if(!pending){ return; }
+      var c=pending.coords, k=pending.kind;
+      if(k==='path' && c.length>=2){
+        drawFC.features.push({type:'Feature',properties:{kind:'path'},geometry:{type:'LineString',coordinates:c}});
+      } else if((k==='area'||k==='sector') && c.length>=3){
+        var ring=c.slice(); ring.push(c[0]);
+        drawFC.features.push({type:'Feature',properties:{kind:k},geometry:{type:'Polygon',coordinates:[ring]}});
+      }
+      pending=null; render();
+    }
+
+    drawEngine={
+      setTool:function(t){
+        if(t!==TOOL) finish();
+        TOOL=t;
+        map.getCanvas().style.cursor = (t==='select') ? '' : 'crosshair';
+        if(t==='select'){ try{ map.doubleClickZoom.enable(); }catch(e){} }
+        else { try{ map.doubleClickZoom.disable(); }catch(e){} }
+      }
+    };
+
+    map.on('click',function(e){
+      if(TOOL==='select'){
+        var hits=map.queryRenderedFeatures(e.point,{layers:['sectors-fill']});
+        if(hits.length){
+          var sec=hits[0].properties.sector;
+          var t=document.querySelector('.trow[data-sector="'+sec+'"]');
+          if(t) highlight(sec, t.getAttribute('data-res'), t);
+        } else { clearHot(); }
+        return;
+      }
+      var ll=[e.lngLat.lng, e.lngLat.lat];
+      if(TOOL==='point'){
+        drawFC.features.push({type:'Feature',properties:{kind:'point'},geometry:{type:'Point',coordinates:ll}});
+        render();
+      } else {                                            // area / sector / path: collect vertices
+        if(!pending) pending={kind:TOOL,coords:[]};
+        pending.coords.push(ll);
+        render();
+      }
+    });
+    map.on('dblclick',function(){                          // finish a line / polygon (drop the duplicate vertex)
+      if(TOOL==='select'||TOOL==='point') return;
+      if(pending && pending.coords.length>1) pending.coords.pop();
+      finish();
+    });
+    document.addEventListener('keydown',function(ev){
+      if(ev.key==='Enter'){ finish(); }
+      else if(ev.key==='Escape'){ if(pending){ pending=null; render(); } }
     });
   }
 
@@ -460,11 +539,12 @@ button{font-family:inherit; cursor:pointer}
     });
   });
 
-  /* ---- plan toolbar (visual only) ---- */
+  /* ---- plan toolbar: activates the matching draw / select tool ---- */
   document.querySelectorAll('.maptools button').forEach(function(b){
     b.addEventListener('click',function(){
       document.querySelectorAll('.maptools button').forEach(function(x){x.classList.remove('on');});
       b.classList.add('on');
+      if(drawEngine) drawEngine.setTool(b.getAttribute('data-tool'));
     });
   });
 
