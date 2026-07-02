@@ -2,7 +2,7 @@
 <html lang="en" data-domain="land">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SAROP Workspace — M6 Forms Engine (complete)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +26,7 @@
   --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
 }
 html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+:root{--safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased; display:flex; flex-direction:column}
@@ -207,7 +208,7 @@ input,textarea,select{font-family:inherit}
 
 /* ===== phone: single column, wrapping app bar ===== */
 /* ===== mobile app bar + module drawer (shown at max-width:560px) ===== */
-.mbar{display:none; align-items:center; gap:10px; position:fixed; top:0; left:0; right:0; z-index:70; height:56px; padding:0 10px 0 14px; background:var(--forest); color:var(--cream); border-bottom:3px solid var(--accent)}
+.mbar{display:none; align-items:center; gap:10px; position:fixed; top:0; left:0; right:0; z-index:70; height:calc(59px + var(--safe-top,0px)); padding:var(--safe-top,0px) 10px 0 14px; background:var(--forest); color:var(--cream); border-bottom:3px solid var(--accent)}
 .mbar-mark{width:30px; height:30px; border-radius:7px; flex:none; object-fit:cover; display:block}
 .mbar-inc{display:flex; align-items:center; gap:8px; min-width:0; flex:1}
 .mbar-ref{font-family:var(--mono); font-size:13px; color:var(--cream); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0}
@@ -220,7 +221,7 @@ input,textarea,select{font-family:inherit}
 .mbar-glyph i:last-child{width:70%}
 .mscrim{display:none; position:fixed; inset:0; z-index:80; background:rgba(10,14,8,.45); opacity:0; pointer-events:none; transition:opacity .25s ease}
 body.mdopen .mscrim{opacity:1; pointer-events:auto}
-.mdrawer{display:none; flex-direction:column; position:fixed; top:0; right:0; z-index:90; height:100%; width:min(300px,84vw); background:var(--paper); box-shadow:0 0 40px rgba(30,40,25,.35); transform:translateX(100%); transition:transform .25s ease}
+.mdrawer{display:none; flex-direction:column; position:fixed; top:0; right:0; z-index:90; height:100%; width:min(300px,84vw); padding-top:var(--safe-top,0px); padding-bottom:var(--safe-bottom,0px); background:var(--paper); box-shadow:0 0 40px rgba(30,40,25,.35); transform:translateX(100%); transition:transform .25s ease}
 body.mdopen .mdrawer{transform:none}
 .mdrawer-head{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 8px 10px 16px; border-bottom:1px solid var(--hairline)}
 .mdrawer-lbl{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
@@ -240,7 +241,7 @@ body.mdopen .mdrawer{transform:none}
   .mbar{display:flex}
   .mscrim{display:block}
   .mdrawer{display:flex}
-  body{padding-top:59px}
+  body{padding-top:calc(59px + var(--safe-top,0px)); padding-bottom:var(--safe-bottom,0px)}
   .appbar .inc{margin-left:0; padding-left:0; border-left:0}
   .appbar .mark,.appbar .sub,.domain{display:none}
   /* 44px touch targets */

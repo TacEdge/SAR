@@ -86,26 +86,13 @@ button{font-family:inherit}
 .landing .begin:hover{background:var(--forest-deep)}
 html[data-domain="marine"] .landing .begin:hover{background:#274b57}
 
-/* ===== mobile: nav becomes a slide-in drawer, the module fills the screen ===== */
-.navcluster{display:none}
-.navback{display:none}
+/* ===== mobile: the shell sidebar hides and the module fills the screen.
+   Each module carries its own top app bar and module drawer, so the shell
+   needs no floating trigger here. The shell offsets the module for the iOS
+   safe area, because env() insets are 0 inside the module iframe. ===== */
 @media (max-width:760px){
+  body{padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); background:var(--forest)}
   .nav{position:fixed; z-index:200; top:0; left:0; height:100%; width:min(86vw,320px);
-    transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 40px rgba(30,40,25,.35)}
-  body.navopen .nav{transform:none}
+    transform:translateX(-100%); box-shadow:0 0 40px rgba(30,40,25,.35)}
   .stage{width:100%}
-  .navback{position:fixed; inset:0; z-index:190; background:rgba(10,14,8,.45);
-    opacity:0; pointer-events:none; transition:opacity .25s ease}
-  body.navopen .navback{display:block; opacity:1; pointer-events:auto}
-
-  /* top-right cluster: clear, touchable menu + the brand mark at the far corner */
-  .navcluster{display:flex; align-items:center; gap:4px; position:fixed; z-index:180; top:64px; right:8px;
-    background:var(--forest); border:1px solid rgba(255,255,255,.16); border-radius:var(--r-pill);
-    padding:3px 8px 3px 3px; box-shadow:0 2px 12px rgba(30,40,25,.45)}
-  .navhandle{width:44px; height:44px; display:flex; align-items:center; justify-content:center; padding:0;
-    background:transparent; border:0; color:var(--cream); cursor:pointer; border-radius:var(--r-pill)}
-  .navhandle:active{background:rgba(255,255,255,.14)}
-  .navhandle svg{width:26px; height:26px}
-  .navmark{height:28px; width:auto; display:block}
-  body.navopen .navcluster{opacity:0; pointer-events:none}
 }

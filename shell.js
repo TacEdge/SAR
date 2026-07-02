@@ -186,10 +186,4 @@
   });
 
   document.getElementById('beginBtn').addEventListener('click', function(){ go(0); });
-
-  // ---- mobile drawer ----
-  var navHandle = document.getElementById('navHandle');
-  var navBack   = document.getElementById('navBack');
-  navHandle.addEventListener('click', function(){ document.body.classList.toggle('navopen'); });
-  navBack.addEventListener('click', function(){ document.body.classList.remove('navopen'); });
 })();
