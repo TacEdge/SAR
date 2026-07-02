@@ -42,7 +42,7 @@ window.SaropMap = (function(){
      Coordination platform uses. NZTM2000Quad tiles exist for aerial
      but MapLibre GL renders Web Mercator, so 3857 is used throughout.
      ============================================================ */
-  var LINZ_API_KEY = 'PUT-YOUR-LINZ-API-KEY-HERE';
+  var LINZ_API_KEY = 'c01kwjjnt5w5dxd7hdj0pd1kg8q';
 
   var LINZ_TILES = {
     // 'Topo Gridless Maps' — the combined Topo50/Topo250 raster tileset.
