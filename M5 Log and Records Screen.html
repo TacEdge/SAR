@@ -142,7 +142,16 @@ button{font-family:inherit; cursor:pointer}
 .recfile .fn{flex:1; font-size:13px; font-weight:500}
 .recfile .fm{font-family:var(--mono); font-size:10px; color:var(--ink-3)}
 
-@media (max-width:920px){ .grid{grid-template-columns:1fr} .rail{position:static} }
+@media (max-width:920px){ .grid{grid-template-columns:minmax(0,1fr)} .rail{position:static} }
+
+/* ===== phone: single column, wrapping app bar ===== */
+@media (max-width:560px){
+  .appbar{flex-wrap:wrap; height:auto; min-height:52px; padding:8px 12px; gap:6px 12px}
+  .appbar .inc{margin-left:0; padding-left:0; border-left:0}
+  .page{padding-left:14px; padding-right:14px}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  
+}
 </style>
 </head>
 <body>

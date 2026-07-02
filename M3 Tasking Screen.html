@@ -147,7 +147,16 @@ html[data-domain="marine"] .btn-push:hover{background:#274b57}
 .pushed-strip .tt{font-weight:600; font-size:15px}
 .pushed-strip .ss{font-size:12.5px; color:var(--olive)}
 
-@media (max-width:900px){ .grid{grid-template-columns:1fr} }
+@media (max-width:900px){ .grid{grid-template-columns:minmax(0,1fr)} }
+
+/* ===== phone: single column, wrapping app bar ===== */
+@media (max-width:560px){
+  .appbar{flex-wrap:wrap; height:auto; min-height:52px; padding:8px 12px; gap:6px 12px}
+  .appbar .inc{margin-left:0; padding-left:0; border-left:0}
+  .page{padding-left:14px; padding-right:14px}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  
+}
 </style>
 </head>
 <body>

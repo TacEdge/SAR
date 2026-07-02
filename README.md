@@ -8,8 +8,13 @@ JS.
 ## What it is
 
 - `index.html` is the shell: a persistent left navigation listing the nine
-  modules, a top bar with the TacEdge SAR / SAROP Workspace identity, Previous /
-  Next paging, and one global Land / Marine domain toggle.
+  modules, Previous / Next paging, and one global Land / Marine domain toggle.
+  On phone widths (<=760px) the sidebar collapses to a slide-in drawer opened by
+  a left-edge handle, so the module fills the screen.
+- Mobile-first: the shell and every module respond down to phone width (a phone
+  breakpoint at 560px stacks each screen to a single column with a wrapping app
+  bar and larger targets; the COP stacks its map above the rail; Field Capture
+  fills the screen). Desktop and iPad layouts are unchanged above the breakpoint.
 - Each screen loads unchanged inside a central iframe, keeping its own styles and
   scripts fully isolated.
 - The domain toggle drives the active screen through the screen's own means: it
@@ -70,10 +75,10 @@ data still rendering.
 
 ## Screens
 
-Six of the nine `M*.html` screen files are loaded byte-for-byte as originally
-found. The shell files (`index.html`, `shell.css`, `shell.js`), the design system,
-the shared map component and this README were added. Three screens were changed
-on request:
+Every screen now carries an additive phone breakpoint (a `@media (max-width:560px)`
+block appended to its own `<style>`) for the mobile-first pass; nothing above the
+breakpoint changed, so the desktop / iPad layouts are as originally found. Beyond
+that responsive addition, three screens were changed on request:
 
 - `M4 Field Capture Screen.html` gained an operator map. A Capture / Map tab pair
   keeps capture-first; the Map tab reuses the COP map component scoped to the

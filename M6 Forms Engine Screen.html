@@ -95,7 +95,7 @@ input,textarea,select{font-family:inherit}
 .fsec{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:var(--s4) var(--s5) var(--s5); margin-bottom:var(--s4)}
 .fsec .sh{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive); margin:0 0 var(--s4); padding-bottom:8px; border-bottom:1px solid var(--hairline)}
 .fgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px 22px}
-.fgrid.one{grid-template-columns:1fr}
+.fgrid.one{grid-template-columns:minmax(0,1fr)}
 .fitem{display:flex; flex-direction:column}
 .fitem.wide{grid-column:1 / -1}
 .fitem label{font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--olive); margin-bottom:5px}
@@ -181,7 +181,16 @@ input,textarea,select{font-family:inherit}
 .feednote.field{background:var(--caution-bg); color:var(--caution)}
 .feednote .fh{font-weight:700; display:block; margin-bottom:3px}
 
-@media (max-width:1080px){ .wrap{grid-template-columns:1fr; height:auto} .nav,.side{border:0} .fgrid{grid-template-columns:1fr} }
+@media (max-width:1080px){ .wrap{grid-template-columns:minmax(0,1fr); height:auto} .nav,.side{border:0} .fgrid{grid-template-columns:minmax(0,1fr)} }
+
+/* ===== phone: single column, wrapping app bar ===== */
+@media (max-width:560px){
+  .appbar{flex-wrap:wrap; height:auto; min-height:52px; padding:8px 12px; gap:6px 12px}
+  .appbar .inc{margin-left:0; padding-left:0; border-left:0}
+  .page{padding-left:14px; padding-right:14px}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .wrap{grid-template-columns:minmax(0,1fr); height:auto} .fgrid{grid-template-columns:minmax(0,1fr)} .nav{border-right:0}
+}
 </style>
 </head>
 <body>

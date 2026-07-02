@@ -142,6 +142,7 @@
     if(i < 0 || i >= SCREENS.length) return;
     current = i;
     landing.classList.add('hidden');
+    document.body.classList.remove('navopen'); // close the mobile drawer on navigate
     frame.src = encodeURI(SCREENS[i].file);
     navItems.forEach(function(b, j){ b.classList.toggle('active', j === i); });
     document.title = 'SAROP Workspace — ' + SCREENS[i].code + ' ' + SCREENS[i].name;
@@ -194,4 +195,10 @@
   });
 
   document.getElementById('beginBtn').addEventListener('click', function(){ go(0); });
+
+  // ---- mobile drawer ----
+  var navHandle = document.getElementById('navHandle');
+  var navBack   = document.getElementById('navBack');
+  navHandle.addEventListener('click', function(){ document.body.classList.toggle('navopen'); });
+  navBack.addEventListener('click', function(){ document.body.classList.remove('navopen'); });
 })();
