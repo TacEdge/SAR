@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css">
 <style>
 /* ===== SAROP design tokens v0.1 ===== */
 :root{
@@ -57,16 +57,22 @@ button{font-family:inherit; cursor:pointer}
 .cop{display:grid; grid-template-columns:1fr 372px; height:calc(100vh - 52px); min-height:600px}
 .mapwrap{position:relative; overflow:hidden; border-right:1px solid var(--hairline)}
 
-/* base map: real satellite imagery via Leaflet */
+/* base map: real satellite imagery + 3D terrain via MapLibre GL */
 #map{position:absolute; inset:0; background:var(--cream-2); z-index:0}
-.leaflet-container{font-family:var(--ui)}
-/* keep Leaflet chrome quiet and on-brand */
-.leaflet-control-zoom a{color:var(--ink); border-color:var(--hairline)}
-.leaflet-control-attribution{font-size:10px; background:rgba(251,250,246,.82); color:var(--ink-3)}
-.leaflet-control-scale-line{border-color:var(--ink-2); color:var(--ink-2); background:rgba(251,250,246,.82); font-family:var(--mono); font-size:10px}
+.maplibregl-map{font-family:var(--ui)}
+/* keep MapLibre chrome quiet and on-brand */
+.maplibregl-ctrl-group{background:var(--paper); border:1px solid var(--hairline)}
+.maplibregl-ctrl-group button+button{border-top:1px solid var(--hairline)}
+.maplibregl-ctrl-attrib{font-size:10px; background:rgba(251,250,246,.82); color:var(--ink-3)}
+.maplibregl-ctrl-attrib a{color:var(--ink-2)}
+.maplibregl-ctrl-scale{border-color:var(--ink-2); color:var(--ink-2); background:rgba(251,250,246,.82); font-family:var(--mono); font-size:10px}
 
-/* pins rendered as Leaflet div-icons, reusing the original teardrop look */
-.leaflet-div-icon{background:transparent; border:0}
+/* 2D / 3D tilt toggle, styled with the design tokens */
+.tiltctl{position:absolute; left:var(--s3); bottom:58px; z-index:2; display:flex; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:3px; box-shadow:var(--shadow)}
+.tiltctl button{border:0; background:transparent; color:var(--ink-2); font-size:11px; font-weight:600; letter-spacing:.04em; padding:5px 12px; border-radius:var(--r-pill)}
+.tiltctl button.on{background:var(--accent); color:#fff}
+
+/* unit / clue pins rendered as MapLibre HTML markers, original teardrop look */
 .pin{display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer}
 .pin .mk{width:18px; height:18px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #fff; box-shadow:var(--shadow)}
 .pin .cap{font-family:var(--mono); font-size:10px; background:var(--paper); padding:1px 6px; border-radius:var(--r-sm); border:1px solid var(--hairline); white-space:nowrap; transform:translateY(-2px)}
@@ -75,7 +81,7 @@ button{font-family:inherit; cursor:pointer}
 
 /* floating panels on the map */
 .floatpanel{position:absolute; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); box-shadow:var(--shadow)}
-.mapinc{top:80px; left:var(--s3); width:250px; padding:var(--s3) var(--s4)}
+.mapinc{top:128px; left:var(--s3); width:250px; padding:var(--s3) var(--s4)}
 .mapinc .h{display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--s2)}
 .mapinc .h .t{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive)}
 .mapinc .r{display:flex; justify-content:space-between; font-size:13px; padding:3px 0}
@@ -190,6 +196,12 @@ button{font-family:inherit; cursor:pointer}
   <div class="mapwrap">
     <div id="map"></div>
 
+    <!-- 2D / 3D tilt toggle -->
+    <div class="tiltctl" role="group" aria-label="Map tilt">
+      <button data-tilt="2d" class="on">2D</button>
+      <button data-tilt="3d">3D</button>
+    </div>
+
     <!-- floating incident + progress -->
     <div class="floatpanel mapinc reveal" style="animation-delay:.05s">
       <div class="h"><span class="t">Operation</span><span class="pill p-active" style="font-size:11px"><span class="dot"></span>Active</span></div>
@@ -283,91 +295,123 @@ button{font-family:inherit; cursor:pointer}
   </div>
 </div>
 
-<script src="vendor/leaflet/leaflet.js"></script>
+<script src="vendor/maplibre/maplibre-gl.js"></script>
 <script>
 (function(){
   var root=document.documentElement;
   var qGrid=document.getElementById('qGrid'), qBrg=document.getElementById('qBrg');
 
-  /* ===== real satellite map (Leaflet + Esri World Imagery) ===== */
-  var LKP=[-45.3805,167.6178];
-  var map=L.map('map',{minZoom:10, maxZoom:18, zoomControl:true, attributionControl:true})
-           .setView([-45.3888,167.6235],14);
-
-  // Esri World Imagery: open satellite basemap, no API key required.
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
-    maxZoom:18,
-    attribution:'Imagery © Esri, Maxar, Earthstar Geographics, GIS User Community'
-  }).addTo(map);
-  L.control.scale({imperial:false, position:'bottomright'}).addTo(map);
-
+  var LKP=[167.6178,-45.3805]; // [lng,lat]
   function accent(){ return root.getAttribute('data-domain')==='marine' ? '#35606E' : '#2B4721'; }
   function trackCol(){ return root.getAttribute('data-domain')==='marine' ? '#2f7d8f' : '#35606E'; }
 
-  // ---- operational overlays, anchored to real coordinates near Luxmore Hut ----
-  var areaLayer=L.polygon([[-45.372,167.598],[-45.372,167.652],[-45.408,167.658],[-45.410,167.600]],
-    {color:accent(), weight:2, dashArray:'7 5', fill:false, opacity:.85});
+  /* ---- GeoJSON overlays, anchored to real coordinates near Luxmore Hut ---- */
+  var AREA={type:'Feature',geometry:{type:'Polygon',coordinates:[[[167.598,-45.372],[167.652,-45.372],[167.658,-45.408],[167.600,-45.410],[167.598,-45.372]]]}};
+  var SECTORS={type:'FeatureCollection',features:[
+    {type:'Feature',properties:{sector:'A'},geometry:{type:'Polygon',coordinates:[[[167.602,-45.374],[167.628,-45.374],[167.626,-45.390],[167.604,-45.390],[167.602,-45.374]]]}},
+    {type:'Feature',properties:{sector:'B'},geometry:{type:'Polygon',coordinates:[[[167.630,-45.391],[167.652,-45.391],[167.652,-45.404],[167.630,-45.404],[167.630,-45.391]]]}}
+  ]};
+  var PATHS={type:'Feature',geometry:{type:'LineString',coordinates:[[167.607,-45.377],[167.624,-45.378],[167.609,-45.381],[167.623,-45.383],[167.611,-45.386],[167.622,-45.388]]}};
+  var TRACK={type:'Feature',geometry:{type:'LineString',coordinates:[[167.634,-45.393],[167.642,-45.395],[167.637,-45.398],[167.646,-45.401],[167.641,-45.403]]}};
 
-  var secNormal={weight:1.5, color:accent(), fillColor:accent(), fillOpacity:.12, opacity:.8};
-  function secHot(){ return {weight:2, color:accent(), fillColor:accent(), fillOpacity:.30, opacity:1}; }
-  var sectorA=L.polygon([[-45.374,167.602],[-45.374,167.628],[-45.390,167.626],[-45.390,167.604]], secNormal);
-  var sectorB=L.polygon([[-45.391,167.630],[-45.391,167.652],[-45.404,167.652],[-45.404,167.630]], secNormal);
-  var sectors={A:sectorA, B:sectorB};
-  var sectorsGroup=L.layerGroup([sectorA, sectorB]);
+  /* ---- the 3D-capable map: satellite raster draped over real terrain ---- */
+  var map=new maplibregl.Map({
+    container:'map',
+    center:[167.6235,-45.3888], zoom:12.6, pitch:0, bearing:12,
+    minZoom:9, maxZoom:17, maxPitch:80, attributionControl:false,
+    style:{
+      version:8,
+      sources:{
+        sat:{type:'raster', tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize:256, maxzoom:18, attribution:'Imagery © Esri, Maxar, Earthstar Geographics'},
+        dem:{type:'raster-dem', tiles:['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'], tileSize:256, maxzoom:14, encoding:'terrarium', attribution:'Elevation: Terrarium (AWS Open Data)'}
+      },
+      layers:[{id:'sat', type:'raster', source:'sat'}]
+    }
+  });
+  map.addControl(new maplibregl.NavigationControl({visualizePitch:true}), 'top-left');
+  map.addControl(new maplibregl.ScaleControl({unit:'metric'}), 'bottom-right');
+  map.addControl(new maplibregl.AttributionControl({compact:false}), 'bottom-right');
+  map.dragRotate.enable(); if(map.touchZoomRotate) map.touchZoomRotate.enableRotation();
+  map.on('error',function(){ /* swallow tile / DEM errors in offline environments */ });
 
-  var pathsLayer=L.polyline([[-45.377,167.607],[-45.378,167.624],[-45.381,167.609],[-45.383,167.623],[-45.386,167.611],[-45.388,167.622]],
-    {color:accent(), weight:2, dashArray:'4 4', opacity:.9});
-  var tracksLayer=L.polyline([[-45.393,167.634],[-45.395,167.642],[-45.398,167.637],[-45.401,167.646],[-45.403,167.641]],
-    {color:trackCol(), weight:3, opacity:.8, lineCap:'round'});
-
-  areaLayer.addTo(map); sectorsGroup.addTo(map); pathsLayer.addTo(map); tracksLayer.addTo(map);
-
-  // ---- unit / clue pins as div-icons (keep the original teardrop look) ----
-  function pin(kind,label){
-    return L.divIcon({className:'pinwrap',
-      html:'<div class="pin '+kind+'"><span class="mk"></span><span class="cap">'+label+'</span></div>',
-      iconSize:[130,40], iconAnchor:[65,40]});
+  function pinEl(kind,label){
+    var el=document.createElement('div'); el.className='pin '+kind;
+    el.innerHTML='<span class="mk"></span><span class="cap">'+label+'</span>';
+    return el;
   }
-  L.marker(LKP,{icon:pin('lkp','LKP')}).addTo(map);
-  L.marker([-45.3852,167.6098],{icon:pin('clue','clue · footprint')}).addTo(map);
-  var mR2=L.marker([-45.3838,167.6135],{icon:pin('team','ROMEO-2')}).addTo(map);
-  var mR4=L.marker([-45.3968,167.6402],{icon:pin('team','ROMEO-4')}).addTo(map);
-  var pinByRes={R2:mR2, R4:mR4};
-  function pinEl(res){ var m=pinByRes[res]; var el=m&&m.getElement(); return el?el.querySelector('.pin'):null; }
+  var markers={};
+  function pinInner(res){ var m=markers[res]; return m?m.getElement():null; }
 
-  // fit the operation on load; keep the map sized correctly inside the frame
-  map.fitBounds(areaLayer.getBounds().pad(0.12));
-  setTimeout(function(){ map.invalidateSize(); },200);
-  window.addEventListener('resize',function(){ map.invalidateSize(); });
+  function addOverlays(){
+    map.addSource('area',{type:'geojson',data:AREA});
+    map.addSource('sectors',{type:'geojson',data:SECTORS,promoteId:'sector'});
+    map.addSource('paths',{type:'geojson',data:PATHS});
+    map.addSource('track',{type:'geojson',data:TRACK});
 
-  /* ===== domain switch (driven by the shell or the in-screen toggle) ===== */
+    map.addLayer({id:'sectors-fill',type:'fill',source:'sectors',paint:{
+      'fill-color':accent(),
+      'fill-opacity':['case',['boolean',['feature-state','hot'],false],0.34,0.12]}});
+    map.addLayer({id:'sectors-line',type:'line',source:'sectors',paint:{'line-color':accent(),'line-width':1.5,'line-opacity':0.85}});
+    map.addLayer({id:'area-line',type:'line',source:'area',paint:{'line-color':accent(),'line-width':2,'line-dasharray':[3,2],'line-opacity':0.85}});
+    map.addLayer({id:'paths-line',type:'line',source:'paths',paint:{'line-color':accent(),'line-width':2,'line-dasharray':[2,2],'line-opacity':0.9}});
+    map.addLayer({id:'track-line',type:'line',source:'track',layout:{'line-cap':'round'},paint:{'line-color':trackCol(),'line-width':3,'line-opacity':0.85}});
+  }
+  function addMarkers(){
+    function mk(kind,label,lnglat){ return new maplibregl.Marker({element:pinEl(kind,label),anchor:'bottom'}).setLngLat(lnglat).addTo(map); }
+    mk('lkp','LKP',LKP);
+    mk('clue','clue · footprint',[167.6098,-45.3852]);
+    markers.R2=mk('team','ROMEO-2',[167.6135,-45.3838]);
+    markers.R4=mk('team','ROMEO-4',[167.6402,-45.3968]);
+  }
+  function enableTerrain(on){ try{ map.setTerrain(on?{source:'dem',exaggeration:1.3}:null); }catch(e){} }
+
+  var inited=false;
+  function initMap(){
+    if(inited) return; inited=true;
+    addOverlays(); addMarkers(); enableTerrain(true);
+    try{ map.setSky({'sky-color':'#9fc0d6','sky-horizon-blend':0.6,'horizon-color':'#dfe6d8','horizon-fog-blend':0.6,'fog-color':'#e4e9dd','fog-ground-blend':0.4}); }catch(e){}
+    wireMap();
+    setTimeout(function(){ map.resize(); },200);
+  }
+  // Run as soon as the style is ready. We do not rely on the 'load' event
+  // alone: it waits on the first complete tile render, which can be delayed
+  // (or, offline, never fire). Poll isStyleLoaded() as a robust fallback.
+  map.on('load', initMap);
+  (function waitStyle(n){
+    if(inited) return;
+    if(map.isStyleLoaded()){ initMap(); return; }
+    if(n<80) setTimeout(function(){ waitStyle(n+1); }, 80);
+  })(0);
+  window.addEventListener('resize',function(){ map.resize(); });
+
+  /* ---- domain switch (shell or in-screen toggle) ---- */
   function restyle(){
-    areaLayer.setStyle({color:accent()});
-    secNormal.color=accent(); secNormal.fillColor=accent();
-    sectorA.setStyle(sectorA._hot?secHot():secNormal);
-    sectorB.setStyle(sectorB._hot?secHot():secNormal);
-    pathsLayer.setStyle({color:accent()});
-    tracksLayer.setStyle({color:trackCol()});
+    if(!map.getLayer('sectors-fill')) return;
+    var a=accent();
+    map.setPaintProperty('sectors-fill','fill-color',a);
+    map.setPaintProperty('sectors-line','line-color',a);
+    map.setPaintProperty('area-line','line-color',a);
+    map.setPaintProperty('paths-line','line-color',a);
+    map.setPaintProperty('track-line','line-color',trackCol());
   }
-  function setDomain(dom){
-    root.setAttribute('data-domain',dom);
-    document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-dom')===dom?'true':'false');});
+  function setDomain(nd){
+    root.setAttribute('data-domain',nd);
+    document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-dom')===nd?'true':'false');});
     restyle();
   }
   document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){setDomain(b.getAttribute('data-dom'));});});
 
-  /* ===== cross-reference: task, sector and resource ===== */
+  /* ---- cross-reference: task, sector and resource ---- */
   function clearHot(){
-    sectorA._hot=false; sectorA.setStyle(secNormal);
-    sectorB._hot=false; sectorB.setStyle(secNormal);
+    ['A','B'].forEach(function(s){ try{ map.setFeatureState({source:'sectors',id:s},{hot:false}); }catch(e){} });
     document.querySelectorAll('.pin.hot').forEach(function(p){p.classList.remove('hot');});
     document.querySelectorAll('.trow.sel,.rrow.sel').forEach(function(r){r.classList.remove('sel');});
   }
   function highlight(sector,res,rowEl){
     clearHot();
     if(rowEl) rowEl.classList.add('sel');
-    if(sector && sectors[sector]){ var s=sectors[sector]; s._hot=true; s.setStyle(secHot()); }
-    if(res){ var el=pinEl(res); if(el) el.classList.add('hot');
+    if(sector){ try{ map.setFeatureState({source:'sectors',id:sector},{hot:true}); }catch(e){} }
+    if(res){ var el=pinInner(res); if(el) el.classList.add('hot');
       var rr=document.querySelector('.rrow[data-res="'+res+'"]'); if(rr) rr.classList.add('sel'); }
   }
   document.querySelectorAll('.trow').forEach(function(row){
@@ -385,23 +429,40 @@ button{font-family:inherit; cursor:pointer}
       row.classList.add('sel'); if(t) t.classList.add('sel');
     });
   });
-  sectorA.on('click',function(){ sectorClick('A'); });
-  sectorB.on('click',function(){ sectorClick('B'); });
-  function sectorClick(sec){
-    var t=document.querySelector('.trow[data-sector="'+sec+'"]');
-    if(t) highlight(sec, t.getAttribute('data-res'), t);
+  function wireMap(){
+    map.on('click','sectors-fill',function(e){
+      var sec=e.features[0].properties.sector;
+      var t=document.querySelector('.trow[data-sector="'+sec+'"]');
+      if(t) highlight(sec, t.getAttribute('data-res'), t);
+    });
+    map.on('mouseenter','sectors-fill',function(){ map.getCanvas().style.cursor='pointer'; });
+    map.on('mouseleave','sectors-fill',function(){ map.getCanvas().style.cursor=''; });
+    map.on('mousemove',function(e){
+      qGrid.textContent=fmt(e.lngLat.lat, e.lngLat.lng);
+      var km=haversine(LKP[1],LKP[0], e.lngLat.lat, e.lngLat.lng);
+      qBrg.textContent=Math.round(bearing(LKP[1],LKP[0], e.lngLat.lat, e.lngLat.lng))+'° · '+km.toFixed(1)+' km';
+    });
   }
 
-  /* ===== base-layer toggles now drive Leaflet layers ===== */
-  var layerMap={'lyr-area':areaLayer, 'lyr-sectors':sectorsGroup, 'lyr-paths':pathsLayer, 'lyr-tracks':tracksLayer};
+  /* ---- base-layer toggles drive MapLibre layers ---- */
+  var layerMap={'lyr-area':['area-line'],'lyr-sectors':['sectors-fill','sectors-line'],'lyr-paths':['paths-line'],'lyr-tracks':['track-line']};
   document.querySelectorAll('.layers input').forEach(function(cb){
     cb.addEventListener('change',function(){
-      var lyr=layerMap[cb.getAttribute('data-layer')]; if(!lyr) return;
-      if(cb.checked) map.addLayer(lyr); else map.removeLayer(lyr);
+      var ids=layerMap[cb.getAttribute('data-layer')]; if(!ids) return;
+      ids.forEach(function(id){ if(map.getLayer(id)) map.setLayoutProperty(id,'visibility', cb.checked?'visible':'none'); });
     });
   });
 
-  /* ===== plan toolbar (visual only) ===== */
+  /* ---- 2D / 3D tilt toggle ---- */
+  document.querySelectorAll('.tiltctl button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.tiltctl button').forEach(function(x){x.classList.toggle('on', x===b);});
+      if(b.getAttribute('data-tilt')==='3d'){ map.easeTo({pitch:62, bearing:18, duration:900}); }
+      else { map.easeTo({pitch:0, bearing:0, duration:700}); }
+    });
+  });
+
+  /* ---- plan toolbar (visual only) ---- */
   document.querySelectorAll('.maptools button').forEach(function(b){
     b.addEventListener('click',function(){
       document.querySelectorAll('.maptools button').forEach(function(x){x.classList.remove('on');});
@@ -409,7 +470,7 @@ button{font-family:inherit; cursor:pointer}
     });
   });
 
-  /* ===== log filter ===== */
+  /* ---- log filter ---- */
   document.querySelectorAll('.railfilter button').forEach(function(b){
     b.addEventListener('click',function(){
       document.querySelectorAll('.railfilter button').forEach(function(x){x.classList.remove('on');});
@@ -421,27 +482,25 @@ button{font-family:inherit; cursor:pointer}
     });
   });
 
-  /* ===== position readout follows the pointer over the imagery ===== */
-  function fmt(lat,lng){
-    return Math.abs(lat).toFixed(4)+'°'+(lat<0?'S':'N')+' '+Math.abs(lng).toFixed(4)+'°'+(lng<0?'W':'E');
+  /* ---- readout helpers ---- */
+  function fmt(lat,lng){ return Math.abs(lat).toFixed(4)+'°'+(lat<0?'S':'N')+' '+Math.abs(lng).toFixed(4)+'°'+(lng<0?'W':'E'); }
+  function haversine(la1,lo1,la2,lo2){
+    var R=6371, toR=Math.PI/180, dLa=(la2-la1)*toR, dLo=(lo2-lo1)*toR;
+    var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(la1*toR)*Math.cos(la2*toR)*Math.sin(dLo/2)*Math.sin(dLo/2);
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
   }
-  function bearing(a,b){
-    var toR=Math.PI/180, y=Math.sin((b[1]-a[1])*toR)*Math.cos(b[0]*toR);
-    var x=Math.cos(a[0]*toR)*Math.sin(b[0]*toR)-Math.sin(a[0]*toR)*Math.cos(b[0]*toR)*Math.cos((b[1]-a[1])*toR);
+  function bearing(la1,lo1,la2,lo2){
+    var toR=Math.PI/180, y=Math.sin((lo2-lo1)*toR)*Math.cos(la2*toR);
+    var x=Math.cos(la1*toR)*Math.sin(la2*toR)-Math.sin(la1*toR)*Math.cos(la2*toR)*Math.cos((lo2-lo1)*toR);
     return (Math.atan2(y,x)/toR+360)%360;
   }
-  map.on('mousemove',function(e){
-    qGrid.textContent=fmt(e.latlng.lat, e.latlng.lng);
-    var km=map.distance(e.latlng, L.latLng(LKP))/1000;
-    qBrg.textContent=Math.round(bearing(LKP,[e.latlng.lat,e.latlng.lng]))+'° · '+km.toFixed(1)+' km';
-  });
 
-  /* ===== render toast ===== */
+  /* ---- render toast ---- */
   var toast=document.getElementById('toast');
   setTimeout(function(){toast.classList.add('show');},600);
   setTimeout(function(){toast.classList.remove('show');},4200);
 
-  /* ===== elapsed ticks ===== */
+  /* ---- elapsed ticks ---- */
   var base=161; // 02:41
   setInterval(function(){base++; var m=Math.floor(base/60),s=base%60; document.getElementById('elapsed').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;},1000);
 })();

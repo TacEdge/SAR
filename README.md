@@ -56,14 +56,18 @@ Seven of the nine `M*.html` screen files are loaded byte-for-byte as originally
 found. The shell files (`index.html`, `shell.css`, `shell.js`), the design system
 and this README were added. Two screens were changed on request:
 
-- `M2 The COP Screen.html` now shows real satellite imagery. Its abstract base
-  map was replaced with a Leaflet map over Esri World Imagery (an open basemap,
-  no API key), and the operational overlays (operational area, search sectors,
-  search paths, completed track, and the unit and clue pins) are anchored to real
-  coordinates near Luxmore Hut so they pan and zoom with the map. The existing
-  behaviour (task to sector to resource cross-highlighting, layer toggles, domain
-  switch) is preserved. Leaflet is vendored under `vendor/leaflet/`, so the page
-  needs no CDN; only the satellite tiles require an internet connection.
+- `M2 The COP Screen.html` now shows real satellite imagery with a 2D / 3D tilt.
+  Its abstract base map was replaced with a MapLibre GL map over Esri World
+  Imagery (an open basemap, no API key), draped over real terrain from the free
+  AWS Terrarium elevation tiles, so the coordinator can tilt the picture into 3D
+  (a 2D / 3D toggle sits on the map; drag with the right mouse button or two
+  fingers to rotate and pitch). The operational overlays (operational area,
+  search sectors, search paths, completed track, and the unit and clue pins) are
+  anchored to real coordinates near Luxmore Hut and drape over the terrain. The
+  existing behaviour (task to sector to resource cross-highlighting, layer
+  toggles, domain switch) is preserved. MapLibre GL is vendored under
+  `vendor/maplibre/`, so the page needs no CDN; only the satellite and elevation
+  tiles require an internet connection.
 - `M6 Forms Engine Screen.html` was replaced with the complete Forms Engine: the
   full form set (subject and intelligence, search urgency, planning, field and
   casualty, outward and debrief), a generic field renderer, the scored urgency
