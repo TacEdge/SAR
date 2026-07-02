@@ -35,6 +35,11 @@ button{font-family:inherit}
 .nav{flex:none; width:248px; background:var(--paper); border-right:1px solid var(--hairline);
   display:flex; flex-direction:column; min-height:0}
 
+/* TacEdge brand header, aligned to the screen's app bar so the top reads as one band */
+.brandbar{flex:none; height:52px; background:var(--forest); display:flex; align-items:center;
+  padding:0 var(--s4); border-bottom:3px solid var(--accent)}
+.brandbar .logo{height:24px; width:auto; display:block}
+
 /* module paging (Prev / Next), in the sidebar */
 .pager{display:flex; align-items:center; gap:var(--s2); flex:none;
   padding:var(--s3) var(--s4); border-bottom:1px solid var(--hairline)}
@@ -80,10 +85,12 @@ button{font-family:inherit}
   background:var(--canvas); padding:var(--s6)}
 .landing.hidden{display:none}
 .landing .card{max-width:520px; background:var(--paper); border:1px solid var(--hairline);
-  border-radius:var(--r-md); box-shadow:var(--shadow); padding:var(--s7) var(--s6); text-align:center}
-.landing .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--olive)}
-.landing h1{font-size:26px; font-weight:700; letter-spacing:-.01em; margin:var(--s3) 0 var(--s2); color:var(--ink)}
+  border-radius:var(--r-md); box-shadow:var(--shadow); overflow:hidden; text-align:center}
+.landing .brandband{background:var(--forest); border-bottom:3px solid var(--accent);
+  padding:var(--s5) var(--s6); display:flex; justify-content:center}
+.landing .brandband .logo{height:34px; width:auto; display:block}
+.landing .cardbody{padding:var(--s6) var(--s6) var(--s7)}
+.landing h1{font-size:26px; font-weight:700; letter-spacing:-.01em; margin:0 0 var(--s2); color:var(--ink)}
 .landing p{color:var(--ink-2); margin:0 auto var(--s6); max-width:40ch}
 .landing .begin{font-size:15px; font-weight:600; padding:12px 26px; border-radius:var(--r-sm);
   border:1px solid transparent; background:var(--accent); color:#fff; cursor:pointer; letter-spacing:.01em}
