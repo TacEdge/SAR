@@ -1,7 +1,7 @@
 {
   "name": "SAROP Workspace prototype",
   "short_name": "SAROP",
-  "description": "Clickable walkthrough of the SAROP Workspace screens.",
+  "description": "A clickable prototype of the SAROP Workspace.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

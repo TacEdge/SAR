@@ -1,8 +1,9 @@
 /* ============================================================
    SAROP Workspace prototype shell
-   Loads each unchanged screen into an iframe, drives the guided
-   Prev / Next path, and applies the global domain to the active
-   screen through the screen's OWN controls. No screen is modified.
+   Loads each unchanged screen into an iframe, pages Prev / Next,
+   applies the global domain to the active screen through the
+   screen's OWN controls, and connects each module's primary
+   hand-off button to the module it leads to. No screen is modified.
    ============================================================ */
 (function(){
   'use strict';
@@ -19,6 +20,18 @@
     {file:'M8 Resources and Staging Screen.html', code:'M8', name:'Resources & Staging',         note:'Accountability'},
     {file:'M9 Close-out Screen.html',             code:'M9', name:'Close-out & Outward Record',  note:'Close-out (F5)'}
   ];
+
+  // Connect each module's primary hand-off button to the module it leads to.
+  // Every screen keeps its own in-screen behaviour; we only add a navigation
+  // after a short delay so its own success state shows first. Attached into the
+  // same-origin iframe, so no screen file is changed. Deep behaviours
+  // (persistence, sync, report emit) stay as they are.
+  var CONNECTORS = {
+    'M1 Stand-up Screen.html':                 [{sel:'#goBtn',    to:'M2 The COP Screen.html',               delay:1100}],
+    'M3 Tasking Screen.html':                  [{sel:'#pushBtn',  to:'M4 Field Capture Screen.html',         delay:1100}],
+    'M7 Notifications and Callout Screen.html': [{sel:'#sendBtn', to:'M8 Resources and Staging Screen.html', delay:1300}],
+    'M8 Resources and Staging Screen.html':    [{sel:'#reconBtn', to:'M9 Close-out Screen.html',             delay:1100}]
+  };
 
   var frame   = document.getElementById('screenFrame');
   var landing = document.getElementById('landing');
@@ -91,6 +104,38 @@
     })();
   }
 
+  function indexByFile(file){ for(var i=0;i<SCREENS.length;i++){ if(SCREENS[i].file===file) return i; } return -1; }
+
+  // Wire this screen's primary hand-off button(s) to navigate onward. Polls the
+  // same-origin document (the button exists in static HTML) and attaches once.
+  function connectScreen(file, token){
+    var conns = CONNECTORS[file]; if(!conns) return;
+    var tries = 0;
+    (function attempt(){
+      if(token !== driveToken) return; // superseded by a newer navigation
+      var doc; try { doc = frame.contentDocument; } catch(e){ return; }
+      var onTarget = doc && doc.documentElement && decodeURIComponent(doc.URL || '').indexOf(file) !== -1;
+      if(onTarget){
+        conns.forEach(function(c){
+          var el = doc.querySelector(c.sel);
+          if(el && !el.__wired){
+            el.__wired = true;
+            el.addEventListener('click', function(){
+              // a disabled button never dispatches click, so a click here is a
+              // real action; the screen may disable it in its own handler.
+              var from = current, dest = indexByFile(c.to);
+              if(dest < 0) return;
+              // let the screen's own effect play, then hand off if still here
+              setTimeout(function(){ if(current === from) go(dest); }, c.delay || 1000);
+            });
+          }
+        });
+        return;
+      }
+      if(tries++ < 50) setTimeout(attempt, 80);
+    })();
+  }
+
   // ---- navigate to a screen by flow index ----
   function go(i){
     if(i < 0 || i >= SCREENS.length) return;
@@ -102,7 +147,9 @@
     stepLbl.textContent = (i + 1) + ' / ' + SCREENS.length;
     prevBtn.disabled = (i === 0);
     nextBtn.disabled = (i === SCREENS.length - 1);
-    driveDomain(SCREENS[i].file, ++driveToken);
+    var tok = ++driveToken;
+    driveDomain(SCREENS[i].file, tok);
+    connectScreen(SCREENS[i].file, tok);
   }
 
   // also re-apply on load where it does fire (webfonts present), as a backstop

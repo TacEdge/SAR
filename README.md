@@ -1,23 +1,29 @@
 # SAROP Workspace prototype
 
 A thin, clickable shell that stitches the nine standalone SAROP Workspace screens
-into one walkthrough for an iPad demo. It is a desirability prototype for a single
-conversation, not the product build: no backend, no data model, no framework, just
-static HTML, CSS and JS.
+into one prototype for an iPad demo. It is a desirability prototype, not the
+product build: no backend, no data model, no framework, just static HTML, CSS and
+JS.
 
 ## What it is
 
-- `index.html` is the shell: a persistent left navigation listing the nine screens
-  in flow order, a top bar with the TacEdge SAR / SAROP Workspace identity, a
-  Previous / Next guided path, and one global Land / Marine domain toggle.
+- `index.html` is the shell: a persistent left navigation listing the nine
+  modules, a top bar with the TacEdge SAR / SAROP Workspace identity, Previous /
+  Next paging, and one global Land / Marine domain toggle.
 - Each screen loads unchanged inside a central iframe, keeping its own styles and
   scripts fully isolated.
 - The domain toggle drives the active screen through the screen's own means: it
   sets `data-domain` on the screen (which every screen's CSS keys off) and, where
   the screen has a built-in Land / Marine control, also clicks that control so its
   in-screen toggle stays in sync.
+- Cross-module hand-offs are connected: a module's primary action moves you to the
+  module it leads to (stand-up "Go active" to the COP, tasking "Push to field" to
+  Field Capture, "Send callout" to Resources & Staging, "Reconcile for close-out"
+  to Close-out). Each screen's own behaviour runs first; the shell only adds the
+  onward navigation, so no screen file is changed. Deep behaviours that need real
+  architecture (persistence, sync, report emit) are intentionally left as-is.
 
-Flow order: M1 Stand-up, M2 The COP, M3 Tasking, M4 Field Capture, M5 Log &
+Modules: M1 Stand-up, M2 The COP, M3 Tasking, M4 Field Capture, M5 Log &
 Records, M6 Forms Engine, M7 Notifications & Callout, M8 Resources & Staging,
 M9 Close-out.
 

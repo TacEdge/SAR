@@ -22,14 +22,14 @@
 </head>
 <body>
 
-<!-- top bar: identity, guided path, global domain toggle -->
+<!-- top bar: identity, module paging, global domain toggle -->
 <div class="topbar">
   <div class="brand">
     <span class="mark">TacEdge SAR</span>
     <span class="sub">SAROP Workspace</span>
   </div>
   <div class="right">
-    <div class="walk" role="group" aria-label="Guided walkthrough">
+    <div class="walk" role="group" aria-label="Previous and next module">
       <button id="prevBtn" type="button" disabled>‹ Prev</button>
       <span class="step" id="stepLabel">—</span>
       <button id="nextBtn" type="button" disabled>Next ›</button>
@@ -45,21 +45,21 @@
 </div>
 
 <div class="body">
-  <!-- left navigation, flow order -->
-  <nav class="nav" aria-label="Screens">
-    <div class="navhead">Walkthrough</div>
+  <!-- left navigation, module list -->
+  <nav class="nav" aria-label="Modules">
+    <div class="navhead">Modules</div>
     <div id="navList"></div>
   </nav>
 
   <!-- central stage: iframe + landing panel -->
   <div class="stage">
-    <iframe id="screenFrame" title="SAROP Workspace screen"></iframe>
+    <iframe id="screenFrame" title="SAROP Workspace module"></iframe>
     <div class="landing" id="landing">
       <div class="card">
-        <div class="kicker">SAROP Workspace</div>
-        <h1>Prototype walkthrough</h1>
-        <p>A clickable walk through the nine workspace screens, in flow order. Begin at stand-up, or pick any screen from the left.</p>
-        <button class="begin" id="beginBtn" type="button">Begin walkthrough</button>
+        <div class="kicker">TacEdge SAR</div>
+        <h1>SAROP Workspace</h1>
+        <p>A clickable prototype of the single-operation workspace. Open any module from the left, or start at stand-up.</p>
+        <button class="begin" id="beginBtn" type="button">Enter the workspace</button>
       </div>
     </div>
   </div>
