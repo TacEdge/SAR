@@ -42,17 +42,30 @@ It is a folder of static files, so any static host works:
 
 No build step, no dependencies.
 
+## Design system
+
+`design-system.html` is the canonical token source for the whole product: the
+brand palette, semantic signal colours, typography, spacing, radii, and the
+component and surface specifications. The shell and every screen use these exact
+tokens (no drift). It is deployed alongside the prototype (open
+`design-system.html`) but is intentionally not a screen in the walkthrough nav.
+
 ## Screens
 
-Eight of the nine `M*.html` screen files are loaded byte-for-byte as found. The
-shell files (`index.html`, `shell.css`, `shell.js`) and this README were added.
+Seven of the nine `M*.html` screen files are loaded byte-for-byte as originally
+found. The shell files (`index.html`, `shell.css`, `shell.js`), the design system
+and this README were added. Two screens were changed on request:
 
-One screen was changed on request: `M2 The COP Screen.html` now shows real
-satellite imagery. Its abstract base map was replaced with a Leaflet map over
-Esri World Imagery (an open basemap, no API key), and the operational overlays
-(operational area, search sectors, search paths, completed track, and the unit
-and clue pins) are anchored to real coordinates near Luxmore Hut so they pan and
-zoom with the map. The existing behaviour (task to sector to resource
-cross-highlighting, layer toggles, domain switch) is preserved. Leaflet is
-vendored under `vendor/leaflet/`, so the page needs no CDN; only the satellite
-tiles require an internet connection.
+- `M2 The COP Screen.html` now shows real satellite imagery. Its abstract base
+  map was replaced with a Leaflet map over Esri World Imagery (an open basemap,
+  no API key), and the operational overlays (operational area, search sectors,
+  search paths, completed track, and the unit and clue pins) are anchored to real
+  coordinates near Luxmore Hut so they pan and zoom with the map. The existing
+  behaviour (task to sector to resource cross-highlighting, layer toggles, domain
+  switch) is preserved. Leaflet is vendored under `vendor/leaflet/`, so the page
+  needs no CDN; only the satellite tiles require an internet connection.
+- `M6 Forms Engine Screen.html` was replaced with the complete Forms Engine: the
+  full form set (subject and intelligence, search urgency, planning, field and
+  casualty, outward and debrief), a generic field renderer, the scored urgency
+  land / marine config pair, and the debrief variants. It keeps the standard
+  Land / Marine toggle, so the shell drives its domain as before.

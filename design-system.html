@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en" data-domain="land">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAROP Workspace — Design System v0.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* --- Brand (TacEdge) --- */
+  --forest:#2B4721; --forest-deep:#1E3317; --olive:#6E7D5C; --sage:#B2B594;
+  --cream:#FCF2E8; --cream-2:#F7F5EC; --ink:#242A1F; --rule:#D6DAC6;
+  /* --- UI-derived --- */
+  --canvas:#EDEBE1; --paper:#FBFAF6; --forest-tint:#E7EBE1;
+  --hairline:#E3E5DA; --ink-2:#545B4A; --ink-3:#7C8270;
+  /* --- Semantic --- */
+  --critical:#A6352B; --critical-bg:#F6E4DF;
+  --caution:#A9741B; --caution-bg:#F5EBD6;
+  --info:#35606E; --info-bg:#E0EAEC;
+  --neutral:#83836F; --neutral-bg:#E9E7DC;
+  /* --- Domain accent (switches on data-domain) --- */
+  --land:var(--forest); --marine:#35606E;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  /* --- Type --- */
+  --ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  /* --- Space / radius --- */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--canvas); color:var(--ink);
+  font-family:var(--ui); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1060px; margin:0 auto; padding:0 var(--s5)}
+
+/* ---- masthead ---- */
+.mast{background:var(--forest); color:var(--cream); padding:var(--s7) 0 var(--s6)}
+.mast .wrap{position:relative}
+.eyebrow{font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--sage)}
+.mast h1{font-size:40px; font-weight:700; letter-spacing:-.01em; margin:var(--s3) 0 var(--s2)}
+.mast .lede{font-size:17px; color:#DCE2CE; max-width:60ch; margin:0}
+.mast .meta{margin-top:var(--s5); font-family:var(--mono); font-size:12px; color:var(--sage); letter-spacing:.02em}
+.mast .rule{height:3px; background:var(--sage); width:64px; margin:var(--s4) 0 0}
+
+/* domain toggle */
+.domain{position:absolute; top:var(--s1); right:var(--s5); display:flex; align-items:center; gap:var(--s2)}
+.domain span{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--sage)}
+.seg{display:inline-flex; border:1px solid rgba(255,255,255,.25); border-radius:var(--r-pill); overflow:hidden}
+.seg button{font-family:var(--ui); font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  background:transparent; color:#CFD6C2; border:0; padding:6px 14px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
+
+/* ---- section scaffolding ---- */
+section{padding:var(--s7) 0; border-bottom:1px solid var(--hairline)}
+.sec-no{font-family:var(--mono); font-size:12px; color:var(--sage); font-weight:600}
+h2.sec{font-size:24px; font-weight:700; letter-spacing:-.01em; margin:var(--s2) 0 var(--s2);
+  padding-bottom:var(--s3); border-bottom:2px solid var(--rule)}
+.sec-lede{color:var(--ink-2); max-width:70ch; margin:0 0 var(--s5)}
+h3.grp{font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--olive);
+  margin:var(--s6) 0 var(--s3)}
+h3.grp:first-of-type{margin-top:0}
+.note{font-size:13px; color:var(--ink-3); margin-top:var(--s3)}
+.note b{color:var(--ink-2)}
+
+/* ---- swatches ---- */
+.swatches{display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:var(--s3)}
+.sw{border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden; background:var(--paper)}
+.sw .chip{height:64px}
+.sw .lab{padding:var(--s2) var(--s3)}
+.sw .lab .nm{font-size:13px; font-weight:600}
+.sw .lab .hx{font-family:var(--mono); font-size:12px; color:var(--ink-3)}
+.sw .lab .use{font-size:11px; color:var(--ink-3); margin-top:2px}
+.sw .aa{font-family:var(--mono); font-size:10px; font-weight:600; padding:1px 5px; border-radius:var(--r-sm);
+  display:inline-block; margin-top:4px}
+.aa.pass{background:var(--forest-tint); color:var(--forest)}
+.aa.large{background:var(--caution-bg); color:var(--caution)}
+
+/* ---- type specimens ---- */
+.type-row{display:flex; align-items:baseline; gap:var(--s4); padding:var(--s3) 0; border-bottom:1px dashed var(--hairline)}
+.type-row .tk{font-family:var(--mono); font-size:11px; color:var(--ink-3); width:120px; flex:none}
+.t-display{font-size:28px; font-weight:700; letter-spacing:-.01em}
+.t-h1{font-size:20px; font-weight:600}
+.t-h2{font-size:16px; font-weight:600}
+.t-body{font-size:15px}
+.t-small{font-size:13px}
+.t-label{font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--olive)}
+.t-micro{font-size:11px; color:var(--ink-3)}
+.t-mono{font-family:var(--mono); font-size:14px}
+
+/* ---- mono data language ---- */
+.data-lang{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:var(--s3)}
+.dl{background:var(--paper); border:1px solid var(--hairline); border-left:3px solid var(--accent);
+  border-radius:var(--r-sm); padding:var(--s3) var(--s4)}
+.dl .k{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin-bottom:4px}
+.dl .v{font-family:var(--mono); font-size:15px; font-weight:500; color:var(--ink)}
+
+/* ---- generic components ---- */
+.gallery{display:flex; flex-wrap:wrap; gap:var(--s3); align-items:center}
+.stack{display:flex; flex-direction:column; gap:var(--s3)}
+
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600;
+  padding:3px 10px 3px 9px; border-radius:var(--r-pill); letter-spacing:.01em; white-space:nowrap}
+.pill .dot{width:7px; height:7px; border-radius:50%}
+.p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
+.p-invest{background:var(--neutral-bg); color:#5f6152} .p-invest .dot{background:var(--neutral)}
+.p-susp{background:var(--caution-bg); color:var(--caution)} .p-susp .dot{background:var(--caution)}
+.p-done{background:var(--info-bg); color:var(--info)} .p-done .dot{background:var(--info)}
+.p-stood{background:var(--neutral-bg); color:var(--ink-3)} .p-stood .dot{background:var(--ink-3)}
+
+.chipst{font-family:var(--mono); font-size:11px; font-weight:500; padding:2px 8px; border-radius:var(--r-sm);
+  border:1px solid; text-transform:uppercase; letter-spacing:.04em}
+.c-created{border-color:var(--rule); color:var(--ink-3); background:var(--paper)}
+.c-assigned{border-color:var(--info); color:var(--info); background:var(--info-bg)}
+.c-progress{border-color:var(--forest); color:var(--forest); background:var(--forest-tint)}
+.c-complete{border-color:var(--neutral); color:#5f6152; background:var(--neutral-bg)}
+.c-cancel{border-color:var(--critical); color:var(--critical); background:var(--critical-bg)}
+
+.urg{display:inline-flex; flex-direction:column; gap:2px; padding:var(--s3) var(--s4); border-radius:var(--r-md);
+  border:1px solid; min-width:180px}
+.urg .band{font-size:14px; font-weight:700}
+.urg .rng{font-family:var(--mono); font-size:11px}
+.u-emerg{background:var(--critical-bg); border-color:var(--critical)} .u-emerg .band{color:var(--critical)} .u-emerg .rng{color:var(--critical)}
+.u-meas{background:var(--caution-bg); border-color:var(--caution)} .u-meas .band{color:var(--caution)} .u-meas .rng{color:var(--caution)}
+.u-eval{background:var(--forest-tint); border-color:var(--forest)} .u-eval .band{color:var(--forest)} .u-eval .rng{color:var(--forest)}
+
+.sync{display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:500; padding:4px 10px;
+  border-radius:var(--r-pill); background:var(--paper); border:1px solid var(--hairline)}
+.sync .ico{width:8px; height:8px; border-radius:50%; flex:none}
+.sy-local .ico{background:var(--neutral)} .sy-queued .ico{background:var(--caution)}
+.sy-syncing .ico{background:var(--info); animation:pulse 1.2s ease-in-out infinite}
+.sy-synced{border-color:var(--forest-tint)} .sy-synced .ico{background:var(--forest)}
+.sy-conflict{background:var(--critical-bg); border-color:var(--critical); color:var(--critical)} .sy-conflict .ico{background:var(--critical)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.sy-syncing .ico{animation:none}}
+
+.dom-badge{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:4px 11px;
+  border-radius:var(--r-pill); text-transform:uppercase; letter-spacing:.06em}
+.dom-land{background:var(--forest-tint); color:var(--forest)}
+.dom-marine{background:var(--info-bg); color:var(--info)}
+
+/* buttons */
+.btn{font-family:var(--ui); font-size:14px; font-weight:600; padding:9px 18px; border-radius:var(--r-sm);
+  border:1px solid transparent; cursor:pointer; letter-spacing:.01em}
+.btn-primary{background:var(--accent); color:#fff}
+.btn-primary:hover{background:var(--forest-deep)}
+html[data-domain="marine"] .btn-primary:hover{background:#274b57}
+.btn-secondary{background:var(--paper); color:var(--forest); border-color:var(--rule)}
+.btn-secondary:hover{background:var(--forest-tint)}
+.btn-quiet{background:transparent; color:var(--olive)}
+.btn-quiet:hover{color:var(--forest); background:var(--forest-tint)}
+.btn-danger{background:var(--paper); color:var(--critical); border-color:var(--critical)}
+.btn-danger:hover{background:var(--critical-bg)}
+.btn-field{font-size:16px; padding:14px 22px; border-radius:var(--r-md)}
+
+/* cards */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:var(--s4)}
+.card{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
+.card .top{display:flex; justify-content:space-between; align-items:flex-start; padding:var(--s3) var(--s4);
+  gap:var(--s3); border-bottom:1px solid var(--hairline)}
+.card .top .ttl{font-weight:600; font-size:15px}
+.card .top .ref{font-family:var(--mono); font-size:12px; color:var(--ink-3)}
+.card .bd{padding:var(--s3) var(--s4); font-size:14px; color:var(--ink-2)}
+.card .bd .mono{font-family:var(--mono); color:var(--ink)}
+.card .foot{display:flex; align-items:center; gap:var(--s2); padding:var(--s2) var(--s4);
+  background:var(--cream-2); border-top:1px solid var(--hairline)}
+
+/* attribution stamp — the trust signature */
+.stamp{display:inline-flex; align-items:center; gap:var(--s2); font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.stamp .lock{display:inline-flex; align-items:center; gap:3px; color:var(--forest); font-weight:600}
+.stamp .lock svg{width:11px; height:11px}
+.stamp .sep{color:var(--rule)}
+
+/* non-destructible strike */
+.struck{position:relative; color:var(--ink-3)}
+.struck s{text-decoration:line-through; text-decoration-color:var(--critical); text-decoration-thickness:1.5px}
+.struck .corr{color:var(--ink); font-weight:500}
+.struck .tag{font-family:var(--mono); font-size:10px; color:var(--critical); text-transform:uppercase;
+  letter-spacing:.06em; margin-left:6px; vertical-align:middle}
+
+/* form field + scored urgency */
+.field{max-width:420px}
+.field label{display:block; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--olive); margin-bottom:6px}
+.field input,.field select{width:100%; font-family:var(--ui); font-size:15px; padding:10px 12px;
+  background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-sm); color:var(--ink)}
+.field input:focus,.field select:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+.scorer{display:flex; align-items:center; gap:var(--s4); background:var(--paper); border:1px solid var(--hairline);
+  border-radius:var(--r-md); padding:var(--s4)}
+.scorer .score{font-family:var(--mono); font-size:32px; font-weight:600; color:var(--accent)}
+.scorer .lbl{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3)}
+
+/* surface profiles */
+.surfaces{display:grid; grid-template-columns:1fr 1fr; gap:var(--s4)}
+.surface{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:var(--s5)}
+.surface h4{margin:0 0 var(--s2); font-size:17px}
+.surface .role{font-family:var(--mono); font-size:11px; color:var(--accent); text-transform:uppercase; letter-spacing:.06em}
+.surface ul{margin:var(--s3) 0 0; padding-left:0; list-style:none}
+.surface li{font-size:13px; color:var(--ink-2); padding:5px 0 5px 18px; position:relative; border-top:1px solid var(--hairline)}
+.surface li:before{content:""; position:absolute; left:0; top:12px; width:6px; height:6px; background:var(--accent); border-radius:1px}
+.surface .mods{margin-top:var(--s3); font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+
+/* map chrome demo */
+.mapdemo{position:relative; height:280px; border-radius:var(--r-md); overflow:hidden; border:1px solid var(--rule);
+  background:
+    linear-gradient(rgba(178,181,148,.14) 1px,transparent 1px) 0 0/28px 28px,
+    linear-gradient(90deg,rgba(178,181,148,.14) 1px,transparent 1px) 0 0/28px 28px,
+    radial-gradient(circle at 30% 40%,rgba(110,125,92,.10),transparent 45%),
+    var(--cream-2);
+}
+html[data-domain="marine"] .mapdemo{background:
+    linear-gradient(rgba(53,96,110,.10) 1px,transparent 1px) 0 0/28px 28px,
+    linear-gradient(90deg,rgba(53,96,110,.10) 1px,transparent 1px) 0 0/28px 28px,
+    radial-gradient(circle at 60% 55%,rgba(53,96,110,.10),transparent 50%),
+    #E9EEEF;
+}
+.mappanel{position:absolute; top:var(--s3); left:var(--s3); width:236px; background:var(--paper);
+  border:1px solid var(--hairline); border-radius:var(--r-md); box-shadow:var(--shadow); padding:var(--s3) var(--s4)}
+.mappanel .h{display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--s2)}
+.mappanel .h .t{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive)}
+.mappanel .row{display:flex; justify-content:space-between; font-size:13px; padding:3px 0}
+.mappanel .row .m{font-family:var(--mono); color:var(--ink)}
+.feat{position:absolute; display:flex; flex-direction:column; align-items:center; gap:3px}
+.feat .pin{width:16px; height:16px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #fff; box-shadow:var(--shadow)}
+.feat .cap{font-family:var(--mono); font-size:10px; background:var(--paper); padding:1px 5px; border-radius:var(--r-sm); border:1px solid var(--hairline)}
+.f1{top:120px; left:52%} .f1 .pin{background:var(--critical)}
+.f2{top:170px; left:38%} .f2 .pin{background:var(--forest)}
+.f3{top:96px; left:70%} .f3 .pin{background:var(--caution)}
+
+/* night mode strip */
+.night{background:#141A12; border-radius:var(--r-md); padding:var(--s5); color:#D8DEC9; border:1px solid #26301F}
+.night .n-swatches{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:var(--s3); margin-top:var(--s4)}
+.n-sw{border:1px solid #2C3626; border-radius:var(--r-sm); overflow:hidden}
+.n-sw .c{height:44px} .n-sw .l{padding:6px 9px; font-family:var(--mono); font-size:11px; color:#AEB6A0}
+.night h4{margin:0; color:#EDEFE2; font-size:16px}
+.night .lede2{color:#A9B29A; font-size:13px; max-width:64ch; margin:var(--s2) 0 0}
+
+/* token reference */
+.tokens{background:var(--forest-deep); border-radius:var(--r-md); padding:var(--s5); overflow:auto}
+.tokens pre{margin:0; font-family:var(--mono); font-size:12.5px; line-height:1.7; color:#CFD6C2}
+.tokens .c{color:var(--sage)} .tokens .p{color:#EDEFE2} .tokens .h{color:#E0A98C}
+
+/* footer */
+footer{padding:var(--s7) 0; color:var(--ink-3); font-size:13px}
+footer .mono{font-family:var(--mono); font-size:12px}
+
+@media (max-width:720px){
+  .surfaces{grid-template-columns:1fr}
+  .mast h1{font-size:30px}
+  .domain{position:static; margin-top:var(--s4); justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="domain">
+      <span>Domain</span>
+      <div class="seg" role="group" aria-label="Domain configuration">
+        <button data-dom="land" aria-pressed="true">Land</button>
+        <button data-dom="marine" aria-pressed="false">Marine</button>
+      </div>
+    </div>
+    <div class="eyebrow">TacEdge SAR · SAROP Workspace</div>
+    <h1>Design System</h1>
+    <p class="lede">Calm under pressure. The operations centre as a field notebook: an earth-toned brand, a disciplined signal layer for urgency, and operational data set like an instrument readout.</p>
+    <div class="rule"></div>
+    <div class="meta">v0.1 · Internal · Pre-gate · Token source for the M1 and M2 screens · Toggle the domain to see the land / marine accent switch</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- 1 FOUNDATIONS -->
+<section id="palette">
+  <div class="sec-no">01</div>
+  <h2 class="sec">Palette</h2>
+  <p class="sec-lede">The TacEdge earth palette is the brand foundation: chrome, surfaces and primary action. Because earth tones cannot carry urgency, a small semantic layer sits on top, muted enough to belong, legible enough to mean something. Contrast is checked against the surface each colour sits on.</p>
+
+  <h3 class="grp">Brand</h3>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#2B4721"></div><div class="lab"><div class="nm" style="color:#2B4721">Forest</div><div class="hx">#2B4721</div><div class="use">Primary action, chrome</div><span class="aa pass">AA on cream</span></div></div>
+    <div class="sw"><div class="chip" style="background:#1E3317"></div><div class="lab"><div class="nm" style="color:#1E3317">Forest deep</div><div class="hx">#1E3317</div><div class="use">Pressed / hover</div></div></div>
+    <div class="sw"><div class="chip" style="background:#6E7D5C"></div><div class="lab"><div class="nm" style="color:#556047">Olive</div><div class="hx">#6E7D5C</div><div class="use">Secondary text, labels</div></div></div>
+    <div class="sw"><div class="chip" style="background:#B2B594"></div><div class="lab"><div class="nm" style="color:#6a6d50">Sage</div><div class="hx">#B2B594</div><div class="use">Muted accent, dividers on dark</div></div></div>
+    <div class="sw"><div class="chip" style="background:#FCF2E8; border-bottom:1px solid var(--hairline)"></div><div class="lab"><div class="nm">Cream</div><div class="hx">#FCF2E8</div><div class="use">Warm surface, header band on dark</div></div></div>
+    <div class="sw"><div class="chip" style="background:#242A1F"></div><div class="lab"><div class="nm" style="color:#242A1F">Ink</div><div class="hx">#242A1F</div><div class="use">Primary text</div></div></div>
+  </div>
+
+  <h3 class="grp">UI-derived</h3>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#EDEBE1"></div><div class="lab"><div class="nm">Canvas</div><div class="hx">#EDEBE1</div><div class="use">App background</div></div></div>
+    <div class="sw"><div class="chip" style="background:#FBFAF6; border-bottom:1px solid var(--hairline)"></div><div class="lab"><div class="nm">Paper</div><div class="hx">#FBFAF6</div><div class="use">Panels, cards</div></div></div>
+    <div class="sw"><div class="chip" style="background:#E7EBE1"></div><div class="lab"><div class="nm">Forest tint</div><div class="hx">#E7EBE1</div><div class="use">Selected, active fill</div></div></div>
+    <div class="sw"><div class="chip" style="background:#D6DAC6"></div><div class="lab"><div class="nm">Rule</div><div class="hx">#D6DAC6</div><div class="use">Borders</div></div></div>
+    <div class="sw"><div class="chip" style="background:#545B4A"></div><div class="lab"><div class="nm" style="color:#545B4A">Ink-2</div><div class="hx">#545B4A</div><div class="use">Secondary text</div></div></div>
+    <div class="sw"><div class="chip" style="background:#7C8270"></div><div class="lab"><div class="nm" style="color:#5f6455">Ink-3</div><div class="hx">#7C8270</div><div class="use">Meta, captions</div></div></div>
+  </div>
+
+  <h3 class="grp">Semantic signal</h3>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#A6352B"></div><div class="lab"><div class="nm" style="color:#A6352B">Critical</div><div class="hx">#A6352B</div><div class="use">Emergency, conflict</div><span class="aa pass">AA on cream</span></div></div>
+    <div class="sw"><div class="chip" style="background:#A9741B"></div><div class="lab"><div class="nm" style="color:#8a5f16">Caution</div><div class="hx">#A9741B</div><div class="use">Alert, suspended, pending</div><span class="aa pass">AA on cream</span></div></div>
+    <div class="sw"><div class="chip" style="background:#35606E"></div><div class="lab"><div class="nm" style="color:#35606E">Info / marine</div><div class="hx">#35606E</div><div class="use">Information, marine accent</div><span class="aa pass">AA on cream</span></div></div>
+    <div class="sw"><div class="chip" style="background:#83836F"></div><div class="lab"><div class="nm" style="color:#63634f">Neutral</div><div class="hx">#83836F</div><div class="use">Investigating, stood-down, off</div></div></div>
+  </div>
+  <p class="note"><b>Nominal is green by default.</b> Active operations, go states and a successful sync reuse Forest rather than a second green, so the palette stays tight. The signal layer earns its place only where the earth tones cannot mean urgency.</p>
+
+  <h3 class="grp">Domain accent</h3>
+  <div class="gallery" style="margin-top:var(--s2)">
+    <span class="dom-badge dom-land">Land</span>
+    <span class="dom-badge dom-marine">Marine</span>
+    <span class="note" style="margin:0"><b>The one config that recolours the chrome.</b> The M1 land / marine flag drives the whole product; the accent follows it, forest for land, slate-blue for marine. Toggle it in the header.</span>
+  </div>
+</section>
+
+<!-- 2 TYPE -->
+<section id="type">
+  <div class="sec-no">02</div>
+  <h2 class="sec">Typography</h2>
+  <p class="sec-lede">IBM Plex Sans and IBM Plex Mono, one stack across desktop and field. No display face: a loud headline would fight the calm this product needs, so personality lives in the mono data language instead. Settling on a single family here retires the desktop-coherence debt the Geotech PM surface carried.</p>
+
+  <div>
+    <div class="type-row"><span class="tk">display / 28 · 700</span><span class="t-display">Cold stand-up in ten minutes</span></div>
+    <div class="type-row"><span class="tk">h1 / 20 · 600</span><span class="t-h1">Common operating picture</span></div>
+    <div class="type-row"><span class="tk">h2 / 16 · 600</span><span class="t-h2">Assign a field team</span></div>
+    <div class="type-row"><span class="tk">body / 15 · 400</span><span class="t-body">A fact captured once is never re-keyed.</span></div>
+    <div class="type-row"><span class="tk">small / 13 · 400</span><span class="t-small">Reads the spine, not many systems.</span></div>
+    <div class="type-row"><span class="tk">label / 12 · 600</span><span class="t-label">Operations · Intelligence</span></div>
+    <div class="type-row"><span class="tk">micro / 11 · 400</span><span class="t-micro">Timestamped, attributed, non-destructible</span></div>
+    <div class="type-row"><span class="tk">mono / 14 · 400</span><span class="t-mono">TASK-014 · CH.62 · 1443 NZST</span></div>
+  </div>
+
+  <h3 class="grp">The mono data language — the signature</h3>
+  <p class="sec-lede" style="margin-bottom:var(--s4)">Every fact-of-record is set in IBM Plex Mono: coordinates, grid references, times, callsigns, channels, reference numbers, deployed hours. It reads like an instrument, keeps columns of data scannable, and marks clearly what is a recorded fact versus prose.</p>
+  <div class="data-lang">
+    <div class="dl"><div class="k">Grid reference</div><div class="v">NZTM 1573290E 5180410N</div></div>
+    <div class="dl"><div class="k">Lat / long</div><div class="v">43°31.8'S 172°37.3'E</div></div>
+    <div class="dl"><div class="k">Time (24h · TZ)</div><div class="v">1443 NZST</div></div>
+    <div class="dl"><div class="k">Callsign</div><div class="v">ROMEO-2</div></div>
+    <div class="dl"><div class="k">Radio channel</div><div class="v">CH.62 · 156.325 MHz</div></div>
+    <div class="dl"><div class="k">Task / incident ref</div><div class="v">SAR-2408-017</div></div>
+    <div class="dl"><div class="k">Deployed hours</div><div class="v">04:12 (hh:mm)</div></div>
+    <div class="dl"><div class="k">Bearing / distance</div><div class="v">247° · 1.8 km</div></div>
+  </div>
+</section>
+
+<!-- 3 SPACE -->
+<section id="space">
+  <div class="sec-no">03</div>
+  <h2 class="sec">Space, radius, elevation</h2>
+  <p class="sec-lede">An 8px grid. Corners stay lightly squared, nearer an instrument than a consumer app. Elevation is reserved for one job: panels that float over the map.</p>
+  <div class="gallery" style="align-items:flex-end">
+    <div style="text-align:center"><div style="width:4px;height:4px;background:var(--forest)"></div><div class="t-micro" style="margin-top:6px">4</div></div>
+    <div style="text-align:center"><div style="width:8px;height:8px;background:var(--forest)"></div><div class="t-micro" style="margin-top:6px">8</div></div>
+    <div style="text-align:center"><div style="width:12px;height:12px;background:var(--forest)"></div><div class="t-micro" style="margin-top:6px">12</div></div>
+    <div style="text-align:center"><div style="width:16px;height:16px;background:var(--forest)"></div><div class="t-micro" style="margin-top:6px">16</div></div>
+    <div style="text-align:center"><div style="width:24px;height:24px;background:var(--forest)"></div><div class="t-micro" style="margin-top:6px">24</div></div>
+    <div style="text-align:center"><div style="width:32px;height:32px;background:var(--forest)"></div><div class="t-micro" style="margin-top:6px">32</div></div>
+    <div style="text-align:center"><div style="width:48px;height:48px;background:var(--forest)"></div><div class="t-micro" style="margin-top:6px">48</div></div>
+  </div>
+  <div class="gallery" style="margin-top:var(--s5)">
+    <div style="text-align:center"><div style="width:80px;height:52px;background:var(--paper);border:1px solid var(--rule);border-radius:4px"></div><div class="t-micro" style="margin-top:6px">radius 4 · chips, inputs</div></div>
+    <div style="text-align:center"><div style="width:80px;height:52px;background:var(--paper);border:1px solid var(--rule);border-radius:8px"></div><div class="t-micro" style="margin-top:6px">radius 8 · cards, panels</div></div>
+    <div style="text-align:center"><div style="width:80px;height:52px;background:var(--paper);border:1px solid var(--hairline);border-radius:8px;box-shadow:var(--shadow)"></div><div class="t-micro" style="margin-top:6px">elevation · map panels only</div></div>
+  </div>
+</section>
+
+<!-- 4 SURFACES -->
+<section id="surfaces">
+  <div class="sec-no">04</div>
+  <h2 class="sec">Two surfaces, one system</h2>
+  <p class="sec-lede">The product spans an ops-room desktop and a hillside phone. They share every token; they differ only in density and target size. Deciding both now, from one system, is what keeps them coherent.</p>
+  <div class="surfaces">
+    <div class="surface">
+      <div class="role">Coordinator desktop</div>
+      <h4>Dense, multi-panel, indoor</h4>
+      <ul>
+        <li>Base text 15px, compact density, minimum target 32px</li>
+        <li>Multi-panel: the COP is a map with docked log and task panels</li>
+        <li>Mouse and keyboard; keyboard shortcuts for the common path</li>
+        <li>Mono data in tight columns; more information per screen</li>
+      </ul>
+      <div class="mods">M1 · M2 · M3 · M5 · M9</div>
+    </div>
+    <div class="surface">
+      <div class="role">Field mobile</div>
+      <h4>Sparse, large-target, outdoor</h4>
+      <ul>
+        <li>Base text 16px, generous spacing, minimum target 48px</li>
+        <li>Single column, thumb-reachable, sunlight-legible contrast</li>
+        <li>Offline state always visible; capture never blocks on signal</li>
+        <li>Night mode is a first-class variant, not an afterthought</li>
+      </ul>
+      <div class="mods">M4 · pushed tasks &amp; briefings</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 COMPONENTS -->
+<section id="components">
+  <div class="sec-no">05</div>
+  <h2 class="sec">Components</h2>
+  <p class="sec-lede">The pieces the screens are built from. Each maps to a spine object or a flow, so status, urgency and sync are consistent wherever they appear.</p>
+
+  <h3 class="grp">Incident status — M1</h3>
+  <div class="gallery">
+    <span class="pill p-invest"><span class="dot"></span>Investigating</span>
+    <span class="pill p-active"><span class="dot"></span>Active</span>
+    <span class="pill p-susp"><span class="dot"></span>Suspended</span>
+    <span class="pill p-done"><span class="dot"></span>Completed</span>
+    <span class="pill p-stood"><span class="dot"></span>Stood-down</span>
+  </div>
+
+  <h3 class="grp">Task status — M3</h3>
+  <div class="gallery">
+    <span class="chipst c-created">Created</span>
+    <span class="chipst c-assigned">Assigned</span>
+    <span class="chipst c-progress">In progress</span>
+    <span class="chipst c-complete">Completed</span>
+    <span class="chipst c-cancel">Cancelled</span>
+  </div>
+
+  <h3 class="grp">Search urgency — M6, scored</h3>
+  <div class="gallery">
+    <div class="urg u-emerg"><span class="band">Requires emergency response</span><span class="rng">score 11–18 · land</span></div>
+    <div class="urg u-meas"><span class="band">Measured response</span><span class="rng">score 19–27 · land</span></div>
+    <div class="urg u-eval"><span class="band">Evaluate &amp; investigate</span><span class="rng">score 28–41 · land</span></div>
+  </div>
+
+  <h3 class="grp">Sync state — M4, the field-capture lifecycle</h3>
+  <div class="gallery">
+    <span class="sync sy-local"><span class="ico"></span>Captured, local</span>
+    <span class="sync sy-queued"><span class="ico"></span>Queued</span>
+    <span class="sync sy-syncing"><span class="ico"></span>Syncing…</span>
+    <span class="sync sy-synced"><span class="ico"></span>Synced</span>
+    <span class="sync sy-conflict"><span class="ico"></span>Conflict — review</span>
+  </div>
+
+  <h3 class="grp">Buttons</h3>
+  <div class="gallery">
+    <button class="btn btn-primary">Go active</button>
+    <button class="btn btn-secondary">Assign team</button>
+    <button class="btn btn-quiet">Cancel</button>
+    <button class="btn btn-danger">Stand down</button>
+    <button class="btn btn-primary btn-field">Capture (field size)</button>
+  </div>
+
+  <h3 class="grp">Records — the attribution stamp &amp; the non-destructible rule</h3>
+  <div class="cards">
+    <div class="card">
+      <div class="top"><div><div class="ttl">Clue: footprint</div><div class="ref">LOG-0142</div></div><span class="sync sy-synced"><span class="ico"></span>Synced</span></div>
+      <div class="bd">Single print, north-west heading, near the creek fork. Photo attached. <span class="mono">NZTM 1573290E 5180410N</span></div>
+      <div class="foot">
+        <span class="stamp">
+          <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>locked</span>
+          <span class="sep">·</span>1443 NZST<span class="sep">·</span>R. Tāne
+        </span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="top"><div><div class="ttl">Task: sector 4 sweep</div><div class="ref">TASK-014</div></div><span class="chipst c-progress">In progress</span></div>
+      <div class="bd struck">Assigned to <s>ROMEO-2</s> <span class="corr">ROMEO-4</span><span class="tag">struck &amp; corrected</span><br><span class="t-micro">Original retained. Nothing is deleted.</span></div>
+      <div class="foot"><span class="stamp"><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>locked</span><span class="sep">·</span>1451 NZST<span class="sep">·</span>IC</span></div>
+    </div>
+  </div>
+  <p class="note"><b>The trust signature.</b> Every record carries a <i>locked · time · user</i> stamp, and corrections strike the original in Critical rather than delete it. This is the timestamped, attributed, non-destructible spine made visible, the property that lets a coroner trust the record on sight.</p>
+
+  <h3 class="grp">Form field &amp; scored input — M6</h3>
+  <div class="gallery" style="align-items:flex-start; gap:var(--s5)">
+    <div class="field">
+      <label for="d">Domain</label>
+      <select id="d"><option>Land</option><option>Marine (close-to-shore)</option></select>
+    </div>
+    <div class="scorer">
+      <div><div class="score">17</div><div class="lbl">urgency score</div></div>
+      <div class="urg u-emerg" style="min-width:150px"><span class="band">Emergency</span><span class="rng">11–18</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 MAP CHROME -->
+<section id="map">
+  <div class="sec-no">06</div>
+  <h2 class="sec">Map chrome — the COP surface</h2>
+  <p class="sec-lede">M2 is map-centric: panels float over the base map, which itself is the land / marine config. Chrome stays on Paper with a single soft elevation so it reads clearly over topography; features use the semantic colours. Toggle the domain in the header to switch the base map and accent.</p>
+  <div class="mapdemo">
+    <div class="mappanel">
+      <div class="h"><span class="t">Incident</span><span class="pill p-active" style="font-size:11px"><span class="dot"></span>Active</span></div>
+      <div class="row"><span>Reference</span><span class="m">SAR-2408-017</span></div>
+      <div class="row"><span>Area searched</span><span class="m">38%</span></div>
+      <div class="row"><span>Teams deployed</span><span class="m">4</span></div>
+      <div class="row"><span>Elapsed</span><span class="m">02:41</span></div>
+    </div>
+    <div class="feat f1"><span class="pin"></span><span class="cap">clue</span></div>
+    <div class="feat f2"><span class="pin"></span><span class="cap">team</span></div>
+    <div class="feat f3"><span class="pin"></span><span class="cap">LKP</span></div>
+  </div>
+</section>
+
+<!-- 7 NIGHT -->
+<section id="night">
+  <div class="sec-no">07</div>
+  <h2 class="sec">Night mode — field-first</h2>
+  <p class="sec-lede">SAR runs at night. The field surface needs a dark variant that preserves the same semantics at lower luminance, so a screen does not blind a searcher or wreck night vision. This is a required variant, defined here as direction and confirmed in the prototype.</p>
+  <div class="night">
+    <h4>Field night palette</h4>
+    <p class="lede2">Ink inverts to a warm off-black; Forest lifts to a legible foliage green; the signal layer keeps its meaning but drops in intensity. Text targets AA at reduced brightness.</p>
+    <div class="n-swatches">
+      <div class="n-sw"><div class="c" style="background:#141A12"></div><div class="l">Canvas #141A12</div></div>
+      <div class="n-sw"><div class="c" style="background:#1C2418"></div><div class="l">Panel #1C2418</div></div>
+      <div class="n-sw"><div class="c" style="background:#7FA46B"></div><div class="l">Forest ↑ #7FA46B</div></div>
+      <div class="n-sw"><div class="c" style="background:#D8DEC9"></div><div class="l">Text #D8DEC9</div></div>
+      <div class="n-sw"><div class="c" style="background:#C86A5C"></div><div class="l">Critical ↑ #C86A5C</div></div>
+      <div class="n-sw"><div class="c" style="background:#C79A4E"></div><div class="l">Caution ↑ #C79A4E</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 TOKENS -->
+<section id="tokens">
+  <div class="sec-no">08</div>
+  <h2 class="sec">Token reference</h2>
+  <p class="sec-lede">The custom properties the M1 and M2 screens import. This file is the source of truth; copy the block into each screen's <span class="t-mono">:root</span> so nothing drifts.</p>
+  <div class="tokens"><pre><span class="c">/* SAROP Workspace — design tokens v0.1 */</span>
+<span class="p">:root</span>{
+  <span class="c">/* brand */</span>
+  --forest:<span class="h">#2B4721</span>; --forest-deep:<span class="h">#1E3317</span>; --olive:<span class="h">#6E7D5C</span>; --sage:<span class="h">#B2B594</span>;
+  --cream:<span class="h">#FCF2E8</span>; --cream-2:<span class="h">#F7F5EC</span>; --ink:<span class="h">#242A1F</span>; --rule:<span class="h">#D6DAC6</span>;
+  <span class="c">/* ui-derived */</span>
+  --canvas:<span class="h">#EDEBE1</span>; --paper:<span class="h">#FBFAF6</span>; --forest-tint:<span class="h">#E7EBE1</span>;
+  --hairline:<span class="h">#E3E5DA</span>; --ink-2:<span class="h">#545B4A</span>; --ink-3:<span class="h">#7C8270</span>;
+  <span class="c">/* semantic */</span>
+  --critical:<span class="h">#A6352B</span>; --critical-bg:<span class="h">#F6E4DF</span>;
+  --caution:<span class="h">#A9741B</span>;  --caution-bg:<span class="h">#F5EBD6</span>;
+  --info:<span class="h">#35606E</span>;     --info-bg:<span class="h">#E0EAEC</span>;
+  --neutral:<span class="h">#83836F</span>;  --neutral-bg:<span class="h">#E9E7DC</span>;
+  <span class="c">/* domain accent — switch on [data-domain="marine"] */</span>
+  --land:var(--forest); --marine:<span class="h">#35606E</span>;
+  --accent:var(--forest); --accent-tint:var(--forest-tint);
+  <span class="c">/* type */</span>
+  --ui:<span class="h">'IBM Plex Sans'</span>,system-ui,sans-serif;
+  --mono:<span class="h">'IBM Plex Mono'</span>,Menlo,Consolas,monospace;
+  <span class="c">/* space · radius */</span>
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --r-sm:4px; --r-md:8px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(30,40,25,.06),0 6px 20px rgba(30,40,25,.08);
+}
+<span class="p">html[data-domain="marine"]</span>{ --accent:var(--marine); --accent-tint:var(--info-bg); }</pre></div>
+</section>
+
+<footer class="wrap">
+  <div class="mono">SAROP Workspace · Design System v0.1 · Internal · Pre-gate</div>
+  <div style="margin-top:6px">Adapts the TacEdge palette and the Geotech operator type stack. Next: the M1 stand-up and M2 COP screens import these tokens.</div>
+</footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var dom=b.getAttribute('data-dom');
+      document.documentElement.setAttribute('data-domain',dom);
+      document.querySelectorAll('.seg button').forEach(function(x){
+        x.setAttribute('aria-pressed', x===b ? 'true':'false');
+      });
+    });
+  });
+</script>
+</body>
+</html>
