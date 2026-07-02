@@ -109,6 +109,9 @@ html[data-domain="marine"] .landing .begin:hover{background:#274b57}
     opacity:0; pointer-events:none; transition:opacity .25s ease}
   body.navopen .navback{display:block; opacity:1; pointer-events:auto}
 
+  /* the module list is the navigation on mobile; drop Prev / Next to reclaim space */
+  .pager{display:none}
+
   /* top-right cluster: clear, touchable menu + the brand mark at the far corner */
   .navcluster{display:flex; align-items:center; gap:4px; position:fixed; z-index:180; top:64px; right:8px;
     background:var(--forest); border:1px solid rgba(255,255,255,.16); border-radius:var(--r-pill);
