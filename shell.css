@@ -40,17 +40,6 @@ button{font-family:inherit}
   padding:0 var(--s4); border-bottom:3px solid var(--accent)}
 .brandbar .logo{height:24px; width:auto; display:block}
 
-/* module paging (Prev / Next), in the sidebar */
-.pager{display:flex; align-items:center; gap:var(--s2); flex:none;
-  padding:var(--s3) var(--s4); border-bottom:1px solid var(--hairline)}
-.pager .step{font-family:var(--mono); font-size:11px; color:var(--ink-3);
-  letter-spacing:.06em; min-width:42px; text-align:center}
-.pager button{flex:1; font-size:12px; font-weight:600; letter-spacing:.02em;
-  background:var(--paper); color:var(--ink-2); border:1px solid var(--rule);
-  border-radius:var(--r-sm); padding:6px 8px; cursor:pointer}
-.pager button:hover:not(:disabled){background:var(--forest-tint); color:var(--forest); border-color:var(--sage)}
-.pager button:disabled{opacity:.4; cursor:not-allowed}
-
 .nav .navhead{flex:none; padding:var(--s4) var(--s5) var(--s3); font-size:11px; font-weight:600;
   letter-spacing:.12em; text-transform:uppercase; color:var(--olive)}
 #navList{flex:1; overflow-y:auto; padding-bottom:var(--s3)}
@@ -108,9 +97,6 @@ html[data-domain="marine"] .landing .begin:hover{background:#274b57}
   .navback{position:fixed; inset:0; z-index:190; background:rgba(10,14,8,.45);
     opacity:0; pointer-events:none; transition:opacity .25s ease}
   body.navopen .navback{display:block; opacity:1; pointer-events:auto}
-
-  /* the module list is the navigation on mobile; drop Prev / Next to reclaim space */
-  .pager{display:none}
 
   /* top-right cluster: clear, touchable menu + the brand mark at the far corner */
   .navcluster{display:flex; align-items:center; gap:4px; position:fixed; z-index:180; top:64px; right:8px;

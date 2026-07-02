@@ -36,9 +36,6 @@
   var frame   = document.getElementById('screenFrame');
   var landing = document.getElementById('landing');
   var navList = document.getElementById('navList');
-  var stepLbl = document.getElementById('stepLabel');
-  var prevBtn = document.getElementById('prevBtn');
-  var nextBtn = document.getElementById('nextBtn');
 
   var current    = -1;
   var domain     = 'land';
@@ -146,9 +143,6 @@
     frame.src = encodeURI(SCREENS[i].file);
     navItems.forEach(function(b, j){ b.classList.toggle('active', j === i); });
     document.title = 'SAROP Workspace — ' + SCREENS[i].code + ' ' + SCREENS[i].name;
-    stepLbl.textContent = (i + 1) + ' / ' + SCREENS.length;
-    prevBtn.disabled = (i === 0);
-    nextBtn.disabled = (i === SCREENS.length - 1);
     var tok = ++driveToken;
     domainSyncBlockUntil = Date.now() + 1600; // let the drive settle before syncing back
     driveDomain(SCREENS[i].file, tok);
@@ -179,9 +173,6 @@
   frame.addEventListener('load', function(){ if(current >= 0) applyDomain(); });
 
   // ---- top-bar controls ----
-  prevBtn.addEventListener('click', function(){ go(current - 1); });
-  nextBtn.addEventListener('click', function(){ go(current + 1); });
-
   document.querySelectorAll('.seg button').forEach(function(b){
     b.addEventListener('click', function(){
       domain = b.getAttribute('data-dom');
