@@ -72,6 +72,8 @@ button{font-family:inherit; cursor:pointer}
 .tiltctl{position:absolute; left:var(--s3); bottom:58px; z-index:2; display:flex; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:3px; box-shadow:var(--shadow)}
 .tiltctl button{border:0; background:transparent; color:var(--ink-2); font-size:11px; font-weight:600; letter-spacing:.04em; padding:5px 12px; border-radius:var(--r-pill)}
 .tiltctl button.on{background:var(--accent); color:#fff}
+/* basemap switcher: same pill language as the tilt control, stacked above it */
+.basectl{bottom:98px}
 
 /* unit / clue pins rendered as MapLibre HTML markers, original teardrop look */
 .pin{display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer}
@@ -229,6 +231,7 @@ body.mdopen .mdrawer{transform:none}
   /* 44px touch targets */
   .maplibregl-ctrl button{width:44px; height:44px}
   .tiltctl button{min-height:44px; display:inline-flex; align-items:center}
+  .basectl{bottom:118px}
   .railfilter button{min-height:44px; display:inline-flex; align-items:center}
   .toast .x{width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; padding:0; margin-left:0; font-size:20px}
   /* micro-text: raise operational labels (pin/callsign, task & resource meta, status chips, log times & categories, scale) to >=10.5px */
@@ -297,6 +300,13 @@ body.mdopen .mdrawer{transform:none}
     <div class="tiltctl" role="group" aria-label="Map tilt">
       <button data-tilt="2d" class="on">2D</button>
       <button data-tilt="3d">3D</button>
+    </div>
+
+    <!-- basemap switcher (LINZ topo / LINZ aerial / Esri satellite) -->
+    <div class="tiltctl basectl" id="basectl" role="group" aria-label="Basemap">
+      <button data-base="linz-topo" class="on">Topo</button>
+      <button data-base="linz-aerial">Aerial</button>
+      <button data-base="satellite">Sat</button>
     </div>
 
     <!-- floating incident + progress -->
@@ -567,10 +577,27 @@ body.mdopen .mdrawer{transform:none}
     });
   });
 
-  /* ---- 2D / 3D tilt toggle ---- */
-  document.querySelectorAll('.tiltctl button').forEach(function(b){
+  /* ---- basemap switcher: routes through the adapter; the attribution
+     line follows automatically. Hidden when no LINZ key is configured
+     (satellite is then the only basemap, so there is nothing to switch). ---- */
+  var basectl=document.getElementById('basectl');
+  if(basectl){
+    if(!SaropMap.hasLinzKey()){
+      basectl.style.display='none';
+    } else {
+      basectl.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click',function(){
+          basectl.querySelectorAll('button').forEach(function(x){x.classList.toggle('on', x===b);});
+          ctrl.setBasemap(b.getAttribute('data-base'));
+        });
+      });
+    }
+  }
+
+  /* ---- 2D / 3D tilt toggle (scoped so the basemap pill is untouched) ---- */
+  document.querySelectorAll('.tiltctl:not(.basectl) button').forEach(function(b){
     b.addEventListener('click',function(){
-      document.querySelectorAll('.tiltctl button').forEach(function(x){x.classList.toggle('on', x===b);});
+      document.querySelectorAll('.tiltctl:not(.basectl) button').forEach(function(x){x.classList.toggle('on', x===b);});
       if(b.getAttribute('data-tilt')==='3d'){ map.easeTo({pitch:62, bearing:18, duration:900}); }
       else { map.easeTo({pitch:0, bearing:0, duration:700}); }
     });

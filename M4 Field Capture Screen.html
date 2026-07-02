@@ -147,6 +147,8 @@ button{font-family:inherit; cursor:pointer}
 .optilt button{border:0; background:transparent; color:var(--muted); font-size:13px; font-weight:700; letter-spacing:.02em; padding:8px 15px; border-radius:var(--r-pill)}
 .optilt button.on{background:var(--brand); color:#fff}
 .phone[data-theme="night"] .optilt button.on{color:var(--app)}
+/* basemap switcher: same pill language, tucked under the map tip */
+.opbase{bottom:auto; top:46px}
 
 /* thumb-sized, theme-aware map controls */
 .opmapwrap .maplibregl-ctrl-group{background:var(--card); border:1px solid var(--cardline); box-shadow:0 1px 4px rgba(0,0,0,.3)}
@@ -350,6 +352,11 @@ body.mdopen .mdrawer{transform:none}
             <div class="optilt" role="group" aria-label="Map tilt">
               <button data-tilt="2d" class="on">2D</button>
               <button data-tilt="3d">3D</button>
+            </div>
+            <div class="optilt opbase" id="opbase" role="group" aria-label="Basemap">
+              <button data-base="linz-topo" class="on">Topo</button>
+              <button data-base="linz-aerial">Aerial</button>
+              <button data-base="satellite">Sat</button>
             </div>
           </div>
           <div class="mapbar">
@@ -601,10 +608,28 @@ body.mdopen .mdrawer{transform:none}
   document.getElementById('tabCapture').addEventListener('click',function(){ selectTab('capture'); });
   document.getElementById('tabMap').addEventListener('click',function(){ selectTab('map'); });
 
-  /* ---- 2D / 3D tilt (reuses the COP map's 3D terrain) ---- */
-  document.querySelectorAll('.optilt button').forEach(function(b){
+  /* ---- basemap switcher: routes through the adapter (attribution follows).
+     Hidden when no LINZ key is configured — satellite is then the only map. ---- */
+  var opbase=document.getElementById('opbase');
+  if(opbase){
+    if(!SaropMap.hasLinzKey()){
+      opbase.style.display='none';
+    } else {
+      opbase.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click',function(){
+          if(!mapCtrl) return;
+          opbase.querySelectorAll('button').forEach(function(x){x.classList.toggle('on', x===b);});
+          mapCtrl.setBasemap(b.getAttribute('data-base'));
+        });
+      });
+    }
+  }
+
+  /* ---- 2D / 3D tilt (reuses the COP map's 3D terrain; scoped so the
+     basemap pill is untouched) ---- */
+  document.querySelectorAll('.optilt:not(.opbase) button').forEach(function(b){
     b.addEventListener('click',function(){
-      document.querySelectorAll('.optilt button').forEach(function(x){x.classList.toggle('on', x===b);});
+      document.querySelectorAll('.optilt:not(.opbase) button').forEach(function(x){x.classList.toggle('on', x===b);});
       if(!mapCtrl) return;
       if(b.getAttribute('data-tilt')==='3d'){ mapCtrl.map.easeTo({pitch:60, duration:800}); }
       else { mapCtrl.map.easeTo({pitch:0, bearing:0, duration:700}); }
