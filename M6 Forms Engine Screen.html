@@ -56,6 +56,9 @@ input,textarea,select{font-family:inherit}
 .head h1{font-size:24px; font-weight:700; margin:0}
 .head p{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:80ch}
 .wrap{flex:1; min-height:0; display:grid; grid-template-columns:250px 1fr 320px}
+/* forms without a side panel (everything but the scored urgency form) run two-column for more room */
+.wrap.noside{grid-template-columns:250px 1fr}
+.wrap.noside .side{display:none}
 
 /* form nav */
 .nav{background:var(--canvas); border-right:1px solid var(--hairline); overflow-y:auto; padding:var(--s4) var(--s3)}
@@ -540,23 +543,6 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       '<div class="aiverified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>AI-assisted, human-verified. You set every value.</div>'+
       '</div></div>';
   }
-  function recordPanelHTML(f){
-    var feed = f.outward
-      ? '<div class="feednote"><span class="fh">On the outward record</span>This form feeds the close-out report (M9) and the ODC emitter (M10). It is structured data, so it carries through without re-entry.</div>'
-      : (f.fieldcap
-        ? '<div class="feednote field"><span class="fh">Captured in the field</span>Completed on the field surface (M4), offline-capable. It writes to the log the moment signal returns, with nothing re-keyed.</div>'
-        : '');
-    return '<div class="recordcard">'+
-      '<div class="rl">Record</div>'+
-      '<div class="rnote"><b>This is a structured record, not a PDF.</b> Every field is data on the incident, so it is searchable, reportable and emittable through the ODC.</div>'+
-      '<div class="metarows">'+
-        '<div class="mr"><span class="lab">Form</span><span class="val">'+f.ref+'</span></div>'+
-        '<div class="mr"><span class="lab">Completed on</span><span class="val">'+f.cap+'</span></div>'+
-        '<div class="mr"><span class="lab">Status</span><span class="val"><span class="statuspill st-'+f.status+'" id="sidestatus"><span class="d"></span>'+STLABEL[f.status]+'</span></span></div>'+
-      '</div>'+
-      feed+
-    '</div>';
-  }
 
   /* ---------- FORM RENDER ---------- */
   function renderForm(){
@@ -579,7 +565,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       '<div class="sub">'+refText+' · structured record · shares the log field set</div></div>'+badge+'</div>';
 
     var meta='<div class="metastrip">'+
-      '<span class="fst st-'+f.status+'">'+STLABEL[f.status]+'</span>'+
+      '<span class="fst st-'+f.status+'" id="metastatus">'+STLABEL[f.status]+'</span>'+
       '<span class="chipm"><b>Captured by</b> · '+f.cap+'</span>'+
       '<span class="chipm">'+f.feeds+'</span>'+
       (isPair?'<span class="chipm"><b>Config pair</b> · land / marine variants on the domain flag</span>':'')+
@@ -608,7 +594,9 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
     var actions='<div class="factact"><button class="btn btn-primary" id="mkdone">Mark complete</button><button class="btn btn-ghost" id="mkdraft">Save draft</button></div><div style="height:24px"></div>';
 
     document.getElementById('editor').innerHTML=head+meta+conc+body+actions;
-    document.getElementById('side').innerHTML = (f.kind==='urgency') ? scorePanelHTML() : recordPanelHTML(f);
+    var wrap=document.querySelector('.wrap');
+    if(f.kind==='urgency'){ document.getElementById('side').innerHTML=scorePanelHTML(); wrap.classList.remove('noside'); }
+    else { document.getElementById('side').innerHTML=''; wrap.classList.add('noside'); }
 
     if(f.kind==='urgency'){ suaWire(); suaCompute(); }
 
@@ -631,8 +619,8 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
   function setStatus(st){
     var f=FORMS.filter(function(x){return x.id===cur;})[0];
     f.status=st; renderNav();
-    var sp=document.getElementById('sidestatus');
-    if(sp){ sp.className='statuspill st-'+st; sp.innerHTML='<span class="d"></span>'+STLABEL[st]; }
+    var sp=document.getElementById('metastatus');
+    if(sp){ sp.className='fst st-'+st; sp.textContent=STLABEL[st]; }
   }
 
   /* ---------- DOMAIN ---------- */
