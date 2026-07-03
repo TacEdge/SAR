@@ -259,8 +259,12 @@ window.SaropMap = (function(){
       addGrid();                                          // cartographic grid sits just above 'base'
       if(opts.controls){
         map.addControl(new maplibregl.NavigationControl({ visualizePitch: terrain, showCompass: opts.rotate !== false }), opts.controlPos || 'top-left');
-        map.addControl(new maplibregl.ScaleControl({ unit:'metric' }), 'bottom-right');
+        // Footer hierarchy (bottom-right): the scale bar is an operational
+        // aid and sits ABOVE the credit/offline chip; the legal attribution
+        // is the lowest line. MapLibre stacks bottom-corner controls with
+        // the last-added on top, so the attribution is added first.
         map.addControl(new AttribCtrl(), 'bottom-right');
+        map.addControl(new maplibregl.ScaleControl({ unit:'metric' }), 'bottom-right');
       }
       if(opts.onReady) opts.onReady(map, ctrl);           // consumer adds overlays over 'base' / 'grid'
       var layers = map.getStyle().layers || [];           // insert 'sat' beneath overlays but above base + grid
