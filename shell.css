@@ -22,6 +22,12 @@
 /* shell follows the same domain accent rule the screens use */
 html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
 
+/* header top offset: device inset plus a small breathing allowance so the
+   brand row clears the status items — the extra 8px only exists when a real
+   inset does, keeping desktop layouts untouched and the green continuous */
+:root{--safe-top:env(safe-area-inset-top,0px);
+  --htop:calc(var(--safe-top) + min(var(--safe-top), 8px))}
+
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0; background:var(--canvas); color:var(--ink);
@@ -36,8 +42,8 @@ button{font-family:inherit}
   display:flex; flex-direction:column; min-height:0}
 
 /* TacEdge brand header, aligned to the screen's app bar so the top reads as one band */
-.brandbar{flex:none; height:52px; background:var(--forest); display:flex; align-items:center;
-  padding:0 var(--s4); border-bottom:3px solid var(--accent)}
+.brandbar{flex:none; height:calc(52px + var(--htop)); background:var(--forest); display:flex; align-items:center;
+  padding:var(--htop) var(--s4) 0; border-bottom:3px solid var(--accent)}
 .brandbar .logo{height:24px; width:auto; display:block}
 
 .nav .navhead{flex:none; padding:var(--s4) var(--s5) var(--s3); font-size:11px; font-weight:600;
