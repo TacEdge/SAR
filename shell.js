@@ -67,8 +67,8 @@
     b.className = 'navitem';
     b.type = 'button';
     b.innerHTML = '<span class="ic">' + (IC[s.code] || '') + '</span>' +
-                  '<span class="txt"><span class="code">' + s.code + '</span>' +
-                  '<span class="name">' + s.name + '</span></span>';
+                  '<span class="code">' + s.code + '</span>' +
+                  '<span class="name">' + s.name + '</span>';
     b.addEventListener('click', function(){ go(i); });
     navList.appendChild(b);
     return b;

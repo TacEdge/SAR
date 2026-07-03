@@ -38,7 +38,7 @@ button{font-family:inherit}
 /* ===== body: nav + stage. The only top bar is each screen's own app bar. ===== */
 .body{flex:1; display:flex; min-height:0}
 
-.nav{flex:none; width:248px; background:var(--paper); border-right:1px solid var(--hairline);
+.nav{flex:none; width:344px; background:var(--paper); border-right:1px solid var(--hairline);
   display:flex; flex-direction:column; min-height:0}
 
 /* TacEdge brand header, aligned to the screen's app bar so the top reads as one band */
@@ -50,22 +50,23 @@ button{font-family:inherit}
   letter-spacing:.12em; text-transform:uppercase; color:var(--olive)}
 #navList{flex:1; overflow-y:auto; padding-bottom:var(--s3)}
 
-/* module rows: icon + code + name, per the design update. The domain toggle
-   lives in each screen's own app bar, so the sidebar has no footer control. */
-.nav .navitem{display:flex; gap:var(--s4); align-items:center; width:100%;
+/* module rows: one horizontal line — icon, inline M-label, title — all
+   vertically centred. The domain toggle lives in each screen's own app bar,
+   so the sidebar has no footer control. */
+.nav .navitem{display:flex; gap:var(--s3); align-items:center; width:100%;
   text-align:left; background:transparent; border:0; cursor:pointer;
-  padding:12px var(--s5); border-left:3px solid transparent; color:var(--ink)}
+  padding:14px var(--s4); border-left:3px solid transparent; color:var(--ink);
+  border-bottom:1px solid var(--hairline)}
 .nav .navitem:hover{background:var(--cream-2)}
 .nav .navitem.active{background:var(--forest-tint); border-left-color:var(--accent)}
 .nav .navitem .ic{flex:none; width:22px; height:22px; color:var(--ink-2)}
 .nav .navitem .ic svg{width:22px; height:22px; display:block}
 .nav .navitem.active .ic{color:var(--accent)}
-.nav .navitem .txt{min-width:0}
-.nav .navitem .txt .code{display:block; font-family:var(--mono); font-size:10.5px; font-weight:600;
-  letter-spacing:.06em; color:var(--olive)}
-.nav .navitem.active .txt .code{color:var(--accent)}
-.nav .navitem .txt .name{display:block; font-size:14.5px; font-weight:600; letter-spacing:.01em; margin-top:1px}
-.nav .navitem.active .txt .name{color:var(--forest)}
+.nav .navitem .code{flex:none; min-width:26px; font-family:var(--mono); font-size:11.5px;
+  font-weight:600; letter-spacing:.05em; color:var(--olive)}
+.nav .navitem.active .code{color:var(--accent)}
+.nav .navitem .name{min-width:0; font-size:14px; font-weight:600; letter-spacing:.01em; line-height:1.3}
+.nav .navitem.active .name{color:var(--forest)}
 
 .stage{flex:1; position:relative; min-width:0; background:var(--canvas)}
 .stage iframe{width:100%; height:100%; border:0; display:block; background:var(--paper)}
@@ -92,7 +93,7 @@ html[data-domain="marine"] .landing .begin:hover{background:#274b57}
    iOS safe area itself (env() insets do propagate into the module iframe), so
    the shell must NOT add its own offset or the inset would be double-counted. ===== */
 @media (max-width:760px){
-  .nav{position:fixed; z-index:200; top:0; left:0; height:100%; width:min(86vw,320px);
+  .nav{position:fixed; z-index:200; top:0; left:0; height:100%; width:min(86vw,344px);
     transform:translateX(-100%); box-shadow:0 0 40px rgba(30,40,25,.35)}
   .stage{width:100%}
 }
