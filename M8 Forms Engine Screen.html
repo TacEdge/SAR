@@ -61,9 +61,9 @@ input,textarea,select{font-family:inherit}
 .pagehd{flex:none; padding:var(--s5) var(--s6) var(--s4) var(--s5); border-bottom:1px solid var(--hairline); background:var(--canvas)}
 .head h1{font-size:24px; font-weight:700; margin:0}
 .head p{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:80ch}
-.wrap{flex:1; min-height:0; display:grid; grid-template-columns:250px 1fr 320px}
+.wrap{flex:1; min-height:0; display:grid; grid-template-columns:360px 1fr 300px}
 /* forms without a side panel (everything but the scored urgency form) run two-column for more room */
-.wrap.noside{grid-template-columns:250px 1fr}
+.wrap.noside{grid-template-columns:360px 1fr}
 .wrap.noside .side{display:none}
 
 /* form nav */
@@ -77,9 +77,10 @@ input,textarea,select{font-family:inherit}
 .nav .grp{margin-bottom:var(--s4)}
 .nav .gt{display:flex; align-items:center; justify-content:space-between; font-size:10px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); padding:var(--s2) var(--s2) 6px; border-bottom:1px solid var(--hairline); margin-bottom:4px}
 .nav .gt .gn{font-family:var(--mono); font-weight:500; color:var(--ink-3); background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:0 7px}
-.nav .f{display:flex; align-items:center; gap:9px; padding:7px var(--s2); border-radius:var(--r-sm); font-size:13px; color:var(--ink-2); cursor:pointer}
-.nav .f:hover{background:var(--forest-tint)}
-.nav .f.on{background:var(--accent-tint); color:var(--accent); font-weight:600}
+.nav .f{display:flex; align-items:center; gap:9px; padding:10px var(--s3); border-bottom:1px solid var(--hairline); border-left:2px solid transparent; font-size:13.5px; color:var(--ink-2); cursor:pointer}
+.nav .grp .f:last-child{border-bottom:0}
+.nav .f:hover{background:var(--cream-2)}
+.nav .f.on{background:var(--accent-tint); border-left-color:var(--accent); color:var(--accent)}
 .nav .f .sd{width:8px; height:8px; border-radius:50%; flex:none}
 .nav .f .cfg{font-family:var(--mono); font-size:9px; color:var(--ink-3); margin-left:auto; flex:none}
 .nav .f .rep{width:9px; height:9px; border-radius:50%; border:2px solid var(--caution); flex:none}
@@ -90,7 +91,7 @@ input,textarea,select{font-family:inherit}
 
 /* main column: operational summary band above the editor */
 .maincol{display:flex; flex-direction:column; min-height:0; min-width:0}
-.statband{flex:none; display:flex; align-items:stretch; gap:0; margin:var(--s4) var(--s6) 0; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px var(--s4); box-shadow:var(--shadow)}
+.statband{flex:none; display:flex; align-items:stretch; gap:0; margin:var(--s4) var(--s6) 0; max-width:880px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px var(--s4); box-shadow:var(--shadow)}
 .statband .st1{flex:1; display:flex; flex-direction:column; gap:1px; padding:0 var(--s4); border-left:1px solid var(--hairline)}
 .statband .st1:first-child{border-left:0}
 .statband .st1 .v{font-family:var(--mono); font-size:20px; font-weight:600; color:var(--ink)}
@@ -98,6 +99,7 @@ input,textarea,select{font-family:inherit}
 
 /* form editor */
 .editor{flex:1; overflow-y:auto; padding:var(--s5) var(--s6); background:var(--canvas)}
+.editor>*{max-width:880px}
 .fhead{display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s4); margin-bottom:var(--s2)}
 .fhead h1{font-size:23px; font-weight:700; margin:0}
 .fhead .sub{font-family:var(--mono); font-size:12px; color:var(--ink-3); margin-top:4px}
@@ -381,7 +383,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
         sec('Assessment',[['a','Intentions','Day loop, intended to return same evening.',1],['a','Medical issues &amp; state of mind','No known distress. Hypertension noted.',1],['a','Lost-person behaviour','Likely to follow drainage downhill; may have missed a junction.',1],['a','Concerns held','Overnight temperatures, no overnight kit.',1]])
       ]},
 
-    {id:'icp', ref:'FORMS-5', title:'Information Collection Plan', grp:'Subject & intelligence',
+    {id:'icp', ref:'FORMS-5', title:'Information Collection Report', grp:'Subject & intelligence',
       cap:'IMT', feeds:'Feeds the intelligence workflow and the log', mode:'repeat', count:2, edit:['IN'],
       sections:[
         tbl('Collection tasks',['Information required','Source','Assigned to','Assigned','Status'],
@@ -437,14 +439,14 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       ]},
 
     /* FIELD & CASUALTY */
-    {id:'ta', ref:'FORMS-13', title:'Team Assignment (Briefing)', grp:'Field & casualty',
+    {id:'ta', ref:'FORMS-13', title:'Team Assignment Log', grp:'Field & casualty',
       cap:'IMT, pushed to field (M6)', feeds:'Feeds the task (M4), the field team and the log', mode:'repeat', count:6, edit:['OP'],
       sections:[
         sec('Team',[['m','Task ID','TASK-014'],['d','Time &amp; date','26 Jul, 14:43'],['t','Team name','ROMEO-4'],['s','Team type',['Ground','Dog','Air','Marine']],['t','Team leader','R. Tāne'],['m','Vehicle / vessel ref','—'],['a','Member / crew names','R. Tāne, J. Millis, S. Patel, K. Rewi',1]]),
         sec('Tasking',[['m','Map reference','NZTM 1573290E 5180410N'],['a','Tasking assignment','Sweep sector B along the NW creek drainage; confirm the footprint clue.',1],['a','Decision points','If no sign by the sector B boundary, report and hold for reassignment.',1],['a','Hazard &amp; risk controls','Bluffs above creek; do not cross above waist depth; keep VHF sched.',1],['t','Comms channels','CH 62 / CH 63'],['a','Additional information','Previous task TASK-012 covered sector A on hasty.',1]])
       ]},
 
-    {id:'fi', ref:'FORMS-17', title:'Found Item', grp:'Field & casualty',
+    {id:'fi', ref:'FORMS-17', title:'Found Item Report', grp:'Field & casualty',
       cap:'Field (via M4)', feeds:'Feeds the log; is also a clue and a map feature (MAP-8)', mode:'repeat', count:3, edit:[], fieldcap:true,
       sections:[
         sec('Found item',[['t','ID number','CLUE-1449'],['t','Relevance (%)','70'],['m','Location found','NZTM 1573290E 5180410N'],['d','Time found','26 Jul, 14:49'],['t','Who found it','R. Tāne (ROMEO-4)'],['s','Status',['In situ','Removed']],['s','Protection',['Photographed','Marked','Bagged']],['t','Where held if removed','—'],['a','Description','Single footprint, north-west heading, near the creek fork.',1],['a','Relationship to other items','Consistent with subject boot tread; near disturbed fern.',1],['a','Additional comments','Photographed in situ; left marked for follow-up.',1]])
@@ -458,7 +460,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
         sec('Comments',[['a','Comments, clues &amp; hazards','',1],['a','Search-team comments','',1],['a','IMT comments','',1]])
       ]},
 
-    {id:'cas', ref:'FORMS-20', title:'Casualty Assessment Form', grp:'Field & casualty',
+    {id:'cas', ref:'FORMS-20', title:'Casualty Assessment Report', grp:'Field & casualty',
       cap:'Field (via M4)', feeds:'Feeds the log, medical handover and the report', mode:'repeat', count:0, edit:[], fieldcap:true,
       sections:[
         sec('Casualty',[['d','Date &amp; time',''],['t','First-aider names',''],['t','Name',''],['d','Date of birth',''],['t','Age',''],['s','Gender',['Male','Female','Other']],['t','Address',''],['m','Phone',''],['t','Email',''],['t','Doctor &amp; contact',''],['t','Next of kin &amp; contact','']]),
