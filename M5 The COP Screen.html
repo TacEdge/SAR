@@ -43,8 +43,13 @@ button{font-family:inherit; cursor:pointer}
 .appbar{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between;
   padding:var(--htop) var(--s5) 0; height:calc(52px + var(--htop)); border-bottom:3px solid var(--accent)}
 .appbar .brand{display:flex; align-items:baseline; gap:var(--s3)}
-.appbar .mark{font-weight:700; font-size:15px}
-.appbar .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
+.appbar .blogo{height:22px; width:auto; display:block}
+.appbar .bdv{width:1px; height:22px; background:rgba(252,242,232,.28); flex:none}
+.appbar .bsr{font-size:13px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--cream); white-space:nowrap}
+/* inside the shell the brand lockup lives in the shell's own band */
+html[data-shell] .appbar .blogo,html[data-shell] .appbar .bdv,html[data-shell] .appbar .bsr{display:none}
+.appbar .brand{align-items:center}
+html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .appbar .inc{display:flex; align-items:center; gap:var(--s3); margin-left:var(--s5); padding-left:var(--s5); border-left:1px solid rgba(255,255,255,.18)}
 .appbar .inc .ref{font-family:var(--mono); font-size:13px; color:var(--cream)}
 .appbar .right{display:flex; align-items:center; gap:var(--s5)}
@@ -261,7 +266,7 @@ body.mdopen .mdrawer{transform:none}
   .mdrawer{display:flex}
   body{padding-top:calc(59px + var(--htop)); padding-bottom:var(--safe-bottom,0px)}
   .appbar .inc{margin-left:0; padding-left:0; border-left:0}
-  .appbar .mark,.appbar .sub,.domain{display:none}
+  .appbar .blogo,.appbar .bdv,.appbar .bsr,.domain{display:none}
   /* 44px touch targets */
   .maplibregl-ctrl button{width:44px; height:44px}
   .mapctl button{min-height:44px; min-width:44px; display:inline-flex; align-items:center; justify-content:center}
@@ -311,7 +316,7 @@ body.mdopen .mdrawer{transform:none}
 
 <div class="appbar">
   <div class="brand">
-    <span class="mark">TacEdge SAR</span><span class="sub">SAROP Workspace</span>
+    <img class="blogo" src="assets/tacedge-logo.png" alt="TacEdge" width="1978" height="391"><span class="bdv" aria-hidden="true"></span><span class="bsr">Search &amp; Rescue</span>
     <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
   </div>
   <div class="right">

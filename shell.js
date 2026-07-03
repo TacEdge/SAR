@@ -91,6 +91,7 @@
       var doc = frame.contentDocument;
       if(!doc || !doc.documentElement) return false;
       doc.documentElement.setAttribute('data-domain', domain);
+      doc.documentElement.setAttribute('data-shell', '1');
       var btn = doc.querySelector('.seg button[data-dom="' + domain + '"]');
       if(btn){
         if(btn.getAttribute('aria-pressed') !== 'true') btn.click();
