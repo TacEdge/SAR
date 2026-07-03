@@ -47,12 +47,18 @@ button{font-family:inherit; cursor:pointer}
 .pill .dot{width:7px; height:7px; border-radius:50%}
 .p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
 .domain{display:flex; align-items:center; gap:var(--s2)}
-.domain .lab{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sage)}
-.seg{display:inline-flex; border:1px solid rgba(255,255,255,.28); border-radius:var(--r-pill); overflow:hidden}
-.seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; background:transparent; color:#CFD6C2; border:0; padding:5px 13px}
+.seg{display:inline-flex; gap:6px}
+.seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; background:transparent; color:#CFD6C2; border:0; padding:5px 15px; border-radius:var(--r-pill)}
 .seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
 .readytag{font-family:var(--mono); font-size:11px; color:var(--sage); display:flex; align-items:center; gap:7px}
-.readytag .g{width:8px;height:8px;border-radius:50%;background:var(--sage)}
+.readytag svg{width:16px; height:16px}
+/* status cluster: hamburger opens the module drawer on any width; link quality is walkthrough dressing */
+.abtn{display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; padding:0; background:none; border:0; color:var(--cream); border-radius:var(--r-sm)}
+.abtn:hover{background:rgba(252,242,232,.12)}
+.abtn svg{width:20px; height:20px}
+.linkq{display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:12px; color:var(--cream)}
+.linkq svg{width:16px; height:16px}
+.appbar .vr{width:1px; height:22px; background:rgba(255,255,255,.18)}
 
 /* ===== COP layout ===== */
 .cop{display:grid; grid-template-columns:1fr 372px; height:calc(100vh - 52px); min-height:600px}
@@ -68,19 +74,26 @@ button{font-family:inherit; cursor:pointer}
 .maplibregl-ctrl-attrib a{color:var(--ink-2)}
 .maplibregl-ctrl-scale{border-color:var(--ink-2); color:var(--ink-2); background:rgba(251,250,246,.82); font-family:var(--mono); font-size:10px}
 
-/* 2D / 3D tilt toggle, styled with the design tokens */
-.tiltctl{position:absolute; left:var(--s3); bottom:58px; z-index:2; display:flex; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:3px; box-shadow:var(--shadow)}
-.tiltctl button{border:0; background:transparent; color:var(--ink-2); font-size:11px; font-weight:600; letter-spacing:.04em; padding:5px 12px; border-radius:var(--r-pill)}
-.tiltctl button.on{background:var(--accent); color:#fff}
-/* basemap switcher: same pill language as the tilt control, stacked above it */
-.basectl{bottom:98px}
+/* combined MAP bar: basemap + tilt in one control, per the design update */
+.mapctl{position:absolute; left:var(--s3); bottom:52px; z-index:2; display:flex; align-items:center; gap:8px;
+  background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:5px 8px 5px 12px; box-shadow:var(--shadow)}
+.mapctl .lab{font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
+.mapctl .grp{display:flex; gap:2px}
+.mapctl .dv{width:1px; height:20px; background:var(--hairline)}
+.mapctl button{border:0; background:transparent; color:var(--ink-2); font-size:11px; font-weight:600; letter-spacing:.04em; padding:6px 11px; border-radius:var(--r-pill)}
+.mapctl button.on{background:var(--accent); color:#fff}
 
-/* unit / clue pins rendered as MapLibre HTML markers, original teardrop look */
-.pin{display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer}
-.pin .mk{width:18px; height:18px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #fff; box-shadow:var(--shadow)}
-.pin .cap{font-family:var(--mono); font-size:10px; background:var(--paper); padding:1px 6px; border-radius:var(--r-sm); border:1px solid var(--hairline); white-space:nowrap; transform:translateY(-2px)}
-.pin.hot .cap{background:var(--accent); color:#fff; border-color:var(--accent)}
-.pin.lkp .mk{background:var(--caution)} .pin.clue .mk{background:var(--critical)} .pin.team .mk{background:var(--forest)}
+/* unit / clue pins: teardrop marker + attached dark info card, per the design update */
+.pin{display:flex; align-items:flex-start; gap:7px; cursor:pointer}
+.pin .mk{width:22px; height:22px; flex:none; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2.5px solid #fff; box-shadow:0 2px 6px rgba(20,28,15,.45); position:relative}
+.pin .mk:after{content:""; position:absolute; inset:6px; border-radius:50%; background:#fff}
+.pin .card{background:rgba(30,51,23,.92); color:var(--cream); border-radius:var(--r-md); padding:6px 10px; box-shadow:0 2px 8px rgba(20,28,15,.35); white-space:nowrap; transform:translateY(2px)}
+.pin .card .nm{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; display:block}
+.pin .card .dt{font-family:var(--mono); font-size:10px; color:var(--sage); display:block; margin-top:1px}
+.pin .card svg{width:11px; height:11px; vertical-align:-1.5px}
+.pin.hot .card{outline:2px solid var(--sage)}
+.pin.rev{flex-direction:row-reverse}
+.pin.lkp .mk{background:var(--caution)} .pin.clue .mk{background:var(--critical)} .pin.team .mk{background:var(--critical)}
 
 /* floating panels on the map */
 .floatpanel{position:absolute; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); box-shadow:var(--shadow)}
@@ -89,29 +102,28 @@ button{font-family:inherit; cursor:pointer}
 .mapinc .h .t{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive)}
 .mapinc .r{display:flex; justify-content:space-between; font-size:13px; padding:3px 0}
 .mapinc .r .m{font-family:var(--mono); color:var(--ink)}
-.progress{margin-top:var(--s2)}
-.progress .bar{height:7px; background:var(--forest-tint); border-radius:var(--r-pill); overflow:hidden}
-.progress .bar i{display:block; height:100%; width:38%; background:var(--accent); border-radius:var(--r-pill)}
-.progress .lg{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--ink-3); margin-top:4px}
+.mapinc .stat{display:flex; justify-content:space-between; gap:var(--s3); border-top:1px solid var(--hairline); margin-top:var(--s2); padding-top:var(--s2); font-size:12px; color:var(--ink-2)}
+.mapinc .stat .m{font-family:var(--mono); color:var(--ink); margin-left:6px}
 
-.layers{top:var(--s3); right:var(--s3); padding:var(--s3)}
-.layers .t{font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:6px}
-.layers button.t{display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; background:none; border:0; padding:0; cursor:pointer; font-family:inherit}
-.layers .caret{font-size:9px; color:var(--ink-3); transition:transform .2s ease}
+/* layers: compact button that expands to the layer checklist */
+.layers{top:var(--s3); right:var(--s3); padding:8px var(--s3)}
+.layers .t{font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ink)}
+.layers button.t{display:flex; align-items:center; gap:9px; width:100%; background:none; border:0; padding:0; cursor:pointer; font-family:inherit}
+.layers .lyr-ic{width:15px; height:15px; color:var(--ink-2); flex:none}
+.layers .caret{font-size:9px; color:var(--ink-3); transition:transform .2s ease; margin-left:2px}
 .layers:not(.collapsed) .caret{transform:rotate(90deg)}
-.layers.collapsed .t{margin-bottom:0}
+.layers:not(.collapsed) button.t{margin-bottom:6px}
 .layers.collapsed .layerbody{display:none}
 .layers label{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-2); padding:3px 0; cursor:pointer}
 .layers input{accent-color:var(--accent)}
 
 .mapquery{left:var(--s3); bottom:var(--s3); padding:8px var(--s4); font-family:var(--mono); font-size:12px; color:var(--ink); display:flex; gap:var(--s4); align-items:center}
 .mapquery .lb{color:var(--ink-3); font-size:10px; text-transform:uppercase; letter-spacing:.08em}
+.mapquery .q-ic{width:14px; height:14px; color:var(--ink-2); flex:none}
 .scalebar{right:var(--s3); bottom:var(--s3); padding:6px 10px; display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11px; color:var(--ink-2)}
 .scalebar .ln{width:56px; height:3px; background:var(--ink-2); position:relative}
 .scalebar .ln:before,.scalebar .ln:after{content:""; position:absolute; width:1px; height:6px; background:var(--ink-2); top:-1.5px}
 .scalebar .ln:after{right:0}
-.north{position:absolute; right:var(--s4); top:var(--s6); font-family:var(--mono); font-size:11px; color:var(--ink-2); text-align:center}
-.north .arw{font-size:18px; line-height:1}
 
 .maptools{position:absolute; left:50%; transform:translateX(-50%); bottom:58px; display:flex; gap:2px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:4px; box-shadow:var(--shadow)}
 .maptools button{border:0; background:transparent; color:var(--ink-2); font-size:12px; font-weight:500; padding:6px 13px; border-radius:var(--r-pill)}
@@ -136,6 +148,10 @@ button{font-family:inherit; cursor:pointer}
   background:var(--paper); color:var(--ink-2); border:1px solid var(--hairline); border-right:0;
   border-radius:var(--r-md) 0 0 var(--r-md); box-shadow:var(--shadow); cursor:pointer; font-size:15px; line-height:1}
 .railtoggle:hover{background:var(--forest-tint); color:var(--forest)}
+/* rail footer: the panel-collapse affordance from the design update */
+.railfoot{display:flex; align-items:center; gap:8px; width:100%; background:none; border:0; border-top:1px solid var(--hairline); margin-top:var(--s2); padding:10px 4px 2px; color:var(--ink-3); font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; cursor:pointer}
+.railfoot:hover{color:var(--forest)}
+.railfoot svg{width:13px; height:13px}
 .rpanel{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); margin-bottom:var(--s3); overflow:hidden}
 .rpanel > .rh{display:flex; align-items:center; justify-content:space-between; padding:10px var(--s4); border-bottom:1px solid var(--hairline); background:var(--cream-2)}
 .rh .tt{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
@@ -202,9 +218,9 @@ button{font-family:inherit; cursor:pointer}
 .mbar-glyph{display:flex; flex-direction:column; gap:4px; width:18px}
 .mbar-glyph i{display:block; height:2px; width:18px; background:var(--cream); border-radius:2px}
 .mbar-glyph i:last-child{width:70%}
-.mscrim{display:none; position:fixed; inset:0; z-index:80; background:rgba(10,14,8,.45); opacity:0; pointer-events:none; transition:opacity .25s ease}
+.mscrim{display:block; position:fixed; inset:0; z-index:80; background:rgba(10,14,8,.45); opacity:0; pointer-events:none; transition:opacity .25s ease}
 body.mdopen .mscrim{opacity:1; pointer-events:auto}
-.mdrawer{display:none; flex-direction:column; position:fixed; top:0; right:0; z-index:90; height:100%; width:min(300px,84vw); padding-top:var(--safe-top,0px); padding-bottom:var(--safe-bottom,0px); background:var(--paper); box-shadow:0 0 40px rgba(30,40,25,.35); transform:translateX(100%); transition:transform .25s ease}
+.mdrawer{display:flex; flex-direction:column; position:fixed; top:0; right:0; z-index:90; height:100%; width:min(300px,84vw); padding-top:var(--safe-top,0px); padding-bottom:var(--safe-bottom,0px); background:var(--paper); box-shadow:0 0 40px rgba(30,40,25,.35); transform:translateX(100%); transition:transform .25s ease}
 body.mdopen .mdrawer{transform:none}
 .mdrawer-head{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 8px 10px 16px; border-bottom:1px solid var(--hairline)}
 .mdrawer-lbl{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
@@ -230,8 +246,8 @@ body.mdopen .mdrawer{transform:none}
   .appbar .mark,.appbar .sub,.domain{display:none}
   /* 44px touch targets */
   .maplibregl-ctrl button{width:44px; height:44px}
-  .tiltctl button{min-height:44px; display:inline-flex; align-items:center}
-  .basectl{bottom:118px}
+  .mapctl button{min-height:44px; min-width:44px; display:inline-flex; align-items:center; justify-content:center}
+  .mapctl{flex-wrap:wrap; max-width:calc(100% - 16px)}
   .railfilter button{min-height:44px; display:inline-flex; align-items:center}
   .toast .x{width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; padding:0; margin-left:0; font-size:20px}
   /* micro-text: raise operational labels (pin/callsign, task & resource meta, status chips, log times & categories, scale) to >=10.5px */
@@ -242,7 +258,7 @@ body.mdopen .mdrawer{transform:none}
   .mapwrap{height:46vh; min-height:300px; border-right:0; border-bottom:1px solid var(--hairline)}
   .rail{height:auto; overflow:visible}
   .railtoggle{display:none}
-  .mapinc,.layers,.north,.mapquery{display:none}
+  .mapinc,.layers,.mapquery{display:none}
   /* markup toolbar stays available on phones: 44px tap targets, wraps to fit */
   .maptools{bottom:10px; max-width:calc(100% - 16px); flex-wrap:wrap; justify-content:center}
   .maptools button{min-height:44px; min-width:44px; padding:6px 11px}
@@ -280,14 +296,17 @@ body.mdopen .mdrawer{transform:none}
     <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
   </div>
   <div class="right">
-    <span class="readytag"><span class="g"></span>COP · read from the spine in 0.8s</span>
+    <span class="readytag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 .42-8.98 6 6 0 0 0-11.7 1.62A3.75 3.75 0 0 0 6.75 19z"/></svg>COP synced 0.8s ago</span>
+    <span class="vr" aria-hidden="true"></span>
     <div class="domain">
-      <span class="lab">Domain</span>
       <div class="seg" role="group" aria-label="Domain">
         <button data-dom="land" aria-pressed="true">Land</button>
         <button data-dom="marine" aria-pressed="false">Marine</button>
       </div>
     </div>
+    <span class="vr" aria-hidden="true"></span>
+    <button class="abtn" type="button" id="abarMenu" aria-label="Open modules menu" aria-expanded="false" aria-controls="modDrawer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
+    <span class="linkq" title="Field link quality"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>90%</span>
   </div>
 </div>
 
@@ -296,34 +315,33 @@ body.mdopen .mdrawer{transform:none}
   <div class="mapwrap">
     <div id="map"></div>
 
-    <!-- 2D / 3D tilt toggle -->
-    <div class="tiltctl" role="group" aria-label="Map tilt">
-      <button data-tilt="2d" class="on">2D</button>
-      <button data-tilt="3d">3D</button>
+    <!-- combined map control: basemap + tilt -->
+    <div class="mapctl" role="group" aria-label="Map display">
+      <span class="lab">Map</span>
+      <div class="grp" id="basectl" role="group" aria-label="Basemap">
+        <button data-base="satellite">Sat</button>
+        <button data-base="linz-topo" class="on">Topo</button>
+        <button data-base="linz-aerial">Aerial</button>
+      </div>
+      <span class="dv" aria-hidden="true"></span>
+      <div class="grp tiltgrp" role="group" aria-label="Map tilt">
+        <button data-tilt="2d" class="on">2D</button>
+        <button data-tilt="3d">3D</button>
+      </div>
     </div>
 
-    <!-- basemap switcher (LINZ topo / LINZ aerial / Esri satellite) -->
-    <div class="tiltctl basectl" id="basectl" role="group" aria-label="Basemap">
-      <button data-base="linz-topo" class="on">Topo</button>
-      <button data-base="linz-aerial">Aerial</button>
-      <button data-base="satellite">Sat</button>
-    </div>
-
-    <!-- floating incident + progress -->
+    <!-- floating incident summary -->
     <div class="floatpanel mapinc reveal" style="animation-delay:.05s">
       <div class="h"><span class="t">Operation</span><span class="pill p-active" style="font-size:11px"><span class="dot"></span>Active</span></div>
-      <div class="r"><span>Reference</span><span class="m">SAR-2607-042</span></div>
-      <div class="r"><span>Teams deployed</span><span class="m">2</span></div>
-      <div class="r"><span>Elapsed</span><span class="m" id="elapsed">02:41</span></div>
-      <div class="progress">
-        <div class="bar"><i></i></div>
-        <div class="lg"><span>area searched 38%</span><span>PoD 41%</span></div>
-      </div>
+      <div class="r"><span>Teams active</span><span class="m">2</span></div>
+      <div class="r"><span>Open tasks</span><span class="m">3</span></div>
+      <div class="r"><span>Elapsed</span><span class="m" id="elapsed">04:20</span></div>
+      <div class="stat"><span>Area searched<span class="m">38%</span></span><span>PoD<span class="m">41%</span></span></div>
     </div>
 
     <!-- base layers -->
     <div class="floatpanel layers collapsed reveal" id="layersPanel" style="animation-delay:.12s">
-      <button class="t" id="layersToggle" type="button" aria-expanded="false" aria-controls="layerBody">Layers <span class="caret" aria-hidden="true">▸</span></button>
+      <button class="t" id="layersToggle" type="button" aria-expanded="false" aria-controls="layerBody"><svg class="lyr-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>Layers <span class="caret" aria-hidden="true">▸</span></button>
       <div class="layerbody" id="layerBody">
         <label><input type="checkbox" data-layer="lyr-area" checked>Operational area</label>
         <label><input type="checkbox" data-layer="lyr-sectors" checked>Search sectors</label>
@@ -332,10 +350,9 @@ body.mdopen .mdrawer{transform:none}
       </div>
     </div>
 
-    <div class="north"><div class="arw">▲</div>N</div>
-
     <!-- query readout -->
     <div class="floatpanel mapquery reveal" style="animation-delay:.2s" id="query">
+      <svg class="q-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>
       <span><span class="lb">Position</span> <span id="qGrid">45.3805°S 167.6178°E</span></span>
       <span><span class="lb">From LKP</span> <span id="qBrg">—</span></span>
     </div>
@@ -399,13 +416,15 @@ body.mdopen .mdrawer{transform:none}
           <button data-f="decision">Decisions</button>
           <button data-f="comms">Comms</button>
         </div>
-        <div class="lrow" data-cat="clue"><span class="lt">1443</span><span class="lc lc-clue"></span><span class="lx"><span class="cat">Clue</span><div class="msg">Footprint, NW heading near creek fork. <span class="mono">NZTM 1573290E 5180410N</span></div></span></div>
-        <div class="lrow" data-cat="decision"><span class="lt">1439</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Prioritise sector A on hasty; hold sector B for daylight.</div></span></div>
-        <div class="lrow" data-cat="comms"><span class="lt">1435</span><span class="lc lc-comms"></span><span class="lx"><span class="cat">Comms</span><div class="msg">ROMEO-2 on task, <span class="mono">CH.62</span>. Signal good.</div></span></div>
-        <div class="lrow" data-cat="info"><span class="lt">1431</span><span class="lc lc-info"></span><span class="lx"><span class="cat">Information</span><div class="msg">MetService: cloud lowering to 900m after 1600.</div></span></div>
-        <div class="lrow" data-cat="decision"><span class="lt">1422</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Stand up SAR-2607-042. Cat I, land. IC assigned.</div></span></div>
+        <div class="lrow" data-cat="clue"><span class="lt">14:43</span><span class="lc lc-clue"></span><span class="lx"><span class="cat">Clue</span><div class="msg">Footprint, NW heading near creek fork. <span class="mono">NZTM 1573290E 5180410N</span></div></span></div>
+        <div class="lrow" data-cat="decision"><span class="lt">14:39</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Prioritise sector A on hasty; hold sector B for daylight.</div></span></div>
+        <div class="lrow" data-cat="comms"><span class="lt">14:35</span><span class="lc lc-comms"></span><span class="lx"><span class="cat">Comms</span><div class="msg">ROMEO-2 on task, <span class="mono">CH.62</span>. Signal good.</div></span></div>
+        <div class="lrow" data-cat="info"><span class="lt">14:31</span><span class="lc lc-info"></span><span class="lx"><span class="cat">Information</span><div class="msg">MetService: cloud lowering to 900m after 1600.</div></span></div>
+        <div class="lrow" data-cat="decision"><span class="lt">14:22</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Stand up SAR-2607-042. Cat I, land. IC assigned.</div></span></div>
       </div>
     </div>
+
+    <button class="railfoot" id="railFoot" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Collapse panel</button>
   </div>
 </div>
 
@@ -424,9 +443,11 @@ body.mdopen .mdrawer{transform:none}
   /* ---- reuse the shared SAROP map component: base + AO geodata ---- */
   var G=SaropMap.geo, LKP=G.LKP;
 
-  function pinEl(kind,label){
+  var CAM_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+  function pinEl(kind,name,details){
     var el=document.createElement('div'); el.className='pin '+kind;
-    el.innerHTML='<span class="mk"></span><span class="cap">'+label+'</span>';
+    var dts=(details||[]).map(function(d){ return '<span class="dt">'+d+'</span>'; }).join('');
+    el.innerHTML='<span class="mk"></span><span class="card"><span class="nm">'+name+'</span>'+dts+'</span>';
     return el;
   }
   var markers={};
@@ -447,11 +468,16 @@ body.mdopen .mdrawer{transform:none}
     map.addLayer({id:'track-line',type:'line',source:'track',layout:{'line-cap':'round'},paint:{'line-color':trackCol(),'line-width':3,'line-opacity':0.85}});
   }
   function addMarkers(map){
-    function mk(kind,label,lnglat){ return new maplibregl.Marker({element:pinEl(kind,label),anchor:'bottom'}).setLngLat(lnglat).addTo(map); }
-    mk('lkp','LKP',LKP);
-    mk('clue','clue · footprint',G.CLUE);
-    markers.R2=mk('team','ROMEO-2',G.R2);
-    markers.R4=mk('team','ROMEO-4',G.R4);
+    // 'rev' pins carry their card on the left, so close neighbours don't stack
+    function mk(kind,name,details,lnglat){
+      var rev=/\brev\b/.test(kind);
+      return new maplibregl.Marker({element:pinEl(kind,name,details),
+        anchor:rev?'bottom-right':'bottom-left', offset:[rev?3:-3,0]}).setLngLat(lnglat).addTo(map);
+    }
+    mk('lkp rev','LKP',['840 m · 128°'],LKP);
+    mk('clue rev','Clue · Footprint',['08:41 · By R2 · '+CAM_SVG+' 2'],G.CLUE);
+    markers.R2=mk('team','ROMEO-2',['2 pax · Sector A','Last update 2m ago'],G.R2);
+    markers.R4=mk('team','ROMEO-4',['2 pax · Sector B','Last update 5m ago'],G.R4);
   }
 
   var ctrl=SaropMap.create({
@@ -578,26 +604,25 @@ body.mdopen .mdrawer{transform:none}
   });
 
   /* ---- basemap switcher: routes through the adapter; the attribution
-     line follows automatically. Hidden when no LINZ key is configured
-     (satellite is then the only basemap, so there is nothing to switch). ---- */
+     line follows automatically. Without a LINZ key the LINZ options hide
+     and satellite is the whole story. ---- */
   var basectl=document.getElementById('basectl');
   if(basectl){
-    if(!SaropMap.hasLinzKey()){
-      basectl.style.display='none';
-    } else {
-      basectl.querySelectorAll('button').forEach(function(b){
-        b.addEventListener('click',function(){
-          basectl.querySelectorAll('button').forEach(function(x){x.classList.toggle('on', x===b);});
-          ctrl.setBasemap(b.getAttribute('data-base'));
-        });
+    basectl.querySelectorAll('button').forEach(function(b){
+      var base=b.getAttribute('data-base');
+      if(base.indexOf('linz')===0 && !SaropMap.hasLinzKey()){ b.style.display='none'; }
+      b.classList.toggle('on', base===ctrl.basemap);
+      b.addEventListener('click',function(){
+        basectl.querySelectorAll('button').forEach(function(x){x.classList.toggle('on', x===b);});
+        ctrl.setBasemap(base);
       });
-    }
+    });
   }
 
-  /* ---- 2D / 3D tilt toggle (scoped so the basemap pill is untouched) ---- */
-  document.querySelectorAll('.tiltctl:not(.basectl) button').forEach(function(b){
+  /* ---- 2D / 3D tilt toggle ---- */
+  document.querySelectorAll('.tiltgrp button').forEach(function(b){
     b.addEventListener('click',function(){
-      document.querySelectorAll('.tiltctl:not(.basectl) button').forEach(function(x){x.classList.toggle('on', x===b);});
+      document.querySelectorAll('.tiltgrp button').forEach(function(x){x.classList.toggle('on', x===b);});
       if(b.getAttribute('data-tilt')==='3d'){ map.easeTo({pitch:62, bearing:18, duration:900}); }
       else { map.easeTo({pitch:0, bearing:0, duration:700}); }
     });
@@ -649,6 +674,8 @@ body.mdopen .mdrawer{transform:none}
       if(ctrl && ctrl.resize){ ctrl.resize(); setTimeout(ctrl.resize, 60); }  // let the map fill the new width
     });
   }
+  var railFoot=document.getElementById('railFoot');
+  if(railFoot && railToggle){ railFoot.addEventListener('click',function(){ railToggle.click(); }); }
 
   /* ---- layers panel: loads collapsed to its header; layers stay on ---- */
   var layersPanel=document.getElementById('layersPanel'), layersToggle=document.getElementById('layersToggle');
@@ -669,13 +696,18 @@ body.mdopen .mdrawer{transform:none}
   toast.addEventListener('click',hideToast);
 
   /* ---- elapsed ticks ---- */
-  var base=161; // 02:41
+  var base=260; // 04:20
   setInterval(function(){base++; var m=Math.floor(base/60),s=base%60; document.getElementById('elapsed').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;},1000);
 })();
 </script>
 <script>
 (function(){
   var mb=document.getElementById('mbarMenu'), sc=document.getElementById('modScrim'), cl=document.getElementById('modClose');
+  var ab=document.getElementById('abarMenu');
+  if(ab) ab.addEventListener('click',function(){
+    var open=!document.body.classList.contains('mdopen');
+    document.body.classList.toggle('mdopen',open); ab.setAttribute('aria-expanded', open?'true':'false');
+  });
   function setOpen(o){ document.body.classList.toggle('mdopen',o); if(mb) mb.setAttribute('aria-expanded', o?'true':'false'); }
   if(mb) mb.addEventListener('click',function(){ setOpen(!document.body.classList.contains('mdopen')); });
   if(sc) sc.addEventListener('click',function(){ setOpen(false); });
