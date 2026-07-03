@@ -61,6 +61,12 @@ html[data-shell] .phead .tag{margin-left:0; padding-left:0; border-left:0}
 .about h2{font-size:15px; margin:0 0 4px; color:var(--forest)}
 .about .framing{font-size:13px; font-weight:600; line-height:1.4; color:var(--forest); background:var(--forest-tint); border:1px solid var(--rule); border-radius:var(--r-sm); padding:10px 12px; margin:0 0 12px}
 .about .lede{font-size:13px; color:var(--ink-2); margin:0 0 16px}
+.about .strap{font-size:13px; color:var(--ink-3); margin:0 0 16px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.about .strapmore{border:0; background:none; padding:0; margin:0; font-family:inherit; font-size:11.5px; font-weight:600; color:var(--olive); cursor:pointer; white-space:nowrap; letter-spacing:.02em}
+.about .strapmore:hover{color:var(--accent)}
+.about .strapfull{margin:0 0 16px}
+.about .strapfull .lede{margin-bottom:0}
+@media (max-width:560px){ .strapmore{min-height:44px; display:inline-flex; align-items:center} }
 .about h3{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--olive); margin:16px 0 8px}
 .about ul{margin:0; padding:0; list-style:none}
 .about li{font-size:12.5px; color:var(--ink-2); padding:5px 0 5px 18px; position:relative; border-top:1px solid var(--hairline)}
@@ -406,8 +412,11 @@ body.mdopen .mdrawer{transform:none}
   <!-- ABOUT -->
   <div class="about">
     <h2>The field surface</h2>
+    <p class="strap">Capture once in the field, sync when connected <button class="strapmore" id="strapMore" type="button" aria-expanded="false" aria-controls="strapFull">Learn more <span aria-hidden="true">▾</span></button></p>
+    <div class="strapfull" id="strapFull" hidden>
     <p class="framing">This is the searcher's phone, shown here for the walkthrough. Field capture happens on the device, in the field, not on this desktop page.</p>
     <p class="lede">Where a searcher captures what they find. Large targets, one column, and the offline state always visible.</p>
+    </div>
     <h3>What it proves (F4)</h3>
     <ul>
       <li>Capture once, on the device, in the field</li>
@@ -700,6 +709,21 @@ body.mdopen .mdrawer{transform:none}
   if(sc) sc.addEventListener('click',function(){ setOpen(false); });
   if(cl) cl.addEventListener('click',function(){ setOpen(false); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
+})();
+</script>
+<script>
+/* page-header strapline: full explanation collapsed behind Learn more */
+(function(){
+  var b=document.getElementById('strapMore'), f=document.getElementById('strapFull');
+  if(!b||!f) return;
+  var openLbl=b.getAttribute('data-less')||'Less', closedLbl=b.getAttribute('data-more')||'Learn more';
+  b.addEventListener('click',function(){
+    var open=f.hasAttribute('hidden');
+    if(open) f.removeAttribute('hidden'); else f.setAttribute('hidden','');
+    b.setAttribute('aria-expanded', open?'true':'false');
+    b.innerHTML=(open?openLbl:closedLbl)+' <span aria-hidden="true">'+(open?'\u25B4':'\u25BE')+'</span>';
+    var t=document.getElementById('toast'); if(t) t.classList.toggle('exp', open);
+  });
 })();
 </script>
 </body>
