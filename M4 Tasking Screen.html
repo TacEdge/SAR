@@ -70,7 +70,11 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .page{max-width:1240px; margin:0 auto; padding:var(--s5) var(--s5) var(--s8)}
 .head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:var(--s4)}
 .head h1{font-size:24px; font-weight:700; margin:0}
-.head p{color:var(--ink-2); margin:6px 0 0; font-size:14px}
+.head .strap{color:var(--ink-3); margin:6px 0 0; font-size:13.5px; line-height:1.5; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.head .strapmore{border:0; background:none; padding:0; margin:0; font-family:inherit; font-size:12px; font-weight:600; color:var(--olive); cursor:pointer; white-space:nowrap; letter-spacing:.02em}
+.head .strapmore:hover{color:var(--accent)}
+.head .strapfull{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:78ch}
+@media (max-width:560px){ .strapmore{min-height:44px; display:inline-flex; align-items:center} }
 .grid{display:grid; grid-template-columns:1fr 420px; gap:var(--s5); align-items:start}
 
 /* composer */
@@ -251,7 +255,8 @@ body.mdopen .mdrawer{transform:none}
 
 <div class="page">
   <div class="head">
-    <div><h1>Tasking</h1><p>Create it, assign it, attach where, push it to the field. One task object, whether you task direct or for-affect.</p></div>
+    <div><h1>Tasking</h1><p class="strap">Create, assign, attach, and push to the field <button class="strapmore" id="strapMore" type="button" aria-expanded="false" aria-controls="strapFull">Learn more <span aria-hidden="true">▾</span></button></p>
+    <p class="strapfull" id="strapFull" hidden>Create it, assign it, attach where, push it to the field. One task object, whether you task direct or for-affect.</p></div>
   </div>
 
   <div class="grid">
@@ -463,6 +468,21 @@ body.mdopen .mdrawer{transform:none}
   if(sc) sc.addEventListener('click',function(){ setOpen(false); });
   if(cl) cl.addEventListener('click',function(){ setOpen(false); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
+})();
+</script>
+<script>
+/* page-header strapline: full explanation collapsed behind Learn more */
+(function(){
+  var b=document.getElementById('strapMore'), f=document.getElementById('strapFull');
+  if(!b||!f) return;
+  var openLbl=b.getAttribute('data-less')||'Less', closedLbl=b.getAttribute('data-more')||'Learn more';
+  b.addEventListener('click',function(){
+    var open=f.hasAttribute('hidden');
+    if(open) f.removeAttribute('hidden'); else f.setAttribute('hidden','');
+    b.setAttribute('aria-expanded', open?'true':'false');
+    b.innerHTML=(open?openLbl:closedLbl)+' <span aria-hidden="true">'+(open?'\u25B4':'\u25BE')+'</span>';
+    var t=document.getElementById('toast'); if(t) t.classList.toggle('exp', open);
+  });
 })();
 </script>
 </body>

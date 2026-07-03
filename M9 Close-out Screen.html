@@ -53,12 +53,15 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .pill .dot{width:7px; height:7px; border-radius:50%}
 .p-active{background:var(--forest-tint); color:var(--forest)} .p-active .dot{background:var(--forest)}
 .p-completed{background:var(--neutral-bg); color:var(--ink-2)} .p-completed .dot{background:var(--ink-3)}
-.appbar .note{font-size:11px; color:var(--sage); font-family:var(--mono)}
 
 /* page */
 .page{max-width:1240px; margin:0 auto; padding:var(--s5) var(--s5) var(--s6)}
 .head h1{font-size:24px; font-weight:700; margin:0}
-.head p{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:78ch}
+.head .strap{color:var(--ink-3); margin:6px 0 0; font-size:13.5px; line-height:1.5; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.head .strapmore{border:0; background:none; padding:0; margin:0; font-family:inherit; font-size:12px; font-weight:600; color:var(--olive); cursor:pointer; white-space:nowrap; letter-spacing:.02em}
+.head .strapmore:hover{color:var(--accent)}
+.head .strapfull{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:78ch}
+@media (max-width:560px){ .strapmore{min-height:44px; display:inline-flex; align-items:center} }
 .grid{display:grid; grid-template-columns:1fr 340px; gap:var(--s5); align-items:start; margin-top:var(--s5)}
 
 /* report document */
@@ -222,13 +225,13 @@ body.mdopen .mdrawer{transform:none}
     <img class="blogo" src="assets/tacedge-logo.png" alt="TacEdge" width="1978" height="391"><span class="bdv" aria-hidden="true"></span><span class="bsr">Search &amp; Rescue</span>
     <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active" id="statusPill"><span class="dot"></span>Active</span></span>
   </div>
-  <span class="note">Zero re-entry · assembled from the record</span>
 </div>
 
 <div class="page">
   <div class="head">
     <h1>Close-out</h1>
-    <p>The whole operation, assembled from the record into one report. Nothing is re-keyed. Review, approve, and it becomes the confirmed outward record that feeds handover, debrief, the coroner, and the national picture.</p>
+    <p class="strap">Reconcile, package, and close the operation <button class="strapmore" id="strapMore" type="button" aria-expanded="false" aria-controls="strapFull">Learn more <span aria-hidden="true">▾</span></button></p>
+    <p class="strapfull" id="strapFull" hidden>The whole operation, assembled from the record into one report. Nothing is re-keyed. Review, approve, and it becomes the confirmed outward record that feeds handover, debrief, the coroner, and the national picture.</p>
   </div>
 
   <div class="grid">
@@ -418,6 +421,21 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
   if(sc) sc.addEventListener('click',function(){ setOpen(false); });
   if(cl) cl.addEventListener('click',function(){ setOpen(false); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
+})();
+</script>
+<script>
+/* page-header strapline: full explanation collapsed behind Learn more */
+(function(){
+  var b=document.getElementById('strapMore'), f=document.getElementById('strapFull');
+  if(!b||!f) return;
+  var openLbl=b.getAttribute('data-less')||'Less', closedLbl=b.getAttribute('data-more')||'Learn more';
+  b.addEventListener('click',function(){
+    var open=f.hasAttribute('hidden');
+    if(open) f.removeAttribute('hidden'); else f.setAttribute('hidden','');
+    b.setAttribute('aria-expanded', open?'true':'false');
+    b.innerHTML=(open?openLbl:closedLbl)+' <span aria-hidden="true">'+(open?'\u25B4':'\u25BE')+'</span>';
+    var t=document.getElementById('toast'); if(t) t.classList.toggle('exp', open);
+  });
 })();
 </script>
 </body>

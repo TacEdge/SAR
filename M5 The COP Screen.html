@@ -160,6 +160,13 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .toast .g{width:7px;height:7px;border-radius:50%;background:var(--sage); flex:none}
 .toast .x{background:none; border:0; color:var(--sage); font-size:16px; line-height:1; padding:0 4px; margin-left:2px; cursor:pointer}
 .toast .x:hover{color:var(--cream)}
+.toast .strapmore{background:none; border:0; padding:0; margin-left:10px; font-family:inherit; font-size:11.5px; font-weight:600; color:var(--sage); cursor:pointer; white-space:nowrap}
+.toast .strapmore:hover{color:var(--cream)}
+.toast .txfull{display:block; margin-top:4px; color:var(--sage); font-size:12px; max-width:52ch}
+.toast .txfull[hidden]{display:none}
+.toast.exp{border-radius:var(--r-md); align-items:flex-start}
+.toast.exp .g{margin-top:5px}
+@media (max-width:560px){ .strapmore{min-height:44px; display:inline-flex; align-items:center} }
 
 /* ===== right rail ===== */
 .rail{background:var(--canvas); overflow-y:auto; padding:var(--s3)}
@@ -387,7 +394,7 @@ body.mdopen .mdrawer{transform:none}
       <button data-tool="erase">Erase</button>
     </div>
 
-    <div class="toast" id="toast" role="status"><span class="g"></span><span class="tx">Common operating picture · one read of the spine, not many systems</span><button class="x" id="toastX" type="button" aria-label="Dismiss">×</button></div>
+    <div class="toast" id="toast" role="status"><span class="g"></span><span class="tx">The live operating picture <button class="strapmore" id="strapMore" type="button" aria-expanded="false" aria-controls="strapFull" data-more="More" data-less="Less">More <span aria-hidden="true">▾</span></button><span class="txfull" id="strapFull" hidden>Common operating picture · one read of the spine, not many systems.</span></span><button class="x" id="toastX" type="button" aria-label="Dismiss">×</button></div>
 
     <!-- retract the side panel to expose more map -->
     <button class="railtoggle" id="railToggle" type="button" aria-expanded="true" aria-label="Hide the side panel" title="Hide the side panel">›</button>
@@ -737,10 +744,14 @@ body.mdopen .mdrawer{transform:none}
   var toast=document.getElementById('toast');
   function hideToast(){ toast.classList.remove('show'); }
   setTimeout(function(){toast.classList.add('show');},600);
-  setTimeout(hideToast,4200);
+  var toastAutoHide=setTimeout(hideToast,4200);
   var toastX=document.getElementById('toastX');
   if(toastX) toastX.addEventListener('click',hideToast);
-  toast.addEventListener('click',hideToast);
+  /* expanding "More" must neither dismiss the toast nor race the auto-hide */
+  toast.addEventListener('click',function(e){
+    if(e.target.closest && e.target.closest('#strapMore')){ clearTimeout(toastAutoHide); return; }
+    hideToast();
+  });
 
   /* ---- elapsed ticks ---- */
   var base=260; // 04:20
@@ -764,6 +775,21 @@ body.mdopen .mdrawer{transform:none}
   if(sc) sc.addEventListener('click',function(){ setOpen(false); });
   if(cl) cl.addEventListener('click',function(){ setOpen(false); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
+})();
+</script>
+<script>
+/* page-header strapline: full explanation collapsed behind Learn more */
+(function(){
+  var b=document.getElementById('strapMore'), f=document.getElementById('strapFull');
+  if(!b||!f) return;
+  var openLbl=b.getAttribute('data-less')||'Less', closedLbl=b.getAttribute('data-more')||'Learn more';
+  b.addEventListener('click',function(){
+    var open=f.hasAttribute('hidden');
+    if(open) f.removeAttribute('hidden'); else f.setAttribute('hidden','');
+    b.setAttribute('aria-expanded', open?'true':'false');
+    b.innerHTML=(open?openLbl:closedLbl)+' <span aria-hidden="true">'+(open?'\u25B4':'\u25BE')+'</span>';
+    var t=document.getElementById('toast'); if(t) t.classList.toggle('exp', open);
+  });
 })();
 </script>
 </body>
