@@ -23,14 +23,19 @@
 }
 /* domain accent: Land = forest, Marine = marine, driven by the shell's data-domain (same rule as M1-M5, M7-M9) */
 html[data-domain="marine"]{ --accent:var(--marine); --accent-tint:var(--info-bg); }
-:root{--safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px)}
+:root{--safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+  /* header top offset: the device inset plus a small breathing allowance so the
+     app header sits clearly below the status items — the extra 8px only exists
+     when a real inset does, keeping desktop layouts untouched and the green
+     band continuous behind both */
+  --htop:calc(var(--safe-top) + min(var(--safe-top), 8px))}
 *{box-sizing:border-box}
 body{margin:0; background:var(--canvas); color:var(--ink); font-family:var(--ui); -webkit-font-smoothing:antialiased}
 button{font-family:inherit; cursor:pointer}
 .mono{font-family:var(--mono)}
 
 /* presentation header */
-.phead{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between; padding:0 24px; height:52px; border-bottom:3px solid var(--forest)}
+.phead{background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:space-between; padding:var(--htop) 24px 0; height:calc(52px + var(--htop)); border-bottom:3px solid var(--forest)}
 .phead .l{display:flex; align-items:baseline; gap:12px}
 .phead .mark{font-weight:700; font-size:15px}
 .phead .sub{font-family:var(--mono); font-size:11px; color:var(--sage); letter-spacing:.06em; text-transform:uppercase}
@@ -199,7 +204,7 @@ button{font-family:inherit; cursor:pointer}
 
 /* ===== phone: fill the screen, drop the desktop canvas + about ===== */
 /* ===== mobile app bar + module drawer (shown at max-width:560px) ===== */
-.mbar{display:none; align-items:center; gap:10px; position:fixed; top:0; left:0; right:0; z-index:70; height:calc(59px + var(--safe-top,0px)); padding:var(--safe-top,0px) 10px 0 14px; background:var(--forest); color:var(--cream); border-bottom:3px solid var(--accent)}
+.mbar{display:none; align-items:center; gap:10px; position:fixed; top:0; left:0; right:0; z-index:70; height:calc(59px + var(--htop)); padding:var(--htop) 10px 0 14px; background:var(--forest); color:var(--cream); border-bottom:3px solid var(--accent)}
 .mbar-mark{width:30px; height:30px; border-radius:7px; flex:none; object-fit:cover; display:block}
 .mbar-inc{display:flex; align-items:center; gap:8px; min-width:0; flex:1}
 .mbar-ref{font-family:var(--mono); font-size:13px; color:var(--cream); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0}
@@ -231,7 +236,7 @@ body.mdopen .mdrawer{transform:none}
   .stage{padding:0; gap:0}
   .about{display:none}
   .phead{display:none}
-  body{padding-top:calc(59px + var(--safe-top,0px))}
+  body{padding-top:calc(59px + var(--htop))}
   .mbar{display:flex}
   .mscrim{display:block}
   .mdrawer{display:flex}
@@ -242,7 +247,7 @@ body.mdopen .mdrawer{transform:none}
   .optilt button{min-height:44px; display:inline-flex; align-items:center}
   .phead .ctrls{flex-wrap:wrap; gap:8px 14px}
   .phone{width:100%; padding:0; border-radius:0; box-shadow:none}
-  .screen{border-radius:0; height:calc(100dvh - 59px - var(--safe-top,0px) - var(--safe-bottom,0px))}
+  .screen{border-radius:0; height:calc(100dvh - 59px - var(--htop) - var(--safe-bottom,0px))}
 }
 </style>
 </head>
