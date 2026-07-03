@@ -89,7 +89,8 @@ button{font-family:inherit; cursor:pointer}
 .pin .mk:after{content:""; position:absolute; inset:6px; border-radius:50%; background:#fff}
 .pin .card{background:rgba(30,51,23,.92); color:var(--cream); border-radius:var(--r-md); padding:6px 10px; box-shadow:0 2px 8px rgba(20,28,15,.35); white-space:nowrap; transform:translateY(2px)}
 .pin .card .nm{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; display:block}
-.pin .card .dt{font-family:var(--mono); font-size:10px; color:var(--sage); display:block; margin-top:1px}
+.pin .card .dt{font-family:var(--mono); font-size:10px; color:var(--sage); display:none; margin-top:1px}
+.pin.open .card .dt{display:block}   /* detail lines appear when the marker is selected */
 .pin .card svg{width:11px; height:11px; vertical-align:-1.5px}
 .pin.hot .card{outline:2px solid var(--sage)}
 .pin.rev{flex-direction:row-reverse}
@@ -97,13 +98,11 @@ button{font-family:inherit; cursor:pointer}
 
 /* floating panels on the map */
 .floatpanel{position:absolute; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); box-shadow:var(--shadow)}
-.mapinc{top:128px; left:var(--s3); width:250px; padding:var(--s3) var(--s4)}
-.mapinc .h{display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--s2)}
-.mapinc .h .t{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive)}
-.mapinc .r{display:flex; justify-content:space-between; font-size:13px; padding:3px 0}
-.mapinc .r .m{font-family:var(--mono); color:var(--ink)}
-.mapinc .stat{display:flex; justify-content:space-between; gap:var(--s3); border-top:1px solid var(--hairline); margin-top:var(--s2); padding-top:var(--s2); font-size:12px; color:var(--ink-2)}
-.mapinc .stat .m{font-family:var(--mono); color:var(--ink); margin-left:6px}
+
+/* incident snapshot rows (lives in the right rail — the map carries no summary card) */
+.snap .r{display:flex; justify-content:space-between; font-size:13px; padding:4px 0}
+.snap .r .m{font-family:var(--mono); color:var(--ink)}
+.snap .div{border-top:1px solid var(--hairline); margin:6px 0 2px}
 
 /* layers: compact button that expands to the layer checklist */
 .layers{top:var(--s3); right:var(--s3); padding:8px var(--s3)}
@@ -117,7 +116,9 @@ button{font-family:inherit; cursor:pointer}
 .layers label{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-2); padding:3px 0; cursor:pointer}
 .layers input{accent-color:var(--accent)}
 
-.mapquery{left:var(--s3); bottom:var(--s3); padding:8px var(--s4); font-family:var(--mono); font-size:12px; color:var(--ink); display:flex; gap:var(--s4); align-items:center}
+/* position readout: shown only while the cursor position is relevant */
+.mapquery{left:var(--s3); bottom:var(--s3); padding:8px var(--s4); font-family:var(--mono); font-size:12px; color:var(--ink); display:none; gap:var(--s4); align-items:center}
+.mapquery.show{display:flex}
 .mapquery .lb{color:var(--ink-3); font-size:10px; text-transform:uppercase; letter-spacing:.08em}
 .mapquery .q-ic{width:14px; height:14px; color:var(--ink-2); flex:none}
 .scalebar{right:var(--s3); bottom:var(--s3); padding:6px 10px; display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11px; color:var(--ink-2)}
@@ -125,10 +126,22 @@ button{font-family:inherit; cursor:pointer}
 .scalebar .ln:before,.scalebar .ln:after{content:""; position:absolute; width:1px; height:6px; background:var(--ink-2); top:-1.5px}
 .scalebar .ln:after{right:0}
 
-.maptools{position:absolute; left:50%; transform:translateX(-50%); bottom:58px; display:flex; gap:2px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:4px; box-shadow:var(--shadow)}
+/* drawing/planning toolbar: collapsed by default behind the Tools button —
+   the COP opens in view mode, not edit mode */
+.maptools{position:absolute; left:50%; transform:translateX(-50%); bottom:58px; display:none; gap:2px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:4px; box-shadow:var(--shadow)}
+.maptools.open{display:flex}
 .maptools button{border:0; background:transparent; color:var(--ink-2); font-size:12px; font-weight:500; padding:6px 13px; border-radius:var(--r-pill)}
 .maptools button:hover{background:var(--forest-tint); color:var(--accent)}
 .maptools button.on{background:var(--accent); color:#fff}
+.toolsbtn{position:absolute; right:var(--s3); bottom:86px; z-index:2; display:inline-flex; align-items:center; gap:8px;
+  background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:8px 14px; box-shadow:var(--shadow);
+  color:var(--ink); font-size:12px; font-weight:600}
+.toolsbtn:hover{background:var(--cream-2)}
+.toolsbtn svg{width:14px; height:14px; color:var(--ink-2)}
+.toolsbtn .caret{font-size:9px; color:var(--ink-3); transition:transform .2s ease}
+.toolsbtn[aria-expanded="true"]{background:var(--accent); color:#fff; border-color:var(--accent)}
+.toolsbtn[aria-expanded="true"] svg,.toolsbtn[aria-expanded="true"] .caret{color:#fff}
+.toolsbtn[aria-expanded="true"] .caret{transform:rotate(180deg)}
 
 /* toast */
 .toast{position:absolute; top:var(--s5); left:50%; transform:translateX(-50%); background:var(--forest-deep); color:var(--cream);
@@ -247,6 +260,7 @@ body.mdopen .mdrawer{transform:none}
   /* 44px touch targets */
   .maplibregl-ctrl button{width:44px; height:44px}
   .mapctl button{min-height:44px; min-width:44px; display:inline-flex; align-items:center; justify-content:center}
+  .toolsbtn{min-height:44px}
   .mapctl{flex-wrap:wrap; max-width:calc(100% - 16px)}
   .railfilter button{min-height:44px; display:inline-flex; align-items:center}
   .toast .x{width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; padding:0; margin-left:0; font-size:20px}
@@ -258,7 +272,7 @@ body.mdopen .mdrawer{transform:none}
   .mapwrap{height:46vh; min-height:300px; border-right:0; border-bottom:1px solid var(--hairline)}
   .rail{height:auto; overflow:visible}
   .railtoggle{display:none}
-  .mapinc,.layers,.mapquery{display:none}
+  .layers,.mapquery{display:none}
   /* markup toolbar stays available on phones: 44px tap targets, wraps to fit */
   .maptools{bottom:10px; max-width:calc(100% - 16px); flex-wrap:wrap; justify-content:center}
   .maptools button{min-height:44px; min-width:44px; padding:6px 11px}
@@ -330,15 +344,6 @@ body.mdopen .mdrawer{transform:none}
       </div>
     </div>
 
-    <!-- floating incident summary -->
-    <div class="floatpanel mapinc reveal" style="animation-delay:.05s">
-      <div class="h"><span class="t">Operation</span><span class="pill p-active" style="font-size:11px"><span class="dot"></span>Active</span></div>
-      <div class="r"><span>Teams active</span><span class="m">2</span></div>
-      <div class="r"><span>Open tasks</span><span class="m">3</span></div>
-      <div class="r"><span>Elapsed</span><span class="m" id="elapsed">04:20</span></div>
-      <div class="stat"><span>Area searched<span class="m">38%</span></span><span>PoD<span class="m">41%</span></span></div>
-    </div>
-
     <!-- base layers -->
     <div class="floatpanel layers collapsed reveal" id="layersPanel" style="animation-delay:.12s">
       <button class="t" id="layersToggle" type="button" aria-expanded="false" aria-controls="layerBody"><svg class="lyr-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>Layers <span class="caret" aria-hidden="true">▸</span></button>
@@ -357,8 +362,12 @@ body.mdopen .mdrawer{transform:none}
       <span><span class="lb">From LKP</span> <span id="qBrg">—</span></span>
     </div>
 
-    <!-- plan toolbar -->
-    <div class="maptools reveal" style="animation-delay:.28s" role="group" aria-label="Map tools">
+    <!-- plan / annotate: one compact button; the toolbar expands on demand -->
+    <button class="toolsbtn reveal" style="animation-delay:.28s" id="toolsBtn" type="button" aria-expanded="false" aria-controls="maptools">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+      Tools <span class="caret" aria-hidden="true">▾</span>
+    </button>
+    <div class="maptools" id="maptools" role="group" aria-label="Map tools">
       <button class="on" data-tool="select">Select</button>
       <button data-tool="area">Area</button>
       <button data-tool="sector">Sector</button>
@@ -376,6 +385,18 @@ body.mdopen .mdrawer{transform:none}
 
   <!-- RIGHT RAIL -->
   <div class="rail">
+    <div class="rpanel reveal" style="animation-delay:.06s">
+      <div class="rh"><span class="tt">Incident snapshot</span><span class="ct" id="elapsedHead">04:20</span></div>
+      <div class="rbody snap">
+        <div class="r"><span>Teams active</span><span class="m">2</span></div>
+        <div class="r"><span>Open tasks</span><span class="m">3</span></div>
+        <div class="r"><span>Elapsed</span><span class="m" id="elapsed">04:20</span></div>
+        <div class="div"></div>
+        <div class="r"><span>Area searched</span><span class="m">38%</span></div>
+        <div class="r"><span>PoD</span><span class="m">41%</span></div>
+      </div>
+    </div>
+
     <div class="rpanel reveal" style="animation-delay:.1s">
       <div class="rh"><span class="tt">Active tasks</span><span class="ct">3 open</span></div>
       <div class="rbody">
@@ -448,6 +469,8 @@ body.mdopen .mdrawer{transform:none}
     var el=document.createElement('div'); el.className='pin '+kind;
     var dts=(details||[]).map(function(d){ return '<span class="dt">'+d+'</span>'; }).join('');
     el.innerHTML='<span class="mk"></span><span class="card"><span class="nm">'+name+'</span>'+dts+'</span>';
+    // compact by default; selecting the marker reveals its detail card
+    el.addEventListener('click',function(e){ e.stopPropagation(); el.classList.toggle('open'); });
     return el;
   }
   var markers={};
@@ -567,11 +590,15 @@ body.mdopen .mdrawer{transform:none}
   function wireMap(map){
     map.on('mouseenter','sectors-fill',function(){ if(TOOL==='select') map.getCanvas().style.cursor='pointer'; });
     map.on('mouseleave','sectors-fill',function(){ if(TOOL==='select') map.getCanvas().style.cursor=''; });
+    /* position readout only while the cursor is over the map */
+    var query=document.getElementById('query');
     map.on('mousemove',function(e){
       qGrid.textContent=fmt(e.lngLat.lat, e.lngLat.lng);
       var km=haversine(LKP[1],LKP[0], e.lngLat.lat, e.lngLat.lng);
       qBrg.textContent=Math.round(bearing(LKP[1],LKP[0], e.lngLat.lat, e.lngLat.lng))+'° · '+km.toFixed(1)+' km';
+      query.classList.add('show');
     });
+    map.getCanvas().addEventListener('mouseleave',function(){ query.classList.remove('show'); });
 
     /* ---- plan tools: Select inspects; Area / Sector / Path / Point / Note /
        Erase are the real TacEdge markup tooling, wired through the SaropMap
@@ -637,6 +664,16 @@ body.mdopen .mdrawer{transform:none}
     });
   });
 
+  /* ---- Tools: the toolbar is collapsed by default (view mode); closing it
+     always returns to Select so the COP never lingers in an edit state ---- */
+  var toolsBtn=document.getElementById('toolsBtn'), maptools=document.getElementById('maptools');
+  toolsBtn.addEventListener('click',function(){
+    var open=!maptools.classList.contains('open');
+    maptools.classList.toggle('open', open);
+    toolsBtn.setAttribute('aria-expanded', open?'true':'false');
+    if(!open){ setToolUI('select'); if(markup) markup.setTool('select'); }
+  });
+
   /* ---- log filter ---- */
   document.querySelectorAll('.railfilter button').forEach(function(b){
     b.addEventListener('click',function(){
@@ -697,7 +734,11 @@ body.mdopen .mdrawer{transform:none}
 
   /* ---- elapsed ticks ---- */
   var base=260; // 04:20
-  setInterval(function(){base++; var m=Math.floor(base/60),s=base%60; document.getElementById('elapsed').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;},1000);
+  var elapsedEl=document.getElementById('elapsed'), elapsedHead=document.getElementById('elapsedHead');
+  setInterval(function(){
+    base++; var m=Math.floor(base/60),s=base%60, t=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    elapsedEl.textContent=t; if(elapsedHead) elapsedHead.textContent=t;
+  },1000);
 })();
 </script>
 <script>
