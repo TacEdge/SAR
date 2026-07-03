@@ -72,17 +72,17 @@ button{font-family:inherit; cursor:pointer}
 .phone[data-theme="night"]{ --app:#141A12; --card:#1C2418; --text:#D8DEC9; --muted:#8A9580; --line:#0F150D; --cardline:#2C3626; --brand:#7FA46B; --brandtint:#243020; --ok:#7FA46B; --warn:#C79A4E; --bad:#C86A5C; --sb:#0F150D; --sbtext:#D8DEC9; --headline:#EDEFE2; }
 
 /* status bar */
-.sbar{background:var(--sb); color:var(--sbtext); padding:14px 20px 12px; display:flex; align-items:center; justify-content:space-between}
-.signal{display:flex; align-items:center; gap:9px; font-size:13px; font-weight:700; letter-spacing:.04em}
-.signal .dot{width:11px; height:11px; border-radius:50%}
+/* compact field header: signal state once, incident ref, callsign — nothing else */
+.sbar{background:var(--sb); color:var(--sbtext); padding:10px 16px 9px; display:flex; align-items:center; justify-content:space-between}
+.signal{display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; letter-spacing:.04em}
+.signal .dot{width:10px; height:10px; border-radius:50%}
 .phone[data-signal="offline"] .signal{color:var(--warn)} .phone[data-signal="offline"] .signal .dot{background:var(--warn)}
 .phone[data-signal="online"] .signal{color:var(--ok)} .phone[data-signal="online"] .signal .dot{background:var(--ok)}
-.sbar .clock{font-family:var(--mono); font-size:13px; opacity:.85}
+.sbar .sref{font-family:var(--mono); font-size:12px; letter-spacing:.02em}
+.sbar .sref i{font-style:normal; opacity:.55; padding:0 3px}
 
 /* app scroll body */
 .app{flex:1; overflow-y:auto; padding:16px 18px 0}
-.inc{font-family:var(--mono); font-size:12px; color:var(--muted); display:flex; justify-content:space-between; margin-bottom:14px}
-.inc b{color:var(--text); font-weight:600}
 
 /* task card (from M4) */
 .taskcard{background:var(--card); border:1px solid var(--cardline); border-left:4px solid var(--brand); border-radius:var(--r-md); padding:14px 16px; margin-bottom:18px}
@@ -140,20 +140,29 @@ button{font-family:inherit; cursor:pointer}
 
 /* map mode makes the app a non-scrolling flex column so the map fills */
 .app.mapmode{overflow:hidden; display:flex; flex-direction:column; padding-bottom:0}
-.app.mapmode .inc{flex:none}
 #paneMap{flex:1; display:flex; flex-direction:column; min-height:0}
 .opmapwrap{position:relative; flex:1; min-height:0; border-radius:var(--r-md); overflow:hidden; border:1px solid var(--cardline)}
 #opmap{position:absolute; inset:0; background:var(--app)}
-.opmapwrap .maptip{position:absolute; left:10px; top:10px; z-index:2; font-size:11px; font-weight:600; padding:6px 10px; border-radius:var(--r-pill); background:var(--card); color:var(--muted); border:1px solid var(--cardline); box-shadow:0 1px 4px rgba(0,0,0,.2)}
-.phone[data-signal="offline"] .opmapwrap .maptip::before{content:"Offline · "; color:var(--warn)}
+/* one compact map-settings pill: current basemap (tap to change) + 3D toggle.
+   Dark treatment so it reads on any imagery, echoing the marker-card language. */
+.mapset{position:absolute; left:10px; top:10px; z-index:3}
+.mapset .row{display:flex; align-items:center; background:rgba(30,51,23,.92); border-radius:var(--r-pill); box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.mapset .row button{display:inline-flex; align-items:center; gap:7px; min-height:44px; border:0; background:transparent; color:#FCF2E8; font-size:13px; font-weight:700; letter-spacing:.02em; padding:8px 14px; border-radius:var(--r-pill)}
+.mapset .row svg{width:15px; height:15px}
+.mapset .ms-caret{font-size:9px; opacity:.7}
+.mapset .ms-dv{width:1px; height:20px; background:rgba(252,242,232,.28)}
+.mapset .ms-tilt[aria-pressed="true"]{background:#FCF2E8; color:#1E3317}
+.ms-menu{margin-top:6px; background:var(--card); border:1px solid var(--cardline); border-radius:var(--r-md); box-shadow:0 2px 10px rgba(0,0,0,.3); overflow:hidden; width:130px}
+.ms-menu button{display:flex; width:100%; min-height:44px; align-items:center; border:0; background:transparent; color:var(--text); font-size:13px; font-weight:600; padding:8px 14px}
+.ms-menu button.on{background:var(--brandtint); color:var(--brand)}
+.ms-menu button:active{background:var(--brandtint)}
+/* the header carries the offline state and the queue bar explains it — the
+   basemap chip would say it a third time; keep it off this surface */
+.opmapwrap .sarop-offchip{display:none !important}
+/* attribution stays, but very quiet */
+.opmapwrap .sarop-cred{font-size:8.5px !important; opacity:.85}
 
 /* 2D / 3D tilt toggle, thumb-sized and theme-aware */
-.optilt{position:absolute; left:10px; bottom:10px; z-index:2; display:flex; background:var(--card); border:1px solid var(--cardline); border-radius:var(--r-pill); padding:3px; box-shadow:0 1px 4px rgba(0,0,0,.3)}
-.optilt button{border:0; background:transparent; color:var(--muted); font-size:13px; font-weight:700; letter-spacing:.02em; padding:8px 15px; border-radius:var(--r-pill)}
-.optilt button.on{background:var(--brand); color:#fff}
-.phone[data-theme="night"] .optilt button.on{color:var(--app)}
-/* basemap switcher: same pill language, tucked under the map tip */
-.opbase{bottom:auto; top:46px}
 
 /* thumb-sized, theme-aware map controls */
 .opmapwrap .maplibregl-ctrl-group{background:var(--card); border:1px solid var(--cardline); box-shadow:0 1px 4px rgba(0,0,0,.3)}
@@ -174,11 +183,8 @@ button{font-family:inherit; cursor:pointer}
 @media (prefers-reduced-motion:reduce){.opin.syncing .dot{animation:none}}
 
 /* map bottom bar: legend + capture-here */
-.mapbar{flex:none; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 0 16px}
-.mapleg{display:flex; gap:12px; font-size:11px; color:var(--muted)}
-.mapleg .lg{display:inline-flex; align-items:center; gap:5px}
-.mapleg .lgdot{width:11px; height:11px; border-radius:50%; border:3px solid var(--c); background:transparent}
-.mapbar{flex-wrap:wrap}
+.mapbar{flex:none; display:flex; align-items:center; gap:10px; padding:12px 0 16px}
+.mapbar .here{flex:1; justify-content:center}
 .here{display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:14px; font-weight:600; padding:11px 16px; border-radius:var(--r-pill); background:var(--brand); color:#fff; border:0}
 .here svg{width:17px; height:17px}
 .phone[data-theme="night"] .here{color:var(--app)}
@@ -244,7 +250,6 @@ body.mdopen .mdrawer{transform:none}
   /* 44px touch targets */
   .seg button{min-height:44px; display:inline-flex; align-items:center}
   .tabs button{min-height:44px}
-  .optilt button{min-height:44px; display:inline-flex; align-items:center}
   .phead .ctrls{flex-wrap:wrap; gap:8px 14px}
   .phone{width:100%; padding:0; border-radius:0; box-shadow:none}
   .screen{border-radius:0; height:calc(100dvh - 59px - var(--htop) - var(--safe-bottom,0px))}
@@ -303,12 +308,10 @@ body.mdopen .mdrawer{transform:none}
     <div class="screen">
       <div class="sbar">
         <span class="signal"><span class="dot"></span><span id="sigText">Offline</span></span>
-        <span class="clock">1451 NZST</span>
+        <span class="sref">SAR-2607-042<i>·</i>ROMEO-4</span>
       </div>
 
       <div class="app" id="app">
-        <div class="inc"><span>Incident <b>SAR-2607-042</b></span><span>You: <b>ROMEO-4</b></span></div>
-
         <div class="tabs" role="tablist">
           <button id="tabCapture" role="tab" aria-selected="true">Capture</button>
           <button id="tabMap" role="tab" aria-selected="false">Map</button>
@@ -353,23 +356,23 @@ body.mdopen .mdrawer{transform:none}
         <div class="pane" id="paneMap" hidden>
           <div class="opmapwrap">
             <div id="opmap"></div>
-            <div class="maptip">Tap the map to capture here</div>
-            <div class="optilt" role="group" aria-label="Map tilt">
-              <button data-tilt="2d" class="on">2D</button>
-              <button data-tilt="3d">3D</button>
-            </div>
-            <div class="optilt opbase" id="opbase" role="group" aria-label="Basemap">
-              <button data-base="linz-topo" class="on">Topo</button>
-              <button data-base="linz-aerial">Aerial</button>
-              <button data-base="satellite">Sat</button>
+            <div class="mapset">
+              <div class="row">
+                <button id="msBase" type="button" aria-expanded="false" aria-controls="msMenu" aria-label="Basemap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+                  <span id="msBaseLbl">Topo</span><span class="ms-caret" aria-hidden="true">▾</span>
+                </button>
+                <span class="ms-dv" aria-hidden="true"></span>
+                <button id="msTilt" type="button" class="ms-tilt" aria-pressed="false">3D</button>
+              </div>
+              <div class="ms-menu" id="msMenu" hidden>
+                <button data-base="linz-topo" class="on">Topo</button>
+                <button data-base="linz-aerial">Aerial</button>
+                <button data-base="satellite">Sat</button>
+              </div>
             </div>
           </div>
           <div class="mapbar">
-            <div class="mapleg">
-              <span class="lg"><i class="lgdot" style="--c:var(--muted)"></i>Captured</span>
-              <span class="lg"><i class="lgdot" style="--c:var(--warn)"></i>Queued</span>
-              <span class="lg"><i class="lgdot" style="--c:var(--ok)"></i>Synced</span>
-            </div>
             <button class="here alt" id="dropBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>Drop point</button>
             <button class="here" id="hereBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22"/></svg>Capture here</button>
           </div>
@@ -564,7 +567,7 @@ body.mdopen .mdrawer{transform:none}
       // The basemap behaves like a pre-cached layer: satellite always loads
       // (with the styled base as the fallback if tiles can't be reached), so it
       // is visible in both states. The Signal toggle governs capture sync only.
-      container:'opmap', online:true, terrain:true, controls:true, rotate:true,
+      container:'opmap', online:true, terrain:true, controls:true, nav:false, rotate:true,
       controlPos:'top-right', zoom:14, pitch:0, center:[167.641,-45.3975],
       baseColor:THEME_BASE[phone.getAttribute('data-theme')],
       onReady:function(map){
@@ -593,7 +596,7 @@ body.mdopen .mdrawer{transform:none}
           },
           onToolChange:function(){ syncDropBtn(); }   // one-shot placement re-arms Select
         });
-        syncDropBtn();
+        syncDropBtn(); syncBaseLbl();
         setTimeout(function(){ map.resize(); },150);
       }
     });
@@ -613,32 +616,42 @@ body.mdopen .mdrawer{transform:none}
   document.getElementById('tabCapture').addEventListener('click',function(){ selectTab('capture'); });
   document.getElementById('tabMap').addEventListener('click',function(){ selectTab('map'); });
 
-  /* ---- basemap switcher: routes through the adapter (attribution follows).
-     Hidden when no LINZ key is configured — satellite is then the only map. ---- */
-  var opbase=document.getElementById('opbase');
-  if(opbase){
-    if(!SaropMap.hasLinzKey()){
-      opbase.style.display='none';
-    } else {
-      opbase.querySelectorAll('button').forEach(function(b){
-        b.addEventListener('click',function(){
-          if(!mapCtrl) return;
-          opbase.querySelectorAll('button').forEach(function(x){x.classList.toggle('on', x===b);});
-          mapCtrl.setBasemap(b.getAttribute('data-base'));
-        });
-      });
-    }
-  }
-
-  /* ---- 2D / 3D tilt (reuses the COP map's 3D terrain; scoped so the
-     basemap pill is untouched) ---- */
-  document.querySelectorAll('.optilt:not(.opbase) button').forEach(function(b){
-    b.addEventListener('click',function(){
-      document.querySelectorAll('.optilt:not(.opbase) button').forEach(function(x){x.classList.toggle('on', x===b);});
-      if(!mapCtrl) return;
-      if(b.getAttribute('data-tilt')==='3d'){ mapCtrl.map.easeTo({pitch:60, duration:800}); }
-      else { mapCtrl.map.easeTo({pitch:0, bearing:0, duration:700}); }
+  /* ---- map settings: one compact pill — current basemap (tap to change)
+     plus a small 3D toggle. Alternatives stay hidden until opened. ---- */
+  var msBase=document.getElementById('msBase'), msMenu=document.getElementById('msMenu'),
+      msBaseLbl=document.getElementById('msBaseLbl'), msTilt=document.getElementById('msTilt');
+  var BASE_LBL={'linz-topo':'Topo','linz-aerial':'Aerial','satellite':'Sat'};
+  function syncBaseLbl(){
+    var base=mapCtrl?mapCtrl.basemap:(SaropMap.hasLinzKey()?'linz-topo':'satellite');
+    msBaseLbl.textContent=BASE_LBL[base]||'Sat';
+    msMenu.querySelectorAll('button').forEach(function(x){
+      x.classList.toggle('on', x.getAttribute('data-base')===base);
     });
+  }
+  if(!SaropMap.hasLinzKey()){
+    msMenu.querySelectorAll('button[data-base^="linz"]').forEach(function(b){ b.style.display='none'; });
+    msBaseLbl.textContent='Sat';
+  }
+  msBase.addEventListener('click',function(){
+    var open=msMenu.hidden;
+    msMenu.hidden=!open;
+    msBase.setAttribute('aria-expanded', open?'true':'false');
+  });
+  msMenu.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var base=b.getAttribute('data-base');
+      msMenu.hidden=true; msBase.setAttribute('aria-expanded','false');
+      if(mapCtrl) mapCtrl.setBasemap(base);
+      msMenu.querySelectorAll('button').forEach(function(x){x.classList.toggle('on', x===b);});
+      msBaseLbl.textContent=BASE_LBL[base];
+    });
+  });
+  msTilt.addEventListener('click',function(){
+    var to3d=msTilt.getAttribute('aria-pressed')!=='true';
+    msTilt.setAttribute('aria-pressed', to3d?'true':'false');
+    if(!mapCtrl) return;
+    if(to3d){ mapCtrl.map.easeTo({pitch:60, duration:800}); }
+    else { mapCtrl.map.easeTo({pitch:0, bearing:0, duration:700}); }
   });
 
   /* ---- capture sheet: the map is another way into the same capture flow ---- */

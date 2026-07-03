@@ -258,7 +258,9 @@ window.SaropMap = (function(){
       if(ctrl._inited) return; ctrl._inited = true;
       addGrid();                                          // cartographic grid sits just above 'base'
       if(opts.controls){
-        map.addControl(new maplibregl.NavigationControl({ visualizePitch: terrain, showCompass: opts.rotate !== false }), opts.controlPos || 'top-left');
+        // opts.nav:false drops the zoom/compass buttons (touch surfaces pinch
+        // instead) while keeping the scale bar and attribution line.
+        if(opts.nav !== false) map.addControl(new maplibregl.NavigationControl({ visualizePitch: terrain, showCompass: opts.rotate !== false }), opts.controlPos || 'top-left');
         // Footer hierarchy (bottom-right): the scale bar is an operational
         // aid and sits ABOVE the credit/offline chip; the legal attribution
         // is the lowest line. MapLibre stacks bottom-corner controls with
