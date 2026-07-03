@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SAROP Workspace — M8 Forms Engine (complete)</title>
+<title>SAROP Workspace — M8 Forms Engine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -69,22 +69,35 @@ input,textarea,select{font-family:inherit}
 /* form nav */
 .nav{background:var(--canvas); border-right:1px solid var(--hairline); overflow-y:auto; padding:var(--s4) var(--s3)}
 .nav .nh{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive); padding:0 var(--s2) 6px}
-.nav .prog{font-family:var(--mono); font-size:10px; color:var(--ink-3); padding:0 var(--s2) var(--s3)}
+.libsearch{display:flex; align-items:center; gap:8px; margin:2px var(--s2) var(--s4); padding:7px 10px; background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-sm)}
+.libsearch svg{width:14px; height:14px; color:var(--ink-3); flex:none}
+.libsearch input{flex:1; min-width:0; border:0; background:none; font-family:inherit; font-size:12.5px; color:var(--ink)}
+.libsearch input:focus{outline:none}
+.libsearch:focus-within{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
 .nav .grp{margin-bottom:var(--s4)}
-.nav .gt{font-size:10px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); padding:var(--s2) var(--s2) 6px}
+.nav .gt{display:flex; align-items:center; justify-content:space-between; font-size:10px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); padding:var(--s2) var(--s2) 6px; border-bottom:1px solid var(--hairline); margin-bottom:4px}
+.nav .gt .gn{font-family:var(--mono); font-weight:500; color:var(--ink-3); background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:0 7px}
 .nav .f{display:flex; align-items:center; gap:9px; padding:7px var(--s2); border-radius:var(--r-sm); font-size:13px; color:var(--ink-2); cursor:pointer}
 .nav .f:hover{background:var(--forest-tint)}
 .nav .f.on{background:var(--accent-tint); color:var(--accent); font-weight:600}
 .nav .f .sd{width:8px; height:8px; border-radius:50%; flex:none}
 .nav .f .cfg{font-family:var(--mono); font-size:9px; color:var(--ink-3); margin-left:auto; flex:none}
-.sd.done{background:var(--forest)} .sd.prog{background:var(--caution)} .sd.draft{background:var(--neutral)} .sd.none{background:var(--rule)}
-.nav .f.on .sd{box-shadow:0 0 0 3px var(--accent-tint)}
+.nav .f .rep{width:9px; height:9px; border-radius:50%; border:2px solid var(--caution); flex:none}
+.nav .f .cnt{font-family:var(--mono); font-size:10px; color:var(--ink-3); white-space:nowrap; flex:none}
 .navkey{border-top:1px solid var(--hairline); margin-top:var(--s3); padding-top:var(--s3); font-size:11px; color:var(--ink-3)}
 .navkey .k{display:flex; align-items:center; gap:7px; padding:2px 8px}
 .navkey .sd{width:8px;height:8px;border-radius:50%}
 
+/* main column: operational summary band above the editor */
+.maincol{display:flex; flex-direction:column; min-height:0; min-width:0}
+.statband{flex:none; display:flex; align-items:stretch; gap:0; margin:var(--s4) var(--s6) 0; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px var(--s4); box-shadow:var(--shadow)}
+.statband .st1{flex:1; display:flex; flex-direction:column; gap:1px; padding:0 var(--s4); border-left:1px solid var(--hairline)}
+.statband .st1:first-child{border-left:0}
+.statband .st1 .v{font-family:var(--mono); font-size:20px; font-weight:600; color:var(--ink)}
+.statband .st1 .k{font-size:11px; color:var(--ink-3)}
+
 /* form editor */
-.editor{overflow-y:auto; padding:var(--s5) var(--s6); background:var(--canvas)}
+.editor{flex:1; overflow-y:auto; padding:var(--s5) var(--s6); background:var(--canvas)}
 .fhead{display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s4); margin-bottom:var(--s2)}
 .fhead h1{font-size:23px; font-weight:700; margin:0}
 .fhead .sub{font-family:var(--mono); font-size:12px; color:var(--ink-3); margin-top:4px}
@@ -99,8 +112,8 @@ input,textarea,select{font-family:inherit}
 .nav .navcap{font-size:11px; line-height:1.4; color:var(--ink-3); padding:0 var(--s2) 8px}
 /* status pills — the product's status language (mirrors M5's .chipst), in place of a bare colour-dot legend */
 .fst{font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:.03em; text-transform:uppercase; padding:2px 7px; border-radius:var(--r-sm); border:1px solid; white-space:nowrap; flex:none}
-.st-done{color:var(--forest); background:var(--forest-tint); border-color:var(--forest)}
-.st-prog{color:var(--caution); background:var(--caution-bg); border-color:var(--caution)}
+.st-current{color:var(--forest); background:var(--forest-tint); border-color:var(--forest)}
+.st-review{color:var(--caution); background:var(--caution-bg); border-color:var(--caution)}
 .st-draft{color:var(--neutral); background:var(--neutral-bg); border-color:var(--neutral)}
 .st-none{color:var(--ink-3); background:var(--paper); border-color:var(--rule)}
 .nav .f .fttl{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
@@ -161,6 +174,10 @@ input,textarea,select{font-family:inherit}
 .scoreseg button.ai:after{content:"AI"; position:absolute; top:-8px; right:-6px; font-family:var(--ui); font-size:8px; font-weight:700; letter-spacing:.04em; background:var(--info); color:#fff; padding:1px 4px; border-radius:3px}
 .scoreseg button[aria-pressed="true"].ai:after{background:var(--forest-deep)}
 
+/* repeatable-record header actions */
+.repact{display:flex; gap:8px; margin:2px 0 var(--s4)}
+.repact .btn{padding:8px 15px; font-size:12.5px}
+
 /* actions */
 .factact{display:flex; gap:8px; margin:var(--s5) 0 var(--s6)}
 .btn{font-size:13px; font-weight:600; padding:10px 18px; border-radius:var(--r-sm); border:1px solid transparent}
@@ -195,19 +212,6 @@ input,textarea,select{font-family:inherit}
 .recordcard .rl{font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:var(--s3)}
 .recordcard .rnote{font-size:13px; color:var(--ink-2); line-height:1.5}
 .recordcard .rnote b{color:var(--ink)}
-.metarows{margin-top:var(--s5); border-top:1px solid var(--hairline); padding-top:var(--s4)}
-.metarows .mr{display:flex; justify-content:space-between; gap:12px; font-size:12px; padding:5px 0}
-.metarows .mr .lab{color:var(--ink-3)}
-.metarows .mr .val{font-family:var(--mono); font-size:12px; color:var(--ink); text-align:right}
-.statuspill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:4px 10px; border-radius:var(--r-pill)}
-.statuspill .d{width:7px;height:7px;border-radius:50%}
-.st-done{background:var(--forest-tint); color:var(--forest)} .st-done .d{background:var(--forest)}
-.st-prog{background:var(--caution-bg); color:var(--caution)} .st-prog .d{background:var(--caution)}
-.st-draft{background:var(--neutral-bg); color:var(--ink-2)} .st-draft .d{background:var(--neutral)}
-.st-none{background:var(--neutral-bg); color:var(--ink-3)} .st-none .d{background:var(--rule)}
-.feednote{margin-top:var(--s5); padding:12px var(--s4); border-radius:var(--r-sm); font-size:12px; line-height:1.5; background:var(--forest-tint); color:var(--forest)}
-.feednote.field{background:var(--caution-bg); color:var(--caution)}
-.feednote .fh{font-weight:700; display:block; margin-bottom:3px}
 
 @media (max-width:1080px){ html,body{height:auto} body{display:block} .wrap{grid-template-columns:minmax(0,1fr); height:auto} .nav,.side{border:0} .fgrid{grid-template-columns:minmax(0,1fr)} }
 
@@ -305,19 +309,21 @@ body.mdopen .mdrawer{transform:none}
 <div class="pagehd">
   <div class="head">
     <h1>Forms</h1>
-    <p>Every IMS form for the operation as a structured record, not a PDF. Complete each once; it feeds the log, the COP and field briefings, and stays timestamped and attributed.</p>
+    <p>Structured records for the operation. Select a form type, submit once or as often as required. Each submission feeds the log, the COP, field briefings and the outward record — timestamped and attributed.</p>
   </div>
 </div>
 
 <div class="wrap">
   <div class="nav">
-    <div class="nh">Form set</div>
-    <div class="navcap">This operation's IMS forms, each with its completion status.</div>
-    <div class="prog" id="navprog"></div>
+    <div class="nh">Form library</div>
+    <div class="libsearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="libSearch" type="search" placeholder="Search form types…" aria-label="Search form types"></div>
     <div id="navlist"></div>
   </div>
 
-  <div class="editor" id="editor"></div>
+  <div class="maincol">
+    <div class="statband" id="statband"></div>
+    <div class="editor" id="editor"></div>
+  </div>
 
   <div class="side" id="side"></div>
 </div>
@@ -358,7 +364,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
   var FORMS=[
     /* SUBJECT & INTELLIGENCE */
     {id:'mpr', ref:'FORMS-4', title:'Initial Missing Person Report', grp:'Subject & intelligence',
-      cap:'Field or IMT (via M4)', feeds:'Feeds the log and the intelligence picture (COP)', status:'done', edit:['IN'],
+      cap:'Field or IMT (via M4)', feeds:'Feeds the log and the intelligence picture (COP)', mode:'single', status:'current', updated:'13:58', edit:['IN'],
       sections:[
         sec('Informant',[['d','Date &amp; time','26 Jul, 13:58'],['t','Informant name','M. Reddick'],['t','Relationship to subject','Spouse'],['m','Contact number','027 xxx xxxx'],['t','Address','Te Anau'],['a','Reason for reporting','Overdue from Kepler Track day walk, no contact since 25 Jul evening.',1]]),
         sec('Missing person',[['t','Full name','David Reddick'],['t','Preferred name','Dave'],['t','Age','58'],['s','Gender',['Male','Female','Other']],['t','Build','Medium'],['t','Height','178 cm'],['t','Hair colour','Grey'],['t','Race / ethnicity','NZ European'],['t','Footwear','Leather tramping boots'],['s','Smoker',['No','Yes']],['a','Medical &amp; mental condition','Mild hypertension, otherwise well.',1],['a','General description, clothing &amp; equipment','Red hard-shell jacket, green pack, walking poles.',1]]),
@@ -366,7 +372,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       ]},
 
     {id:'mps', ref:'FORMS-4(b)', title:'Missing Person Summary', grp:'Subject & intelligence',
-      cap:'IMT', feeds:'Feeds the log, the COP and field briefings', status:'done', edit:['IN'],
+      cap:'IMT', feeds:'Feeds the log, the COP and field briefings', mode:'single', status:'current', updated:'14:32', edit:['IN'],
       note:'Shares subject fields with the Initial Missing Person Report. Whether the summary auto-derives from the report or is authored separately is an open question (M8 sub-sheet).',
       sections:[
         sec('Description',[['t','Name','David Reddick'],['t','Nickname','Dave'],['t','Age','58'],['s','Gender',['Male','Female','Other']],['t','Height','178 cm'],['t','Weight','~82 kg'],['t','Hair','Grey'],['t','Build','Medium'],['t','Headwear','Beanie'],['t','Jacket / top','Red hard-shell'],['t','Pants','Grey softshell'],['t','Footwear','Leather boots'],['a','Distinctive features','Glasses, trekking poles.',1],['a','Equipment carried','Day pack, water, snacks, phone (likely flat).',1]]),
@@ -376,7 +382,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       ]},
 
     {id:'icp', ref:'FORMS-5', title:'Information Collection Plan', grp:'Subject & intelligence',
-      cap:'IMT', feeds:'Feeds the intelligence workflow and the log', status:'prog', edit:['IN'],
+      cap:'IMT', feeds:'Feeds the intelligence workflow and the log', mode:'repeat', count:2, edit:['IN'],
       sections:[
         tbl('Collection tasks',['Information required','Source','Assigned to','Assigned','Status'],
           [['Cellphone last-ping location','Telco / Police','Intel','1430','Requested'],
@@ -385,13 +391,13 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       ]},
 
     {id:'scn', ref:'FORMS-8', title:'Scenario Recording', grp:'Subject & intelligence',
-      cap:'IMT', feeds:'Feeds the intelligence picture and planning', status:'prog', edit:['IN'],
+      cap:'IMT', feeds:'Feeds the intelligence picture and planning', mode:'repeat', count:2, edit:['IN'],
       sections:[
         sec('Scenario',[['d','Date &amp; time','26 Jul, 14:35'],['t','Starting point','Luxmore Hut'],['t','Direction of travel','North-west, downhill'],['t','Destination','Intended road end'],['t','Likelihood (%)','60'],['a','Activity or purpose','Descending after cloud came in; missed the marked junction.',1],['a','Route','Followed the creek line NW rather than the benched track.',1],['a','Evidence or factors developing the scenario','Footprint clue at 1449 supports a NW drainage descent.',1],['a','Comments','Second scenario (sheltered above bushline) held at lower likelihood.',1]])
       ]},
 
     {id:'ros', ref:'FORMS-19', title:'Register of Sightings', grp:'Subject & intelligence',
-      cap:'IMT (intelligence)', feeds:'Feeds the intelligence picture and the log', status:'draft', edit:[],
+      cap:'IMT (intelligence)', feeds:'Feeds the intelligence picture and the log', mode:'repeat', count:5, edit:[],
       sections:[
         tbl('Sightings',['Date / time','Source','Location','How identified','Corroborated','Reliability'],
           [['25 Jul ~1550','Hut warden','Luxmore Hut','Sign-out book','Yes','High']],'Add sighting')
@@ -399,12 +405,12 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
 
     /* SEARCH URGENCY (scored config pair) */
     {id:'sua', ref:'FORMS-6 / FORMS-7', title:'Search Urgency Assessment', grp:'Search urgency',
-      cap:'IMT', feeds:'Feeds the scored urgency rating, drives the response, and logs', status:'done', edit:['IC','IN'],
+      cap:'IMT', feeds:'Feeds the scored urgency rating, drives the response, and logs', mode:'single', status:'current', updated:'14:36', edit:['IC','IN'],
       kind:'urgency', ai:true},
 
     /* PLANNING */
     {id:'iap', ref:'FORMS-14', title:'Incident Action Plan', grp:'Planning',
-      cap:'IMT', feeds:'Feeds the operational period, briefings and the report', status:'prog', edit:['IC'],
+      cap:'IMT', feeds:'Feeds the operational period, briefings and the report', mode:'single', status:'current', updated:'14:40', edit:['IC'],
       sections:[
         sec('Frame',[['d','Date &amp; time','26 Jul, 14:40'],['t','Phase / operational period','OP1 · daylight 26 Jul'],['a','Situation','Overdue tramper, LKP creek fork NW of Luxmore. Cloud lowering after 1600.',1],['a','Mission / goal','Locate and recover the subject before nightfall.',1]]),
         sec('Subject',[['d','Date &amp; time missing','25 Jul evening'],['t','Next of kin','M. Reddick (partner)'],['t','Last known position','Creek fork NW of Luxmore'],['t','Survivability rating','Guarded, worsens overnight']]),
@@ -412,7 +418,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       ]},
 
     {id:'comms', ref:'FORMS-15', title:'Communications Plan', grp:'Planning',
-      cap:'IMT', feeds:'Feeds the comms record (M2) and briefings', status:'done', edit:['IC'],
+      cap:'IMT', feeds:'Feeds the comms record (M2) and briefings', mode:'single', status:'draft', updated:'14:20', edit:['IC'],
       sections:[
         sec('Frame',[['d','Date &amp; time','26 Jul, 14:20'],['t','Operational period','OP1 · daylight 26 Jul']],true),
         tbl('VHF',['Functional group','Channel name','ID','Number'],
@@ -423,7 +429,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       ]},
 
     {id:'med', ref:'FORMS-16', title:'Medical Plan', grp:'Planning',
-      cap:'IMT', feeds:'Feeds briefings, safety and the report', status:'draft', edit:[],
+      cap:'IMT', feeds:'Feeds briefings, safety and the report', mode:'single', status:'none', edit:[],
       sections:[
         sec('Medical unit',[['t','Name','Team medic (MEDIC-1)'],['t','Location','Staging, control gates'],['m','Phone / radio','CH 62'],['s','Paramedics available',['Yes','No']]]),
         sec('Transport',[['t','Service','Rescue helicopter'],['t','Location','Te Anau'],['m','Phone / radio','via RCCNZ'],['s','Paramedics available',['Yes','No']]]),
@@ -432,20 +438,20 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
 
     /* FIELD & CASUALTY */
     {id:'ta', ref:'FORMS-13', title:'Team Assignment (Briefing)', grp:'Field & casualty',
-      cap:'IMT, pushed to field (M6)', feeds:'Feeds the task (M4), the field team and the log', status:'done', edit:['OP'],
+      cap:'IMT, pushed to field (M6)', feeds:'Feeds the task (M4), the field team and the log', mode:'repeat', count:6, edit:['OP'],
       sections:[
         sec('Team',[['m','Task ID','TASK-014'],['d','Time &amp; date','26 Jul, 14:43'],['t','Team name','ROMEO-4'],['s','Team type',['Ground','Dog','Air','Marine']],['t','Team leader','R. Tāne'],['m','Vehicle / vessel ref','—'],['a','Member / crew names','R. Tāne, J. Millis, S. Patel, K. Rewi',1]]),
         sec('Tasking',[['m','Map reference','NZTM 1573290E 5180410N'],['a','Tasking assignment','Sweep sector B along the NW creek drainage; confirm the footprint clue.',1],['a','Decision points','If no sign by the sector B boundary, report and hold for reassignment.',1],['a','Hazard &amp; risk controls','Bluffs above creek; do not cross above waist depth; keep VHF sched.',1],['t','Comms channels','CH 62 / CH 63'],['a','Additional information','Previous task TASK-012 covered sector A on hasty.',1]])
       ]},
 
     {id:'fi', ref:'FORMS-17', title:'Found Item', grp:'Field & casualty',
-      cap:'Field (via M4)', feeds:'Feeds the log; is also a clue and a map feature (MAP-8)', status:'done', edit:[], fieldcap:true,
+      cap:'Field (via M4)', feeds:'Feeds the log; is also a clue and a map feature (MAP-8)', mode:'repeat', count:3, edit:[], fieldcap:true,
       sections:[
         sec('Found item',[['t','ID number','CLUE-1449'],['t','Relevance (%)','70'],['m','Location found','NZTM 1573290E 5180410N'],['d','Time found','26 Jul, 14:49'],['t','Who found it','R. Tāne (ROMEO-4)'],['s','Status',['In situ','Removed']],['s','Protection',['Photographed','Marked','Bagged']],['t','Where held if removed','—'],['a','Description','Single footprint, north-west heading, near the creek fork.',1],['a','Relationship to other items','Consistent with subject boot tread; near disturbed fern.',1],['a','Additional comments','Photographed in situ; left marked for follow-up.',1]])
       ]},
 
     {id:'ssl', ref:'FORMS-18', title:'Suburban Search Log', grp:'Field & casualty',
-      cap:'Field (search team)', feeds:'Feeds the log and the COP', status:'none', edit:[], fieldcap:true,
+      cap:'Field (search team)', feeds:'Feeds the log and the COP', mode:'conditional', edit:[], fieldcap:true,
       sections:[
         tbl('Search log',['Time','Address','Name','Section searched','Follow up'],
           [['','','','','']],'Add entry'),
@@ -453,7 +459,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       ]},
 
     {id:'cas', ref:'FORMS-20', title:'Casualty Assessment Form', grp:'Field & casualty',
-      cap:'Field (via M4)', feeds:'Feeds the log, medical handover and the report', status:'none', edit:[], fieldcap:true,
+      cap:'Field (via M4)', feeds:'Feeds the log, medical handover and the report', mode:'repeat', count:0, edit:[], fieldcap:true,
       sections:[
         sec('Casualty',[['d','Date &amp; time',''],['t','First-aider names',''],['t','Name',''],['d','Date of birth',''],['t','Age',''],['s','Gender',['Male','Female','Other']],['t','Address',''],['m','Phone',''],['t','Email',''],['t','Doctor &amp; contact',''],['t','Next of kin &amp; contact','']]),
         sec('History (SAMPLE)',[['a','Complaints',''],['a','Events leading to onset',''],['a','Past medical history',''],['a','Medications',''],['a','Allergies',''],['t','Last ate or drank',''],['a','Examination result','']]),
@@ -465,14 +471,14 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
 
     /* OUTWARD & DEBRIEF */
     {id:'sitrep', ref:'FORMS-12', title:'SITREP', grp:'Outward & debrief',
-      cap:'IMT', feeds:'Feeds the outward record (M9) and the ODC (M10)', status:'prog', edit:['IC'], outward:true,
+      cap:'IMT', feeds:'Feeds the outward record (M9) and the ODC (M10)', mode:'repeat', count:4, drafts:1, edit:['IC'], outward:true,
       sections:[
         sec('Situation report',[['d','Date &amp; time','26 Jul, 15:20'],['t','Location','Kepler Track, Luxmore sector'],['m','Map / chart reference','NZTM 1573290E 5180410N']],true),
         sec('',[['a','Situation','Two ground teams committed to sectors A and B. Footprint clue at 1449 narrowed the search north-west.',1],['a','Actions taken','TASK-014 reassigned ROMEO-2 to ROMEO-4 for sector B.',1],['a','Factors impacting planning','Cloud lowering to 900 m after 1600 closes the air window.',1],['a','Contingency &amp; long-term planning','Hold sector A on hasty; commit sector B for daylight; overnight plan if unresolved.',1]])
       ]},
 
     {id:'debrief', ref:'FORMS-21 / FORMS-22', title:'Team Debrief', grp:'Outward & debrief',
-      cap:'IMT (debriefer)', feeds:'Feeds search effectiveness, probability of detection and the report', status:'draft', edit:['IN'],
+      cap:'IMT (debriefer)', feeds:'Feeds search effectiveness, probability of detection and the report', mode:'repeat', count:2, drafts:1, edit:['IN'],
       kind:'debrief',
       variants:{
         land:[
@@ -489,7 +495,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       }},
 
     {id:'hand', ref:'FORMS-23', title:'Handover Briefing', grp:'Outward & debrief',
-      cap:'IMT', feeds:'Feeds the outward record and the shift handover', status:'none', edit:[], outward:true,
+      cap:'IMT', feeds:'Feeds the outward record and the shift handover', mode:'conditional', edit:[], outward:true,
       note:'Covers within-Category I handover only. Cat I to Cat II handover is roadmap.',
       sections:[
         sec('Handover',[['d','Date &amp; time',''],['t','Operational period','OP2']],true),
@@ -497,32 +503,63 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       ]}
   ];
 
-  var GROUPS=['Subject & intelligence','Search urgency','Planning','Field & casualty','Outward & debrief'];
-  var STLABEL={done:'Complete',prog:'In progress',draft:'Draft',none:'Not started'};
-  var dom='land', cur='sua', suaVals=[];
+  /* library categories: the form set is a library of record types, not a
+     checklist — singles carry a status, repeatables carry a submitted count,
+     and conditional records are simply "not used" until they are. */
+  var CATS=[
+    {key:'single',      label:'Single incident records'},
+    {key:'repeat',      label:'Repeatable operational submissions'},
+    {key:'conditional', label:'Conditional / specialist records'}
+  ];
+  var STLABEL={current:'Current',draft:'Draft',review:'Needs review',none:'Not started'};
+  var dom='land', cur='sua', suaVals=[], libFilter='';
 
-  /* ---------- NAV ---------- */
+  function rightCell(f){
+    if(f.mode==='repeat') return '<span class="cnt">'+f.count+' submitted</span>';
+    if(f.mode==='conditional') return '<span class="fst st-none">Not used</span>';
+    return '<span class="fst st-'+f.status+'">'+STLABEL[f.status]+'</span>';
+  }
+
+  /* ---------- FORM LIBRARY ---------- */
   function renderNav(){
-    var html='';
-    GROUPS.forEach(function(g){
-      var items=FORMS.filter(function(f){return f.grp===g;});
-      if(!items.length) return;
-      html+='<div class="grp"><div class="gt">'+g+'</div>';
-      items.forEach(function(f){
+    var q=libFilter.toLowerCase(), html='';
+    CATS.forEach(function(c){
+      var items=FORMS.filter(function(f){return f.mode===c.key;});
+      var shown=items.filter(function(f){return !q || f.title.toLowerCase().indexOf(q)!==-1;});
+      if(!shown.length) return;
+      html+='<div class="grp"><div class="gt">'+c.label+'<span class="gn">'+items.length+'</span></div>';
+      shown.forEach(function(f){
         var cfg = (f.kind==='urgency'||f.kind==='debrief') ? '<span class="cfg">L / M</span>' : '';
-        html+='<div class="f'+(f.id===cur?' on':'')+'" data-id="'+f.id+'" title="'+f.title+' · '+STLABEL[f.status]+'">'+
-          '<span class="fttl">'+f.title+'</span>'+cfg+
-          '<span class="fst st-'+f.status+'">'+STLABEL[f.status]+'</span></div>';
+        var mark = f.mode==='repeat' ? '<span class="rep" aria-hidden="true"></span>' : '';
+        html+='<div class="f'+(f.id===cur?' on':'')+'" data-id="'+f.id+'" title="'+f.title+'">'+
+          mark+'<span class="fttl">'+f.title+'</span>'+cfg+rightCell(f)+'</div>';
       });
       html+='</div>';
     });
-    document.getElementById('navlist').innerHTML=html;
+    document.getElementById('navlist').innerHTML=html || '<div class="navcap">No form types match.</div>';
     document.querySelectorAll('.nav .f').forEach(function(el){
       el.addEventListener('click',function(){ cur=el.getAttribute('data-id'); renderNav(); renderForm(); });
     });
-    var done=FORMS.filter(function(f){return f.status==='done';}).length;
-    document.getElementById('navprog').textContent=done+' of '+FORMS.length+' complete';
+    renderStats();
   }
+
+  /* operational summary: counts, never completion */
+  function renderStats(){
+    var submitted=0, drafts=0, current=0;
+    FORMS.forEach(function(f){
+      if(f.mode==='repeat'){ submitted+=f.count; drafts+=(f.drafts||0); }
+      if(f.mode==='single'){ if(f.status==='draft') drafts++; if(f.status==='current') current++; }
+    });
+    document.getElementById('statband').innerHTML=
+      '<div class="st1"><span class="v">'+FORMS.length+'</span><span class="k">Form types available</span></div>'+
+      '<div class="st1"><span class="v">'+submitted+'</span><span class="k">Records submitted</span></div>'+
+      '<div class="st1"><span class="v">'+drafts+'</span><span class="k">Drafts</span></div>'+
+      '<div class="st1"><span class="v">'+current+'</span><span class="k">Current incident records</span></div>';
+  }
+
+  document.getElementById('libSearch').addEventListener('input',function(){
+    libFilter=this.value.trim(); renderNav();
+  });
 
   /* ---------- GENERIC FIELD RENDER ---------- */
   function ctrl(f){
@@ -622,20 +659,46 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
     else if(f.fieldcap){ badge='<span class="vbadge v-fieldcap">Field · M4</span>'; }
     else { badge='<span class="vbadge v-cap">IMT</span>'; }
 
+    var modeTag, subLine;
+    if(f.mode==='repeat'){
+      modeTag='Repeatable record';
+      subLine=refText+' · repeatable record · '+f.count+' submitted this operation';
+    } else if(f.mode==='conditional'){
+      modeTag='Conditional record';
+      subLine=refText+' · conditional record · used only when the operation calls for it';
+    } else {
+      modeTag='Single incident record';
+      subLine=refText+' · '+(f.status==='current'
+        ? 'current incident record · last updated '+f.updated+' today'
+        : 'single incident record · '+STLABEL[f.status].toLowerCase());
+    }
+
     var head='<div class="fhead"><div>'+
       '<div class="modeline">'+
-        '<span class="vbadge v-mode"><span class="mdot"></span>Filling · live record</span>'+
-        '<button type="button" class="mgt" disabled aria-disabled="true" title="Template management is out of scope for this prototype. Every form here is completed as a live operational record, not designed.">Manage templates</button>'+
+        '<span class="vbadge v-mode"><span class="mdot"></span>'+modeTag+'</span>'+
+        '<button type="button" class="mgt" disabled aria-disabled="true" title="Template management is out of scope for this prototype. Every form here is filled in as a live operational record, not designed.">Manage templates</button>'+
       '</div>'+
       '<h1>'+f.title+'</h1>'+
-      '<div class="sub">'+refText+' · structured record · shares the log field set</div></div>'+badge+'</div>';
+      '<div class="sub">'+subLine+'</div></div>'+badge+'</div>';
 
+    var statusChip = f.mode==='repeat'
+      ? '<span class="fst st-current" id="metastatus">'+f.count+' submitted</span>'
+      : (f.mode==='conditional'
+        ? '<span class="fst st-none" id="metastatus">Not used</span>'
+        : '<span class="fst st-'+f.status+'" id="metastatus">'+STLABEL[f.status]+'</span>');
     var meta='<div class="metastrip">'+
-      '<span class="fst st-'+f.status+'" id="metastatus">'+STLABEL[f.status]+'</span>'+
+      statusChip+
       '<span class="chipm"><b>Captured by</b> · '+f.cap+'</span>'+
       '<span class="chipm">'+f.feeds+'</span>'+
       (isPair?'<span class="chipm"><b>Config pair</b> · land / marine variants on the domain flag</span>':'')+
       '</div>';
+
+    var repact = f.mode==='repeat'
+      ? '<div class="repact">'+
+        '<button class="btn btn-primary" id="newSub">New submission</button>'+
+        '<button class="btn btn-ghost" disabled aria-disabled="true" title="Submission history is out of scope for this prototype.">View previous submissions ('+f.count+')</button>'+
+        '</div>'
+      : '';
 
     var conc='';
     if(f.edit && f.edit.length){
@@ -657,9 +720,16 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       body+=renderSections(f.sections);
     }
 
-    var actions='<div class="factact"><button class="btn btn-primary" id="mkdone">Mark complete</button><button class="btn btn-ghost" id="mkdraft">Save draft</button></div><div style="height:24px"></div>';
+    var actions;
+    if(f.mode==='repeat'){
+      actions='<div class="factact"><button class="btn btn-primary" id="submitRec">Submit record</button><button class="btn btn-ghost" id="mkdraft">Save draft</button></div><div style="height:24px"></div>';
+    } else if(f.mode==='conditional'){
+      actions='<div class="factact"><button class="btn btn-ghost" id="mkdraft">Save draft</button><span class="chipm" style="align-self:center">Optional — not counted until used</span></div><div style="height:24px"></div>';
+    } else {
+      actions='<div class="factact"><button class="btn btn-primary" id="saveCur">Save current record</button><button class="btn btn-ghost" id="mkdraft">Save as draft</button></div><div style="height:24px"></div>';
+    }
 
-    document.getElementById('editor').innerHTML=head+meta+conc+body+actions;
+    document.getElementById('editor').innerHTML=head+meta+repact+conc+body+actions;
     var wrap=document.querySelector('.wrap');
     if(f.kind==='urgency'){ document.getElementById('side').innerHTML=scorePanelHTML(); wrap.classList.remove('noside'); }
     else { document.getElementById('side').innerHTML=''; wrap.classList.add('noside'); }
@@ -677,13 +747,25 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       });
     });
 
-    // status controls
-    document.getElementById('mkdone').addEventListener('click',function(){ setStatus('done'); });
-    document.getElementById('mkdraft').addEventListener('click',function(){ setStatus('prog'); });
+    // record controls (per mode)
+    var saveCur=document.getElementById('saveCur');
+    if(saveCur) saveCur.addEventListener('click',function(){ setStatus('current'); });
+    var submitRec=document.getElementById('submitRec');
+    if(submitRec) submitRec.addEventListener('click',function(){
+      f.count++; renderNav(); renderForm();
+    });
+    var newSub=document.getElementById('newSub');
+    if(newSub) newSub.addEventListener('click',function(){ renderForm(); });
+    var mkdraft=document.getElementById('mkdraft');
+    if(mkdraft) mkdraft.addEventListener('click',function(){
+      if(f.mode==='single'){ setStatus('draft'); }
+      else { f.drafts=(f.drafts||0)+1; renderStats(); }
+    });
   }
 
   function setStatus(st){
     var f=FORMS.filter(function(x){return x.id===cur;})[0];
+    if(f.mode!=='single') return;
     f.status=st; renderNav();
     var sp=document.getElementById('metastatus');
     if(sp){ sp.className='fst st-'+st; sp.textContent=STLABEL[st]; }
