@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SAROP Workspace — M6 Forms Engine (complete)</title>
+<title>SAROP Workspace — M8 Forms Engine (complete)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -52,7 +52,7 @@ input,textarea,select{font-family:inherit}
 .seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
 
 /* layout */
-/* page heading band, consistent with the other modules (M1, M3, M5, M7-M9) */
+/* page heading band, consistent with the other modules (M1-M4, M7, M9) */
 .pagehd{flex:none; padding:var(--s5) var(--s6) var(--s4) var(--s5); border-bottom:1px solid var(--hairline); background:var(--canvas)}
 .head h1{font-size:24px; font-weight:700; margin:0}
 .head p{color:var(--ink-2); margin:6px 0 0; font-size:14px; max-width:80ch}
@@ -92,7 +92,7 @@ input,textarea,select{font-family:inherit}
 .v-mode .mdot{width:7px; height:7px; border-radius:50%; background:var(--forest); flex:none}
 .mgt{font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--ink-3); background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-pill); padding:3px 12px; cursor:not-allowed; opacity:.75}
 .nav .navcap{font-size:11px; line-height:1.4; color:var(--ink-3); padding:0 var(--s2) 8px}
-/* status pills — the product's status language (mirrors M2's .chipst), in place of a bare colour-dot legend */
+/* status pills — the product's status language (mirrors M5's .chipst), in place of a bare colour-dot legend */
 .fst{font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:.03em; text-transform:uppercase; padding:2px 7px; border-radius:var(--r-sm); border:1px solid; white-space:nowrap; flex:none}
 .st-done{color:var(--forest); background:var(--forest-tint); border-color:var(--forest)}
 .st-prog{color:var(--caution); background:var(--caution-bg); border-color:var(--caution)}
@@ -269,13 +269,13 @@ body.mdopen .mdrawer{transform:none}
   </div>
   <div class="mdrawer-list">
     <a class="mrow" href="M1%20Stand-up%20Screen.html"><span class="mrow-id">M1</span><span class="mrow-nm">Stand-up</span><span class="mrow-dot"></span></a>
-    <a class="mrow" href="M2%20The%20COP%20Screen.html"><span class="mrow-id">M2</span><span class="mrow-nm">The COP</span><span class="mrow-dot"></span></a>
-    <a class="mrow" href="M3%20Tasking%20Screen.html"><span class="mrow-id">M3</span><span class="mrow-nm">Tasking</span><span class="mrow-dot"></span></a>
-    <a class="mrow" href="M4%20Field%20Capture%20Screen.html"><span class="mrow-id">M4</span><span class="mrow-nm">Field Capture</span><span class="mrow-dot"></span></a>
-    <a class="mrow" href="M5%20Log%20and%20Records%20Screen.html"><span class="mrow-id">M5</span><span class="mrow-nm">Log & Records</span><span class="mrow-dot"></span></a>
-    <a class="mrow on" href="M6%20Forms%20Engine%20Screen.html" aria-current="page"><span class="mrow-id">M6</span><span class="mrow-nm">Forms Engine</span><span class="mrow-dot"></span></a>
-    <a class="mrow" href="M7%20Notifications%20and%20Callout%20Screen.html"><span class="mrow-id">M7</span><span class="mrow-nm">Notifications & Callout</span><span class="mrow-dot"></span></a>
-    <a class="mrow" href="M8%20Resources%20and%20Staging%20Screen.html"><span class="mrow-id">M8</span><span class="mrow-nm">Resources & Staging</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M2%20Notifications%20and%20Callout%20Screen.html"><span class="mrow-id">M2</span><span class="mrow-nm">Notifications & Callout</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M3%20Resources%20and%20Staging%20Screen.html"><span class="mrow-id">M3</span><span class="mrow-nm">Resources & Staging</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M4%20Tasking%20Screen.html"><span class="mrow-id">M4</span><span class="mrow-nm">Tasking</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M5%20The%20COP%20Screen.html"><span class="mrow-id">M5</span><span class="mrow-nm">The COP</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M6%20Field%20Capture%20Screen.html"><span class="mrow-id">M6</span><span class="mrow-nm">Field Capture</span><span class="mrow-dot"></span></a>
+    <a class="mrow" href="M7%20Log%20and%20Records%20Screen.html"><span class="mrow-id">M7</span><span class="mrow-nm">Log & Records</span><span class="mrow-dot"></span></a>
+    <a class="mrow on" href="M8%20Forms%20Engine%20Screen.html" aria-current="page"><span class="mrow-id">M8</span><span class="mrow-nm">Forms Engine</span><span class="mrow-dot"></span></a>
     <a class="mrow" href="M9%20Close-out%20Screen.html"><span class="mrow-id">M9</span><span class="mrow-nm">Close-out</span><span class="mrow-dot"></span></a>
   </div>
 </nav>
@@ -362,7 +362,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
 
     {id:'mps', ref:'FORMS-4(b)', title:'Missing Person Summary', grp:'Subject & intelligence',
       cap:'IMT', feeds:'Feeds the log, the COP and field briefings', status:'done', edit:['IN'],
-      note:'Shares subject fields with the Initial Missing Person Report. Whether the summary auto-derives from the report or is authored separately is an open question (M6 sub-sheet).',
+      note:'Shares subject fields with the Initial Missing Person Report. Whether the summary auto-derives from the report or is authored separately is an open question (M8 sub-sheet).',
       sections:[
         sec('Description',[['t','Name','David Reddick'],['t','Nickname','Dave'],['t','Age','58'],['s','Gender',['Male','Female','Other']],['t','Height','178 cm'],['t','Weight','~82 kg'],['t','Hair','Grey'],['t','Build','Medium'],['t','Headwear','Beanie'],['t','Jacket / top','Red hard-shell'],['t','Pants','Grey softshell'],['t','Footwear','Leather boots'],['a','Distinctive features','Glasses, trekking poles.',1],['a','Equipment carried','Day pack, water, snacks, phone (likely flat).',1]]),
         sec('Vehicle or vessel',[['t','Type','Ute'],['m','Registration','ABC123'],['t','Location','Kepler control gates car park'],['t','Description','White Toyota Hilux']]),
@@ -407,7 +407,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       ]},
 
     {id:'comms', ref:'FORMS-15', title:'Communications Plan', grp:'Planning',
-      cap:'IMT', feeds:'Feeds the comms record (M7) and briefings', status:'done', edit:['IC'],
+      cap:'IMT', feeds:'Feeds the comms record (M2) and briefings', status:'done', edit:['IC'],
       sections:[
         sec('Frame',[['d','Date &amp; time','26 Jul, 14:20'],['t','Operational period','OP1 · daylight 26 Jul']],true),
         tbl('VHF',['Functional group','Channel name','ID','Number'],
@@ -427,7 +427,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
 
     /* FIELD & CASUALTY */
     {id:'ta', ref:'FORMS-13', title:'Team Assignment (Briefing)', grp:'Field & casualty',
-      cap:'IMT, pushed to field (M4)', feeds:'Feeds the task (M3), the field team and the log', status:'done', edit:['OP'],
+      cap:'IMT, pushed to field (M6)', feeds:'Feeds the task (M4), the field team and the log', status:'done', edit:['OP'],
       sections:[
         sec('Team',[['m','Task ID','TASK-014'],['d','Time &amp; date','26 Jul, 14:43'],['t','Team name','ROMEO-4'],['s','Team type',['Ground','Dog','Air','Marine']],['t','Team leader','R. Tāne'],['m','Vehicle / vessel ref','—'],['a','Member / crew names','R. Tāne, J. Millis, S. Patel, K. Rewi',1]]),
         sec('Tasking',[['m','Map reference','NZTM 1573290E 5180410N'],['a','Tasking assignment','Sweep sector B along the NW creek drainage; confirm the footprint clue.',1],['a','Decision points','If no sign by the sector B boundary, report and hold for reassignment.',1],['a','Hazard &amp; risk controls','Bluffs above creek; do not cross above waist depth; keep VHF sched.',1],['t','Comms channels','CH 62 / CH 63'],['a','Additional information','Previous task TASK-012 covered sector A on hasty.',1]])

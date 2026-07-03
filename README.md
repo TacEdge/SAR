@@ -28,9 +28,9 @@ JS.
   onward navigation, so no screen file is changed. Deep behaviours that need real
   architecture (persistence, sync, report emit) are intentionally left as-is.
 
-Modules: M1 Stand-up, M2 The COP, M3 Tasking, M4 Field Capture, M5 Log &
-Records, M6 Forms Engine, M7 Notifications & Callout, M8 Resources & Staging,
-M9 Close-out.
+Modules (incident-workflow order): M1 Stand-up, M2 Notifications & Callout,
+M3 Resources & Staging, M4 Tasking, M5 The COP, M6 Field Capture, M7 Log &
+Records, M8 Forms Engine, M9 Close-out.
 
 ## Run it locally
 
@@ -63,12 +63,12 @@ tokens (no drift). It is deployed alongside the prototype (open
 
 ## The map component
 
-`vendor/sarop-map.js` is the single map component, reused by both the COP (M2)
-and Field Capture (M4). It wraps MapLibre GL with the incident's area-of-operation
+`vendor/sarop-map.js` is the single map component, reused by both the COP (M5)
+and Field Capture (M6). It wraps MapLibre GL with the incident's area-of-operation
 geodata, the Esri satellite + Terrarium terrain base, and an always-present
 offline-safe background so the map is never blank. `setOnline(false)` drops the
 satellite/terrain and leaves the vector picture fully usable with no tile fetch,
-which is how M4 stays usable offline. Note: this static prototype does not bundle
+which is how M6 stays usable offline. Note: this static prototype does not bundle
 real tiles for true offline imagery (that needs a connected build step or a
 service worker); offline degrades gracefully to the styled base with all vector
 data still rendering.
@@ -80,7 +80,7 @@ block appended to its own `<style>`) for the mobile-first pass; nothing above th
 breakpoint changed, so the desktop / iPad layouts are as originally found. Beyond
 that responsive addition, three screens were changed on request:
 
-- `M4 Field Capture Screen.html` gained an operator map. A Capture / Map tab pair
+- `M6 Field Capture Screen.html` gained an operator map. A Capture / Map tab pair
   keeps capture-first; the Map tab reuses the COP map component scoped to the
   operator's own picture: the assigned task geometry (Sector B, TASK-014), the own
   track, and the on-device captures, with each marker carrying its sync state
@@ -88,7 +88,7 @@ that responsive addition, three screens were changed on request:
   "Capture here") opens the same capture flow pre-filled with the coordinate, so
   entries land in the same on-device queue. The map is fully usable with Signal =
   Offline, and respects the Day / Night theme.
-- `M2 The COP Screen.html` now shows real satellite imagery with a 2D / 3D tilt.
+- `M5 The COP Screen.html` now shows real satellite imagery with a 2D / 3D tilt.
   Its abstract base map was replaced with a MapLibre GL map over Esri World
   Imagery (an open basemap, no API key), draped over real terrain from the free
   AWS Terrarium elevation tiles, so the coordinator can tilt the picture into 3D
@@ -100,7 +100,7 @@ that responsive addition, three screens were changed on request:
   toggles, domain switch) is preserved. MapLibre GL is vendored under
   `vendor/maplibre/`, so the page needs no CDN; only the satellite and elevation
   tiles require an internet connection.
-- `M6 Forms Engine Screen.html` was replaced with the complete Forms Engine: the
+- `M8 Forms Engine Screen.html` was replaced with the complete Forms Engine: the
   full form set (subject and intelligence, search urgency, planning, field and
   casualty, outward and debrief), a generic field renderer, the scored urgency
   land / marine config pair, and the debrief variants. It keeps the standard

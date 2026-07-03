@@ -22,7 +22,7 @@ Notes
 -----
 - Keep this folder structure intact: each Mx.html loads the matching module file
   in the parent folder, which in turn uses /vendor and /assets.
-- The map modules (M2, M4) show live satellite imagery when online; with no
+- The map modules (M5, M6) show live satellite imagery when online; with no
   connection they fall back to the offline cartographic basemap automatically.
 - Fonts (IBM Plex) load from Google Fonts when online; offline they fall back
   to the system UI font.

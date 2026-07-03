@@ -8,29 +8,33 @@
 (function(){
   'use strict';
 
-  // Module nav icons (inline stroke SVGs, per the design update)
+  // Module nav icons (inline stroke SVGs), keyed by the module's code in the
+  // incident-workflow order: stand-up, callout, staging, tasking, COP, field,
+  // log, forms, close-out.
   var IC = {
     M1:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-    M2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><path d="M8 2v16M16 6v16"/></svg>',
-    M3:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="m8 12 2.5 2.5L15.5 9.5"/></svg>',
-    M4:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
-    M5:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>',
-    M6:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h6M7 16h4"/></svg>',
-    M7:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
-    M8:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>',
+    M2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
+    M3:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>',
+    M4:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="m8 12 2.5 2.5L15.5 9.5"/></svg>',
+    M5:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><path d="M8 2v16M16 6v16"/></svg>',
+    M6:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+    M7:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>',
+    M8:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h6M7 16h4"/></svg>',
     M9:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>'
   };
 
-  // Flow order. Files are loaded byte-for-byte unchanged.
+  // Incident-workflow order: stand up → call out → stage resources → task →
+  // run the COP → capture in the field → preserve the record → complete
+  // forms → close out. Files are loaded byte-for-byte unchanged.
   var SCREENS = [
     {file:'M1 Stand-up Screen.html',              code:'M1', name:'Stand-up & Incident Control'},
-    {file:'M2 The COP Screen.html',               code:'M2', name:'The COP'},
-    {file:'M3 Tasking Screen.html',               code:'M3', name:'Tasking'},
-    {file:'M4 Field Capture Screen.html',         code:'M4', name:'Field Capture'},
-    {file:'M5 Log and Records Screen.html',       code:'M5', name:'Log & Records'},
-    {file:'M6 Forms Engine Screen.html',          code:'M6', name:'Forms Engine'},
-    {file:'M7 Notifications and Callout Screen.html', code:'M7', name:'Notifications & Callout'},
-    {file:'M8 Resources and Staging Screen.html', code:'M8', name:'Resources & Staging'},
+    {file:'M2 Notifications and Callout Screen.html', code:'M2', name:'Notifications & Callout'},
+    {file:'M3 Resources and Staging Screen.html', code:'M3', name:'Resources & Staging'},
+    {file:'M4 Tasking Screen.html',               code:'M4', name:'Tasking'},
+    {file:'M5 The COP Screen.html',               code:'M5', name:'The COP'},
+    {file:'M6 Field Capture Screen.html',         code:'M6', name:'Field Capture'},
+    {file:'M7 Log and Records Screen.html',       code:'M7', name:'Log & Records'},
+    {file:'M8 Forms Engine Screen.html',          code:'M8', name:'Forms Engine'},
     {file:'M9 Close-out Screen.html',             code:'M9', name:'Close-out & Outward Record'}
   ];
 
@@ -40,10 +44,12 @@
   // same-origin iframe, so no screen file is changed. Deep behaviours
   // (persistence, sync, report emit) stay as they are.
   var CONNECTORS = {
-    'M1 Stand-up Screen.html':                 [{sel:'#goBtn',    to:'M2 The COP Screen.html',               delay:1100}],
-    'M3 Tasking Screen.html':                  [{sel:'#pushBtn',  to:'M4 Field Capture Screen.html',         delay:1100}],
-    'M7 Notifications and Callout Screen.html': [{sel:'#sendBtn', to:'M8 Resources and Staging Screen.html', delay:1300}],
-    'M8 Resources and Staging Screen.html':    [{sel:'#reconBtn', to:'M9 Close-out Screen.html',             delay:1100}]
+    // stand up → call people out (the first action once IC is established)
+    'M1 Stand-up Screen.html':                 [{sel:'#goBtn',    to:'M2 Notifications and Callout Screen.html', delay:1100}],
+    'M2 Notifications and Callout Screen.html': [{sel:'#sendBtn', to:'M3 Resources and Staging Screen.html', delay:1300}],
+    'M4 Tasking Screen.html':                  [{sel:'#pushBtn',  to:'M6 Field Capture Screen.html',         delay:1100}],
+    // end-of-operation reconciliation hands off to close-out
+    'M3 Resources and Staging Screen.html':    [{sel:'#reconBtn', to:'M9 Close-out Screen.html',             delay:1100}]
   };
 
   var frame   = document.getElementById('screenFrame');
