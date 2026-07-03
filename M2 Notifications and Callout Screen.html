@@ -184,6 +184,31 @@ body.mdopen .mdrawer{transform:none}
   .grid{grid-template-columns:minmax(0,1fr)}
   
 }
+
+/* ===== global header: brand | incident | system status (identical on every module) ===== */
+.appbar .brand{flex:1 1 0; min-width:0}
+.appbar>.inc{flex:none; margin-left:0; padding-left:0; border-left:0}
+.appbar .right{flex:1 1 0; min-width:max-content; display:flex; align-items:center; justify-content:flex-end; gap:var(--s4)}
+/* narrow widths: shed quiet status items before anything can collide */
+@media (max-width:1120px){ .appbar .hsync{display:none} }
+@media (max-width:960px){ .appbar .hclock{display:none} }
+.appbar .hsync{display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:11.5px; color:var(--sage); white-space:nowrap}
+.appbar .hsync .hdot{width:7px; height:7px; border-radius:50%; background:#8FBF6F; box-shadow:0 0 0 3px rgba(143,191,111,.22)}
+.appbar .hclock{font-family:var(--mono); font-size:11.5px; color:var(--sage); white-space:nowrap}
+.appbar .hclock .t{color:var(--cream); font-weight:600; font-size:13px}
+.appbar .hclock.over .t{color:#E7B75F}
+.appbar .hmenu{width:34px; height:34px; flex:none; display:inline-flex; align-items:center; justify-content:center; padding:0; background:rgba(252,242,232,.06); border:1px solid rgba(252,242,232,.28); border-radius:9px; color:var(--cream); cursor:pointer}
+.appbar .hmenu:hover{background:rgba(252,242,232,.14)}
+.appbar .hmenu svg{width:17px; height:17px}
+/* the module drawer opens from the header menu on desktop too */
+body.mdopen .mscrim{display:block}
+body.mdopen .mdrawer{display:flex}
+.domain{display:flex; align-items:center; gap:var(--s2)}
+.domain .lab{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sage)}
+.seg{display:inline-flex; border:1px solid rgba(255,255,255,.28); border-radius:var(--r-pill); overflow:hidden}
+.seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; background:transparent; color:#CFD6C2; border:0; padding:5px 13px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
+
 </style>
 </head>
 <body>
@@ -212,9 +237,19 @@ body.mdopen .mdrawer{transform:none}
 </nav>
 
 <div class="appbar">
-  <div class="brand">
-    <img class="blogo" src="assets/tacedge-logo.png" alt="TacEdge" width="1978" height="391"><span class="bdv" aria-hidden="true"></span><span class="bsr">Search &amp; Rescue</span>
-    <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
+  <div class="brand"><img class="blogo" src="assets/tacedge-logo.png" alt="TacEdge" width="1978" height="391"><span class="bdv" aria-hidden="true"></span><span class="bsr">Search &amp; Rescue</span></div>
+  <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
+  <div class="right">
+    <span class="hsync" title="COP sync"><span class="hdot"></span>Synced 0.8s ago</span>
+    <span class="hclock"><span class="t" id="hdrElapsed">04:20</span> elapsed</span>
+    <div class="domain">
+      <span class="lab">Domain</span>
+      <div class="seg" role="group" aria-label="Domain">
+        <button data-dom="land" aria-pressed="true">Land</button>
+        <button data-dom="marine" aria-pressed="false">Marine</button>
+      </div>
+    </div>
+    <button class="hmenu" type="button" id="hdrMenu" aria-label="Open modules menu" aria-expanded="false" aria-controls="modDrawer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
   </div>
 </div>
 
@@ -435,6 +470,25 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
     b.innerHTML=(open?openLbl:closedLbl)+' <span aria-hidden="true">'+(open?'\u25B4':'\u25BE')+'</span>';
     var t=document.getElementById('toast'); if(t) t.classList.toggle('exp', open);
   });
+})();
+</script>
+<script>
+/* global header wiring */
+(function(){
+  var hm=document.getElementById('hdrMenu');
+  if(hm) hm.addEventListener('click',function(){
+    var o=!document.body.classList.contains('mdopen');
+    document.body.classList.toggle('mdopen',o); hm.setAttribute('aria-expanded',o?'true':'false');
+  });
+  document.querySelectorAll('.appbar .seg button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var dom=b.getAttribute('data-dom');
+      document.documentElement.setAttribute('data-domain',dom);
+      document.querySelectorAll('.appbar .seg button').forEach(function(x){x.setAttribute('aria-pressed', x.getAttribute('data-dom')===dom?'true':'false');});
+    });
+  });
+  var he=document.getElementById('hdrElapsed');
+  if(he){ var hb=260; setInterval(function(){ hb++; var m=Math.floor(hb/60),s=hb%60; he.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s; },1000); }
 })();
 </script>
 </body>

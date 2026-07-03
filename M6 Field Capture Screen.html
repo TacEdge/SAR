@@ -43,7 +43,7 @@ button{font-family:inherit; cursor:pointer}
 /* inside the shell the brand lockup lives in the shell's own band */
 html[data-shell] .phead .blogo,html[data-shell] .phead .bdv,html[data-shell] .phead .bsr{display:none}
 .phead .l{align-items:center}
-html[data-shell] .phead .tag{margin-left:0; padding-left:0; border-left:0}
+html[data-shell] .phead .inc{margin-left:0; padding-left:0; border-left:0}
 .phead .tag{margin-left:16px; padding-left:16px; border-left:1px solid rgba(255,255,255,.18); font-size:13px; color:#DCE2CE}
 .phead .ctrls{display:flex; align-items:center; gap:20px}
 .tgl{display:flex; align-items:center; gap:8px}
@@ -257,7 +257,7 @@ body.mdopen .mdrawer{transform:none}
   .mbar{display:flex}
   .mscrim{display:block}
   .mdrawer{display:flex}
-  .phead .tag,.phead .blogo,.phead .bdv,.phead .bsr{display:none}
+  .phead .inc,.phead .blogo,.phead .bdv,.phead .bsr{display:none}
   /* 44px touch targets */
   .seg button{min-height:44px; display:inline-flex; align-items:center}
   .tabs button{min-height:44px}
@@ -265,6 +265,12 @@ body.mdopen .mdrawer{transform:none}
   .phone{width:100%; padding:0; border-radius:0; box-shadow:none}
   .screen{border-radius:0; height:calc(100dvh - 59px - var(--htop) - var(--safe-bottom,0px))}
 }
+.phead .inc{display:flex; align-items:center; gap:var(--s3); margin-left:var(--s5); padding-left:var(--s5); border-left:1px solid rgba(255,255,255,.18)}
+.phead .inc .ref{font-family:var(--mono); font-size:13px; color:var(--cream)}
+.phead .pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:var(--r-pill)}
+.phead .pill .dot{width:7px; height:7px; border-radius:50%}
+.phead .p-active{background:var(--forest-tint); color:var(--forest)} .phead .p-active .dot{background:var(--forest)}
+
 </style>
 </head>
 <body>
@@ -295,7 +301,7 @@ body.mdopen .mdrawer{transform:none}
 <div class="phead">
   <div class="l">
     <img class="blogo" src="assets/tacedge-logo.png" alt="TacEdge" width="1978" height="391"><span class="bdv" aria-hidden="true"></span><span class="bsr">Search &amp; Rescue</span>
-    <span class="tag">M6 Field Capture · the field mobile surface</span>
+    <span class="inc"><span class="ref">SAR-2607-042</span><span class="pill p-active"><span class="dot"></span>Active</span></span>
   </div>
   <div class="ctrls">
     <div class="tgl"><span class="lab">Signal</span>
