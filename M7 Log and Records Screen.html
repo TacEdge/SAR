@@ -66,7 +66,6 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .searchbar:focus-within{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
 .searchbar svg{width:18px; height:18px; color:var(--ink-3); flex:none}
 .searchbar input{flex:1; border:0; background:transparent; font-family:var(--ui); font-size:15px; padding:11px 0; color:var(--ink); outline:none}
-.searchbar .scope{font-size:11px; color:var(--ink-3); font-family:var(--mono); padding-right:var(--s3); border-right:1px solid var(--hairline); margin-right:var(--s2)}
 .filters{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:var(--s4)}
 .filters button{font-size:12px; font-weight:500; padding:5px 12px; border-radius:var(--r-pill); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2)}
 .filters button.on{background:var(--accent); color:#fff; border-color:var(--accent)}
@@ -92,7 +91,6 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .entry .estamp{font-family:var(--mono); font-size:10px; color:var(--ink-3); margin-top:5px; display:flex; align-items:center; gap:5px}
 .entry .estamp .lock{display:inline-flex; align-items:center; gap:3px}
 .entry .estamp .lock svg{width:9px;height:9px}
-.entry .struckmark{font-family:var(--mono); font-size:9px; color:var(--critical); text-transform:uppercase; letter-spacing:.05em; margin-top:3px; display:inline-flex; align-items:center; gap:4px}
 .empty{padding:40px var(--s4); text-align:center; color:var(--ink-3)}
 .empty b{color:var(--ink-2); display:block; margin-bottom:4px}
 
@@ -142,11 +140,20 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .dact button:hover{background:var(--forest-tint); color:var(--accent); border-color:var(--accent)}
 .dact button.danger{color:var(--critical)} .dact button.danger:hover{background:var(--critical-bg); border-color:var(--critical); color:var(--critical)}
 .dact svg{width:13px;height:13px}
+.moregrp{position:relative; display:inline-flex}
+.moremenu{position:absolute; bottom:calc(100% + 6px); right:0; display:flex; flex-direction:column; gap:4px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-sm); padding:6px; box-shadow:var(--shadow); z-index:5; min-width:150px}
+.moremenu[hidden]{display:none}
+.moremenu button{width:100%; justify-content:flex-start}
 .actmsg{font-size:11px; color:var(--ink-3); padding:0 var(--s4) var(--s3); background:var(--cream-2); display:none}
 .actmsg.show{display:block}
 
 /* record store */
 .recpanel .rh{padding:11px var(--s4); background:var(--cream-2); border-bottom:1px solid var(--hairline); display:flex; justify-content:space-between; align-items:center}
+.recpanel .rtoggle{width:100%; border:0; font-family:inherit; cursor:pointer; text-align:left}
+.recpanel .rcaret{display:inline-block; transition:transform .2s ease; font-size:9px}
+.recpanel:not(.collapsed) .rcaret{transform:rotate(180deg)}
+.recpanel.collapsed #recFiles{display:none}
+.recpanel.collapsed .rh{border-bottom:0}
 .recpanel .rh .t{font-size:11px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--olive)}
 .recfile{display:flex; align-items:center; gap:var(--s3); padding:10px var(--s4); border-bottom:1px solid var(--hairline)}
 .recfile:last-child{border-bottom:0}
@@ -284,14 +291,11 @@ body.mdopen .mdrawer{display:flex}
 <div class="page">
   <div class="head">
     <h1>Log &amp; records</h1>
-    <p class="strap">The trusted operational record <button class="strapmore" id="strapMore" type="button" aria-expanded="false" aria-controls="strapFull">Learn more <span aria-hidden="true">▾</span></button></p>
-    <p class="strapfull" id="strapFull" hidden>Every action, decision, clue and communication, in one chronological record. Searchable during and after the operation, and reviewable remotely, with no district method to learn. Every entry is timestamped, attributed, and non-destructible.</p>
   </div>
 
   <div class="searchbar">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-    <input id="search" type="text" placeholder="Search the record — subject, description, author, reference…">
-    <span class="scope">fuzzy · during &amp; after</span>
+    <input id="search" type="text" placeholder="Search records">
   </div>
   <div class="filters" role="group" aria-label="Filter by category">
     <button class="on" data-f="all">All</button>
@@ -310,12 +314,14 @@ body.mdopen .mdrawer{display:flex}
 
     <div class="rail">
       <div class="dpanel" id="detail"></div>
-      <div class="dpanel recpanel">
-        <div class="rh"><span class="t">Record store</span><span class="c mono" style="font-size:11px; color:var(--ink-3)">4 files</span></div>
+      <div class="dpanel recpanel collapsed" id="recPanel">
+        <button class="rh rtoggle" id="recToggle" type="button" aria-expanded="false" aria-controls="recFiles"><span class="t">Record store</span><span class="c mono" style="font-size:11px; color:var(--ink-3)">4 files <span class="rcaret" aria-hidden="true">▾</span></span></button>
+        <div id="recFiles">
         <div class="recfile"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span><span class="fn">footprint.jpg</span><span class="fm">2.1 MB · 1449 · R. Tāne</span></div>
         <div class="recfile"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span class="fn">IAP-v1.pdf</span><span class="fm">Incident action plan · 1438 · IC</span></div>
         <div class="recfile"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span class="fn">missing-person-report.pdf</span><span class="fm">FORMS-4 · 1425 · Intel</span></div>
         <div class="recfile"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v16"/></svg></span><span class="fn">team-signin.csv</span><span class="fm">Staging · live · Logistics</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -356,7 +362,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
   function renderList(){
     var list=document.getElementById('logList'); var shown=E.filter(matches);
     document.getElementById('logCount').textContent=shown.length+' of '+E.length+' entries';
-    if(!shown.length){ list.innerHTML='<div class="empty"><b>No entries match.</b>Try fewer words, or clear the filter to see the full record.</div>'; return; }
+    if(!shown.length){ list.innerHTML='<div class="empty"><b>No entries match.</b></div>'; return; }
     list.innerHTML=shown.map(function(e){
       var c=CAT[e.cat];
       return '<div class="entry'+(e.id===sel?' sel':'')+'" data-id="'+e.id+'">'+
@@ -366,7 +372,6 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
           '<div class="esubj">'+e.subj+'</div>'+
           '<div class="edesc">'+e.desc+'</div>'+
           '<div class="estamp"><span class="lock" style="color:'+c.color+'">'+LOCK+'</span>'+e.author+' · '+e.id+'</div>'+
-          (e.struck?'<div class="struckmark">'+LOCK+' struck &amp; corrected · original retained</div>':'')+
         '</span></div>';
     }).join('');
     list.querySelectorAll('.entry').forEach(function(row){ row.addEventListener('click',function(){ sel=row.getAttribute('data-id'); renderList(); renderDetail(); }); });
@@ -384,7 +389,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
     if(e.meta) rows+=drow('Detail','<span class="mono">'+e.meta+'</span>');
     if(e.att) rows+=drow('Attachment','<span class="mono">'+e.att+'</span>');
 
-    var struckHtml = e.struck ? '<div class="struckbox">Assigned to <s>'+e.struck.from+'</s> <span class="corr">'+e.struck.to+'</span><span class="lab">Struck &amp; corrected. Original retained. Nothing is deleted.</span></div>' : '';
+    var struckHtml = e.struck ? '<div class="struckbox">Assigned to <s>'+e.struck.from+'</s> <span class="corr">'+e.struck.to+'</span><span class="lab">Struck &amp; corrected</span></div>' : '';
 
     var histHtml=e.hist.map(function(h){
       return '<div class="hline'+(h.corr?' corr':'')+'"><span class="hdot"></span><span class="htime">'+h.t+'</span><span class="hx"><span class="hw">'+h.w+'</span> <span class="hby">'+h.by+'</span></span></div>';
@@ -396,23 +401,31 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       '<div class="dbody">'+
         '<div class="desc">'+e.desc+'</div>'+ rows +
         '<div class="stamps">'+
-          '<div class="srow"><span class="sk editable">Logged (you set)</span><span class="sv editable">'+e.t+'</span></div>'+
-          '<div class="srow"><span class="sk">Recorded (system)</span><span class="locked">'+LOCK+e.tt+'</span></div>'+
+          '<div class="srow"><span class="sk">Logged</span><span class="sv">'+e.t+'</span></div>'+
+          '<div class="srow"><span class="sk">Recorded</span><span class="locked">'+LOCK+e.tt+'</span></div>'+
           '<div class="srow"><span class="sk">Author</span><span class="sv">'+e.author+'</span></div>'+
-          '<div class="note">The recorded time and author are system-set and cannot be edited. The logged time can be adjusted for out-of-sequence capture.</div>'+
         '</div>'+
         struckHtml +
         '<div class="hist"><div class="ht">History</div>'+histHtml+'</div>'+
       '</div>'+
       '<div class="dact">'+
         '<button data-a="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>Edit</button>'+
-        '<button class="danger" data-a="strike"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>Strike &amp; correct</button>'+
         '<button data-a="attach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.5L12 21a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/></svg>Attach</button>'+
-        '<button data-a="print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>Print</button>'+
+        '<span class="moregrp"><button id="moreBtn" aria-expanded="false" aria-controls="moreMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>More</button>'+
+        '<span class="moremenu" id="moreMenu" hidden>'+
+          '<button class="danger" data-a="strike">Strike &amp; correct</button>'+
+          '<button data-a="print">Print</button>'+
+        '</span></span>'+
       '</div>'+
       '<div class="actmsg" id="actmsg"></div>';
 
-    document.querySelectorAll('.dact button').forEach(function(b){
+    var moreBtn=document.getElementById('moreBtn'), moreMenu=document.getElementById('moreMenu');
+    if(moreBtn) moreBtn.addEventListener('click',function(){
+      var open=moreMenu.hasAttribute('hidden');
+      if(open) moreMenu.removeAttribute('hidden'); else moreMenu.setAttribute('hidden','');
+      moreBtn.setAttribute('aria-expanded', open?'true':'false');
+    });
+    document.querySelectorAll('.dact button[data-a]').forEach(function(b){
       b.addEventListener('click',function(){
         var a=b.getAttribute('data-a'), m=document.getElementById('actmsg');
         var msg={edit:'Edits are tracked. The original entry is retained in the history.',
@@ -431,6 +444,12 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       document.querySelectorAll('.filters button').forEach(function(x){x.classList.remove('on');});
       b.classList.add('on'); filter=b.getAttribute('data-f'); renderList();
     });
+  });
+
+  var recPanel=document.getElementById('recPanel'), recToggle=document.getElementById('recToggle');
+  if(recToggle) recToggle.addEventListener('click',function(){
+    var collapsed=recPanel.classList.toggle('collapsed');
+    recToggle.setAttribute('aria-expanded', collapsed?'false':'true');
   });
 
   renderList(); renderDetail();
