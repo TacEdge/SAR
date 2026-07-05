@@ -158,6 +158,7 @@
   function go(i){
     if(i < 0 || i >= SCREENS.length) return;
     current = i;
+    document.body.classList.add('entered'); // workspace shell exists only after entry
     landing.classList.add('hidden');
     document.body.classList.remove('navopen'); // close the mobile drawer on navigate
     frame.src = encodeURI(SCREENS[i].file);
