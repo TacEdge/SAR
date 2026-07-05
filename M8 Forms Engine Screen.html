@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SAROP Workspace — M8 Forms Engine</title>
+<title>SAROP Workspace — M8 Forms</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -93,7 +93,6 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .nav .f:hover{background:var(--cream-2)}
 .nav .f.on{background:var(--accent-tint); border-left-color:var(--accent); color:var(--accent)}
 .nav .f .sd{width:8px; height:8px; border-radius:50%; flex:none}
-.nav .f .cfg{font-family:var(--mono); font-size:9px; color:var(--ink-3); margin-left:auto; flex:none}
 .nav .f .rep{width:9px; height:9px; border-radius:50%; border:2px solid var(--caution); flex:none}
 .nav .f .cnt{font-family:var(--mono); font-size:10px; color:var(--ink-3); white-space:nowrap; flex:none}
 .navkey{border-top:1px solid var(--hairline); margin-top:var(--s3); padding-top:var(--s3); font-size:11px; color:var(--ink-3)}
@@ -102,11 +101,6 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 
 /* main column: operational summary band above the editor */
 .maincol{display:flex; flex-direction:column; min-height:0; min-width:0}
-.statband{flex:none; display:flex; align-items:stretch; gap:0; margin:var(--s4) var(--s6) 0; max-width:880px; background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:12px var(--s4); box-shadow:var(--shadow)}
-.statband .st1{flex:1; display:flex; flex-direction:column; gap:1px; padding:0 var(--s4); border-left:1px solid var(--hairline)}
-.statband .st1:first-child{border-left:0}
-.statband .st1 .v{font-family:var(--mono); font-size:20px; font-weight:600; color:var(--ink)}
-.statband .st1 .k{font-size:11px; color:var(--ink-3)}
 
 /* form editor */
 .editor{flex:1; overflow-y:auto; padding:var(--s5) var(--s6); background:var(--canvas)}
@@ -118,10 +112,8 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .v-land{background:var(--forest-tint); color:var(--forest)} .v-marine{background:var(--info-bg); color:var(--info)}
 .v-cap{background:var(--neutral-bg); color:var(--ink-2)} .v-fieldcap{background:var(--caution-bg); color:var(--caution)}
 /* mode indicator: reuses the vbadge pill so the pane declares fill-vs-build at a glance */
-.modeline{display:flex; align-items:center; gap:var(--s3); flex-wrap:wrap; margin-bottom:8px}
 .v-mode{background:var(--forest-tint); color:var(--forest)}
 .v-mode .mdot{width:7px; height:7px; border-radius:50%; background:var(--forest); flex:none}
-.mgt{font-size:11px; font-weight:600; letter-spacing:.03em; color:var(--ink-3); background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-pill); padding:3px 12px; cursor:not-allowed; opacity:.75}
 .nav .navcap{font-size:11px; line-height:1.4; color:var(--ink-3); padding:0 var(--s2) 8px}
 /* status pills — the product's status language (mirrors M5's .chipst), in place of a bare colour-dot legend */
 .fst{font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:.03em; text-transform:uppercase; padding:2px 7px; border-radius:var(--r-sm); border:1px solid; white-space:nowrap; flex:none}
@@ -130,11 +122,9 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .st-draft{color:var(--neutral); background:var(--neutral-bg); border-color:var(--neutral)}
 .st-none{color:var(--ink-3); background:var(--paper); border-color:var(--rule)}
 .nav .f .fttl{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-.nav .f .cfg{margin-left:0}
 
-.metastrip{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:6px 0 var(--s5)}
-.chipm{font-size:11px; color:var(--ink-2); background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-pill); padding:3px 10px}
-.chipm b{color:var(--ink); font-weight:600}
+.metastrip{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:6px 0 var(--s5)}
+.updline{font-size:12.5px; color:var(--ink-3)}
 
 .concurrent{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-3); margin-bottom:var(--s4)}
 .avatars{display:flex}
@@ -157,7 +147,6 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .fitem textarea{resize:vertical; min-height:64px; line-height:1.5}
 .fitem input:focus,.fitem select:focus,.fitem textarea:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
 .fitem input.mono,.fitem.dt input{font-family:var(--mono); font-size:13px}
-.fitem .aihint{font-family:var(--mono); font-size:9px; font-weight:700; color:#fff; background:var(--info); padding:1px 5px; border-radius:3px; margin-left:6px; letter-spacing:.03em}
 .fitem .seeded{border-color:var(--sage)}
 
 /* repeatable table sections */
@@ -178,13 +167,10 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .factor:last-child{border-bottom:0}
 .factor .fl{flex:1}
 .factor .fname{font-size:14px; font-weight:500}
-.factor .fadj{font-family:var(--mono); font-size:10px; color:var(--caution); margin-left:8px; display:none}
-.factor.adj .fadj{display:inline}
 .scoreseg{display:inline-flex; gap:4px}
 .scoreseg button{width:38px; height:38px; border-radius:var(--r-sm); border:1px solid var(--rule); background:var(--paper); color:var(--ink-2); font-family:var(--mono); font-size:15px; font-weight:500; position:relative}
 .scoreseg button:hover{border-color:var(--accent)}
 .scoreseg button[aria-pressed="true"]{background:var(--accent); color:#fff; border-color:var(--accent)}
-.scoreseg button.ai:after{content:"AI"; position:absolute; top:-8px; right:-6px; font-family:var(--ui); font-size:8px; font-weight:700; letter-spacing:.04em; background:var(--info); color:#fff; padding:1px 4px; border-radius:3px}
 .scoreseg button[aria-pressed="true"].ai:after{background:var(--forest-deep)}
 
 /* repeatable-record header actions */
@@ -217,8 +203,6 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .gauge .glabels{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--ink-3); margin-top:16px}
 .guidance{margin-top:var(--s5); font-size:13px; color:var(--ink-2); border-top:1px solid var(--hairline); padding-top:var(--s4)}
 .guidance .gh{font-size:10px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--olive); margin-bottom:6px}
-.aiverified{display:flex; align-items:center; gap:8px; margin-top:var(--s4); padding:10px 12px; background:var(--forest-tint); border-radius:var(--r-sm); font-size:12px; color:var(--forest)}
-.aiverified svg{width:15px;height:15px; flex:none}
 
 /* record card (non-scored forms) */
 .recordcard{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:var(--s5)}
@@ -267,7 +251,6 @@ body.mdopen .mdrawer{transform:none}
   .appbar .inc{margin-left:0; padding-left:0; border-left:0}
   .appbar .blogo,.appbar .bdv,.appbar .bsr,.domain{display:none}
   /* 44px touch targets */
-  .mgt{min-height:44px}
   .scoreseg button{min-height:44px}
   .btn{min-height:44px}
   .fhead{flex-wrap:wrap}
@@ -326,7 +309,7 @@ body.mdopen .mdrawer{display:flex}
     <a class="mrow" href="M5%20The%20COP%20Screen.html"><span class="mrow-id">M5</span><span class="mrow-nm">The COP</span><span class="mrow-dot"></span></a>
     <a class="mrow" href="M6%20Field%20Capture%20Screen.html"><span class="mrow-id">M6</span><span class="mrow-nm">Field Capture</span><span class="mrow-dot"></span></a>
     <a class="mrow" href="M7%20Log%20and%20Records%20Screen.html"><span class="mrow-id">M7</span><span class="mrow-nm">Log & Records</span><span class="mrow-dot"></span></a>
-    <a class="mrow on" href="M8%20Forms%20Engine%20Screen.html" aria-current="page"><span class="mrow-id">M8</span><span class="mrow-nm">Forms Engine</span><span class="mrow-dot"></span></a>
+    <a class="mrow on" href="M8%20Forms%20Engine%20Screen.html" aria-current="page"><span class="mrow-id">M8</span><span class="mrow-nm">Forms</span><span class="mrow-dot"></span></a>
     <a class="mrow" href="M9%20Close-out%20Screen.html"><span class="mrow-id">M9</span><span class="mrow-nm">Close-out</span><span class="mrow-dot"></span></a>
   </div>
 </nav>
@@ -351,20 +334,17 @@ body.mdopen .mdrawer{display:flex}
 <div class="pagehd">
   <div class="head">
     <h1>Forms</h1>
-    <p class="strap">Structured records, not PDFs <button class="strapmore" id="strapMore" type="button" aria-expanded="false" aria-controls="strapFull">Learn more <span aria-hidden="true">▾</span></button></p>
-    <p class="strapfull" id="strapFull" hidden>Structured records for the operation. Select a form type, submit once or as often as required. Each submission feeds the log, the COP, field briefings and the outward record — timestamped and attributed.</p>
   </div>
 </div>
 
 <div class="wrap">
   <div class="nav">
     <div class="nh">Form library</div>
-    <div class="libsearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="libSearch" type="search" placeholder="Search form types…" aria-label="Search form types"></div>
+    <div class="libsearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="libSearch" type="search" placeholder="Search forms" aria-label="Search forms"></div>
     <div id="navlist"></div>
   </div>
 
   <div class="maincol">
-    <div class="statband" id="statband"></div>
     <div class="editor" id="editor"></div>
   </div>
 
@@ -551,7 +531,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
      and conditional records are simply "not used" until they are. */
   var CATS=[
     {key:'single',      label:'Single incident records'},
-    {key:'repeat',      label:'Repeatable operational submissions'},
+    {key:'repeat',      label:'Repeatable submissions'},
     {key:'conditional', label:'Conditional / specialist records'}
   ];
   var STLABEL={current:'Current',draft:'Draft',review:'Needs review',none:'Not started'};
@@ -572,32 +552,16 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       if(!shown.length) return;
       html+='<div class="grp"><div class="gt">'+c.label+'<span class="gn">'+items.length+'</span></div>';
       shown.forEach(function(f){
-        var cfg = (f.kind==='urgency'||f.kind==='debrief') ? '<span class="cfg">L / M</span>' : '';
-        var mark = f.mode==='repeat' ? '<span class="rep" aria-hidden="true"></span>' : '';
+          var mark = f.mode==='repeat' ? '<span class="rep" aria-hidden="true"></span>' : '';
         html+='<div class="f'+(f.id===cur?' on':'')+'" data-id="'+f.id+'" title="'+f.title+'">'+
-          mark+'<span class="fttl">'+f.title+'</span>'+cfg+rightCell(f)+'</div>';
+          mark+'<span class="fttl">'+f.title+'</span>'+rightCell(f)+'</div>';
       });
       html+='</div>';
     });
-    document.getElementById('navlist').innerHTML=html || '<div class="navcap">No form types match.</div>';
+    document.getElementById('navlist').innerHTML=html || '<div class="navcap">No forms match.</div>';
     document.querySelectorAll('.nav .f').forEach(function(el){
       el.addEventListener('click',function(){ cur=el.getAttribute('data-id'); renderNav(); renderForm(); });
     });
-    renderStats();
-  }
-
-  /* operational summary: counts, never completion */
-  function renderStats(){
-    var submitted=0, drafts=0, current=0;
-    FORMS.forEach(function(f){
-      if(f.mode==='repeat'){ submitted+=f.count; drafts+=(f.drafts||0); }
-      if(f.mode==='single'){ if(f.status==='draft') drafts++; if(f.status==='current') current++; }
-    });
-    document.getElementById('statband').innerHTML=
-      '<div class="st1"><span class="v">'+FORMS.length+'</span><span class="k">Form types available</span></div>'+
-      '<div class="st1"><span class="v">'+submitted+'</span><span class="k">Records submitted</span></div>'+
-      '<div class="st1"><span class="v">'+drafts+'</span><span class="k">Drafts</span></div>'+
-      '<div class="st1"><span class="v">'+current+'</span><span class="k">Current incident records</span></div>';
   }
 
   document.getElementById('libSearch').addEventListener('input',function(){
@@ -608,7 +572,7 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
   function ctrl(f){
     var type=f[0], label=f[1], def=f[2]||'', ai=f[3];
     var wide = (type==='a');
-    var lab='<label>'+label+(ai?'<span class="aihint">AI</span>':'')+'</label>';
+    var lab='<label>'+label+'</label>';
     var seeded = def!=='' && def!=='—' ? ' seeded' : '';
     var el;
     if(type==='a'){ el='<textarea placeholder="…">'+def+'</textarea>'; }
@@ -640,9 +604,8 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
     var d=SUA[dom];
     return d.factors.map(function(f,i){
       var btns='';
-      for(var s=1;s<=f.max;s++){ btns+='<button data-i="'+i+'" data-v="'+s+'" aria-pressed="'+(suaVals[i]===s?'true':'false')+'"'+(f.ai===s?' class="ai"':'')+'>'+s+'</button>'; }
-      var adj=suaVals[i]!==f.ai;
-      return '<div class="factor'+(adj?' adj':'')+'" data-row="'+i+'"><div class="fl"><span class="fname">'+f.k+'</span><span class="fadj">· adjusted from '+f.ai+'</span></div><div class="scoreseg">'+btns+'</div></div>';
+      for(var s=1;s<=f.max;s++){ btns+='<button data-i="'+i+'" data-v="'+s+'" aria-pressed="'+(suaVals[i]===s?'true':'false')+'">'+s+'</button>'; }
+      return '<div class="factor" data-row="'+i+'"><div class="fl"><span class="fname">'+f.k+'</span></div><div class="scoreseg">'+btns+'</div></div>';
     }).join('');
   }
   function suaWire(){
@@ -650,7 +613,6 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       b.addEventListener('click',function(){
         var i=+b.getAttribute('data-i'), v=+b.getAttribute('data-v'); suaVals[i]=v;
         b.parentNode.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
-        document.querySelector('.factor[data-row="'+i+'"]').classList.toggle('adj', v!==SUA[dom].factors[i].ai);
         suaCompute();
       });
     });
@@ -686,7 +648,6 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       '<div class="bandpill" id="bandpill"><span class="bd"></span><span id="bandName"></span></div>'+
       '<div class="gauge">'+suaGaugeHTML()+'</div>'+
       '<div class="guidance"><div class="gh">Response</div><div id="guidance"></div>'+
-      '<div class="aiverified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>AI-assisted, human-verified. You set every value.</div>'+
       '</div></div>';
   }
 
@@ -696,45 +657,17 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
     var isPair = (f.kind==='urgency'||f.kind==='debrief');
     var refText = f.kind==='urgency' ? SUA[dom].ref : f.ref;
 
-    // header
-    var badge;
-    if(isPair){ badge='<span class="vbadge '+(dom==='marine'?'v-marine':'v-land')+'">'+(dom==='marine'?'Marine':'Land')+' variant</span>'; }
-    else if(f.fieldcap){ badge='<span class="vbadge v-fieldcap">Field · M4</span>'; }
-    else { badge='<span class="vbadge v-cap">IMT</span>'; }
-
-    var modeTag, subLine;
-    if(f.mode==='repeat'){
-      modeTag='Repeatable record';
-      subLine=refText+' · repeatable record · '+f.count+' submitted this operation';
-    } else if(f.mode==='conditional'){
-      modeTag='Conditional record';
-      subLine=refText+' · conditional record · used only when the operation calls for it';
-    } else {
-      modeTag='Single incident record';
-      subLine=refText+' · '+(f.status==='current'
-        ? 'current incident record · last updated '+f.updated+' today'
-        : 'single incident record · '+STLABEL[f.status].toLowerCase());
-    }
-
-    var head='<div class="fhead"><div>'+
-      '<div class="modeline">'+
-        '<span class="vbadge v-mode"><span class="mdot"></span>'+modeTag+'</span>'+
-        '<button type="button" class="mgt" disabled aria-disabled="true" title="Template management is out of scope for this prototype. Every form here is filled in as a live operational record, not designed.">Manage templates</button>'+
-      '</div>'+
-      '<h1>'+f.title+'</h1>'+
-      '<div class="sub">'+subLine+'</div></div>'+badge+'</div>';
+    // header: title, then a quiet status line
+    var head='<div class="fhead"><div><h1>'+f.title+'</h1></div></div>';
 
     var statusChip = f.mode==='repeat'
       ? '<span class="fst st-current" id="metastatus">'+f.count+' submitted</span>'
       : (f.mode==='conditional'
         ? '<span class="fst st-none" id="metastatus">Not used</span>'
         : '<span class="fst st-'+f.status+'" id="metastatus">'+STLABEL[f.status]+'</span>');
-    var meta='<div class="metastrip">'+
-      statusChip+
-      '<span class="chipm"><b>Captured by</b> · '+f.cap+'</span>'+
-      '<span class="chipm">'+f.feeds+'</span>'+
-      (isPair?'<span class="chipm"><b>Config pair</b> · land / marine variants on the domain flag</span>':'')+
-      '</div>';
+    var updated = (f.mode==='single' && f.status==='current' && f.updated)
+      ? '<span class="updline">Last updated '+f.updated+' today</span>' : '';
+    var meta='<div class="metastrip">'+statusChip+updated+'</div>';
 
     var repact = f.mode==='repeat'
       ? '<div class="repact">'+
@@ -744,16 +677,11 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
       : '';
 
     var conc='';
-    if(f.edit && f.edit.length){
-      var avs=f.edit.map(function(a){return '<span class="av">'+a+'</span>';}).join('');
-      var who = f.edit.length>1 ? 'multiple users, one record (UI-10)' : 'live editor';
-      conc='<div class="concurrent"><span>Editing now:</span><div class="avatars">'+avs+'</div><span>'+who+'</span></div>';
-    }
 
     var body='';
     if(f.kind==='urgency'){
-      body='<div class="editnote"><span class="ai">AI</span><div><b>Values suggested from the missing-person intake.</b> Confirm or adjust each factor. The score is assistance, it never decides for you.</div></div>'+
-        '<div class="scalekey">Score each factor <b>1 (most urgent)</b> to <b>'+SUA[dom].scaleHi+'</b>. The total bands the response.</div>'+
+      body='<div class="editnote"><span class="ai">AI</span><div>AI suggestions applied. Review before saving.</div></div>'+
+        '<div class="scalekey">Score each factor <b>1 (most urgent)</b> to <b>'+SUA[dom].scaleHi+' (least urgent)</b>.</div>'+
         '<div class="factors" id="factors">'+suaFactorsHTML()+'</div>';
     } else if(f.kind==='debrief'){
       if(f.note) body+='<div class="editnote"><span class="ai" style="background:var(--neutral)">i</span><div>'+f.note+'</div></div>';
@@ -767,9 +695,9 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
     if(f.mode==='repeat'){
       actions='<div class="factact"><button class="btn btn-primary" id="submitRec">Submit record</button><button class="btn btn-ghost" id="mkdraft">Save draft</button></div><div style="height:24px"></div>';
     } else if(f.mode==='conditional'){
-      actions='<div class="factact"><button class="btn btn-ghost" id="mkdraft">Save draft</button><span class="chipm" style="align-self:center">Optional — not counted until used</span></div><div style="height:24px"></div>';
+      actions='<div class="factact"><button class="btn btn-ghost" id="mkdraft">Save draft</button></div><div style="height:24px"></div>';
     } else {
-      actions='<div class="factact"><button class="btn btn-primary" id="saveCur">Save current record</button><button class="btn btn-ghost" id="mkdraft">Save as draft</button></div><div style="height:24px"></div>';
+      actions='<div class="factact"><button class="btn btn-primary" id="saveCur">Save record</button><button class="btn btn-ghost" id="mkdraft">Save draft</button></div><div style="height:24px"></div>';
     }
 
     document.getElementById('editor').innerHTML=head+meta+repact+conc+body+actions;

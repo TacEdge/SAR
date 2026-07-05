@@ -34,7 +34,7 @@
     {file:'M5 The COP Screen.html',               code:'M5', name:'The COP'},
     {file:'M6 Field Capture Screen.html',         code:'M6', name:'Field Capture'},
     {file:'M7 Log and Records Screen.html',       code:'M7', name:'Log & Records'},
-    {file:'M8 Forms Engine Screen.html',          code:'M8', name:'Forms Engine'},
+    {file:'M8 Forms Engine Screen.html',          code:'M8', name:'Forms'},
     {file:'M9 Close-out Screen.html',             code:'M9', name:'Close-out & Outward Record'}
   ];
 
