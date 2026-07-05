@@ -81,7 +81,7 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 
 /* combined MAP bar: basemap + tilt in one control, per the design update */
 .mapctl{position:absolute; left:var(--s3); bottom:52px; z-index:2; display:flex; align-items:center; gap:8px;
-  background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:5px 8px 5px 12px; box-shadow:var(--shadow)}
+  background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:5px 8px; box-shadow:var(--shadow)}
 .mapctl .lab{font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
 .mapctl .grp{display:flex; gap:2px}
 .mapctl .dv{width:1px; height:20px; background:var(--hairline)}
@@ -173,6 +173,10 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
   background:var(--paper); color:var(--ink-2); border:1px solid var(--hairline); border-right:0;
   border-radius:var(--r-md) 0 0 var(--r-md); box-shadow:var(--shadow); cursor:pointer; font-size:15px; line-height:1}
 .railtoggle:hover{background:var(--forest-tint); color:var(--forest)}
+/* collapsed by default: the toggle becomes a discoverable vertical Overview tab */
+.railtoggle .ovlbl{display:none}
+.cop.railhidden .railtoggle{width:28px; height:auto; padding:12px 5px; flex-direction:column; gap:9px}
+.cop.railhidden .railtoggle .ovlbl{display:block; writing-mode:vertical-rl; font-size:11px; font-weight:600; letter-spacing:.08em; color:var(--ink-2)}
 /* rail footer: the panel-collapse affordance from the design update */
 .railfoot{display:flex; align-items:center; gap:8px; width:100%; background:none; border:0; border-top:1px solid var(--hairline); margin-top:var(--s2); padding:10px 4px 2px; color:var(--ink-3); font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; cursor:pointer}
 .railfoot:hover{color:var(--forest)}
@@ -362,16 +366,14 @@ body.mdopen .mdrawer{display:flex}
   </div>
 </div>
 
-<div class="cop">
+<div class="cop railhidden">
   <!-- MAP -->
   <div class="mapwrap">
     <div id="map"></div>
 
     <!-- combined map control: basemap + tilt -->
     <div class="mapctl" role="group" aria-label="Map display">
-      <span class="lab">Map</span>
       <div class="grp" id="basectl" role="group" aria-label="Basemap">
-        <button data-base="satellite">Sat</button>
         <button data-base="linz-topo" class="on">Topo</button>
         <button data-base="linz-aerial">Aerial</button>
       </div>
@@ -418,40 +420,34 @@ body.mdopen .mdrawer{display:flex}
     <div class="toast" id="toast" role="status"><span class="g"></span><span class="tx">The live operating picture <button class="strapmore" id="strapMore" type="button" aria-expanded="false" aria-controls="strapFull" data-more="More" data-less="Less">More <span aria-hidden="true">▾</span></button><span class="txfull" id="strapFull" hidden>Common operating picture · one read of the spine, not many systems.</span></span><button class="x" id="toastX" type="button" aria-label="Dismiss">×</button></div>
 
     <!-- retract the side panel to expose more map -->
-    <button class="railtoggle" id="railToggle" type="button" aria-expanded="true" aria-label="Hide the side panel" title="Hide the side panel">›</button>
+    <button class="railtoggle" id="railToggle" type="button" aria-expanded="false" aria-label="Show the overview panel" title="Show the overview panel"><span class="ch" aria-hidden="true">‹</span><span class="ovlbl">Overview</span></button>
   </div>
 
   <!-- RIGHT RAIL -->
   <div class="rail">
     <div class="rpanel reveal" style="animation-delay:.06s">
-      <div class="rh"><span class="tt">Incident snapshot</span><span class="ct" id="elapsedHead">04:20</span></div>
+      <div class="rh"><span class="tt">Snapshot</span></div>
       <div class="rbody snap">
-        <div class="r"><span>Teams active</span><span class="m">2</span></div>
-        <div class="r"><span>Open tasks</span><span class="m">3</span></div>
-        <div class="r"><span>Elapsed</span><span class="m" id="elapsed">04:20</span></div>
-        <div class="div"></div>
-        <div class="r"><span>Area searched</span><span class="m">38%</span></div>
+        <div class="r"><span>Teams</span><span class="m">2</span></div>
+        <div class="r"><span>Tasks</span><span class="m">3</span></div>
+        <div class="r"><span>Searched</span><span class="m">38%</span></div>
         <div class="r"><span>PoD</span><span class="m">41%</span></div>
-        <div class="r"><span>Field link</span><span class="m">90%</span></div>
       </div>
     </div>
 
     <div class="rpanel reveal" style="animation-delay:.1s">
-      <div class="rh"><span class="tt">Active tasks</span><span class="ct">3 open</span></div>
+      <div class="rh"><span class="tt">Tasks</span><span class="ct">3 open</span></div>
       <div class="rbody">
         <div class="trow" data-sector="A" data-res="R2">
-          <span class="tid">TASK-012</span>
-          <span class="tinfo"><span class="tname">Sector A hasty search</span><span class="tmeta">ROMEO-2 · sector A</span></span>
+          <span class="tinfo"><span class="tname">Sector A hasty search</span></span>
           <span class="chipst c-progress">In progress</span>
         </div>
         <div class="trow" data-sector="B" data-res="R4">
-          <span class="tid">TASK-014</span>
-          <span class="tinfo"><span class="tname">Sector B sweep</span><span class="tmeta">ROMEO-4 · sector B</span></span>
+          <span class="tinfo"><span class="tname">Sector B sweep</span></span>
           <span class="chipst c-assigned">Assigned</span>
         </div>
         <div class="trow" data-sector="" data-res="">
-          <span class="tid">TASK-015</span>
-          <span class="tinfo"><span class="tname">Road-end containment</span><span class="tmeta">unassigned</span></span>
+          <span class="tinfo"><span class="tname">Road-end containment</span></span>
           <span class="chipst c-created">Created</span>
         </div>
       </div>
@@ -460,27 +456,21 @@ body.mdopen .mdrawer{display:flex}
     <div class="rpanel reveal" style="animation-delay:.16s">
       <div class="rh"><span class="tt">Resources</span><span class="ct">4 on scene</span></div>
       <div class="rbody">
-        <div class="rrow" data-res="R2"><span class="rn">ROMEO-2 <small>ground team · sector A</small></span><span class="sync s-in"><span class="ico"></span>Signed in</span></div>
-        <div class="rrow" data-res="R4"><span class="rn">ROMEO-4 <small>ground team · sector B</small></span><span class="sync s-in"><span class="ico"></span>Signed in</span></div>
-        <div class="rrow" data-res=""><span class="rn">K9-1 <small>dog team · staging</small></span><span class="sync s-queued"><span class="ico"></span>At staging</span></div>
-        <div class="rrow" data-res=""><span class="rn">Heli-1 <small>air · Wanaka</small></span><span class="sync s-avail"><span class="ico"></span>Available</span></div>
+        <div class="rrow" data-res="R2"><span class="rn">ROMEO-2</span><span class="sync s-in"><span class="ico"></span>Signed in</span></div>
+        <div class="rrow" data-res="R4"><span class="rn">ROMEO-4</span><span class="sync s-in"><span class="ico"></span>Signed in</span></div>
+        <div class="rrow" data-res=""><span class="rn">K9-1</span><span class="sync s-queued"><span class="ico"></span>At staging</span></div>
+        <div class="rrow" data-res=""><span class="rn">Heli-1</span><span class="sync s-avail"><span class="ico"></span>Available</span></div>
       </div>
     </div>
 
     <div class="rpanel reveal" style="animation-delay:.22s">
-      <div class="rh"><span class="tt">Event log</span><span class="ct">by status</span></div>
+      <div class="rh"><span class="tt">Log</span></div>
       <div class="rbody">
-        <div class="railfilter" role="group" aria-label="Filter log">
-          <button class="on" data-f="all">All</button>
-          <button data-f="clue">Clues</button>
-          <button data-f="decision">Decisions</button>
-          <button data-f="comms">Comms</button>
-        </div>
-        <div class="lrow" data-cat="clue"><span class="lt">14:43</span><span class="lc lc-clue"></span><span class="lx"><span class="cat">Clue</span><div class="msg">Footprint, NW heading near creek fork. <span class="mono">NZTM 1573290E 5180410N</span></div></span></div>
-        <div class="lrow" data-cat="decision"><span class="lt">14:39</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Prioritise sector A on hasty; hold sector B for daylight.</div></span></div>
-        <div class="lrow" data-cat="comms"><span class="lt">14:35</span><span class="lc lc-comms"></span><span class="lx"><span class="cat">Comms</span><div class="msg">ROMEO-2 on task, <span class="mono">CH.62</span>. Signal good.</div></span></div>
-        <div class="lrow" data-cat="info"><span class="lt">14:31</span><span class="lc lc-info"></span><span class="lx"><span class="cat">Information</span><div class="msg">MetService: cloud lowering to 900m after 1600.</div></span></div>
-        <div class="lrow" data-cat="decision"><span class="lt">14:22</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Stand up SAR-2607-042. Cat I, land. IC assigned.</div></span></div>
+        <div class="lrow" data-cat="clue"><span class="lt">14:43</span><span class="lc lc-clue"></span><span class="lx"><span class="cat">Clue</span><div class="msg">Footprint</div></span></div>
+        <div class="lrow" data-cat="decision"><span class="lt">14:39</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Prioritise sector A</div></span></div>
+        <div class="lrow" data-cat="comms"><span class="lt">14:35</span><span class="lc lc-comms"></span><span class="lx"><span class="cat">Comms</span><div class="msg">ROMEO-2 on task</div></span></div>
+        <div class="lrow" data-cat="info"><span class="lt">14:31</span><span class="lc lc-info"></span><span class="lx"><span class="cat">Information</span><div class="msg">Cloud lowering after 1600</div></span></div>
+        <div class="lrow" data-cat="decision"><span class="lt">14:22</span><span class="lc lc-decision"></span><span class="lx"><span class="cat">Decision</span><div class="msg">Operation stood up</div></span></div>
       </div>
     </div>
 
@@ -743,9 +733,9 @@ body.mdopen .mdrawer{display:flex}
   if(railToggle){
     railToggle.addEventListener('click',function(){
       var hidden=cop.classList.toggle('railhidden');
-      railToggle.textContent = hidden ? '‹' : '›';
+      railToggle.querySelector('.ch').textContent = hidden ? '‹' : '›';
       railToggle.setAttribute('aria-expanded', hidden ? 'false' : 'true');
-      var lab = hidden ? 'Show the side panel' : 'Hide the side panel';
+      var lab = hidden ? 'Show the overview panel' : 'Hide the overview panel';
       railToggle.setAttribute('aria-label', lab); railToggle.title = lab;
       if(ctrl && ctrl.resize){ ctrl.resize(); setTimeout(ctrl.resize, 60); }  // let the map fill the new width
     });
@@ -780,7 +770,7 @@ body.mdopen .mdrawer{display:flex}
   var elapsedEl=document.getElementById('elapsed'), elapsedHead=document.getElementById('elapsedHead'), hdrEl=document.getElementById('hdrElapsed');
   setInterval(function(){
     base++; var m=Math.floor(base/60),s=base%60, t=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
-    elapsedEl.textContent=t; if(elapsedHead) elapsedHead.textContent=t; if(hdrEl) hdrEl.textContent=t;
+    if(elapsedEl) elapsedEl.textContent=t; if(elapsedHead) elapsedHead.textContent=t; if(hdrEl) hdrEl.textContent=t;
   },1000);
 })();
 </script>
