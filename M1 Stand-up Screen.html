@@ -81,14 +81,13 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .field:last-child{margin-bottom:0}
 .field > label{display:block; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--olive); margin-bottom:var(--s2)}
 .field .opt{color:var(--ink-3); font-weight:500; letter-spacing:0; text-transform:none}
-.field input, .field textarea{width:100%; font-family:var(--ui); font-size:15px; padding:11px 13px; background:var(--paper);
+.field input, .field textarea, .field select{width:100%; font-family:var(--ui); font-size:15px; padding:11px 13px; background:var(--paper);
   border:1px solid var(--rule); border-radius:var(--r-sm); color:var(--ink); resize:vertical}
 .field input::placeholder, .field textarea::placeholder{color:#a7a996}
 .field input:focus, .field textarea:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
 .field .mono-ref{font-family:var(--mono); font-size:16px; font-weight:500; color:var(--ink); background:var(--forest-tint);
   border:1px solid var(--rule); border-radius:var(--r-sm); padding:11px 13px; display:flex; align-items:center; justify-content:space-between}
 .field .mono-ref .auto{font-family:var(--ui); font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive)}
-.hint{font-size:12px; color:var(--ink-3); margin-top:6px}
 
 /* segmented domain (in-form, large) */
 .domseg{display:inline-flex; border:1px solid var(--rule); border-radius:var(--r-sm); overflow:hidden; background:var(--paper)}
@@ -99,15 +98,8 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .domseg button:not(:last-child){border-right:1px solid var(--rule)}
 
 /* category set-marker */
-.catset{display:flex; align-items:center; gap:10px; font-size:14px}
-.catset .val{font-weight:600; color:var(--ink); background:var(--forest-tint); color:var(--forest); padding:4px 12px; border-radius:var(--r-pill); font-size:13px}
 
 /* roles */
-.roles{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s3)}
-.rolechip{display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:500; padding:6px 12px; border-radius:var(--r-pill);
-  border:1px dashed var(--rule); color:var(--ink-3); background:var(--paper); cursor:pointer}
-.rolechip[aria-pressed="true"]{border-style:solid; border-color:var(--accent); color:var(--accent); background:var(--accent-tint)}
-.rolechip .x{font-family:var(--mono); font-size:12px; opacity:.6}
 
 /* primary action */
 .actions{display:flex; align-items:center; gap:var(--s4); margin-top:var(--s6); padding-top:var(--s5); border-top:1px solid var(--hairline)}
@@ -118,7 +110,6 @@ html[data-domain="marine"] .btn-primary:hover{background:#274b57}
 .btn-primary:disabled{background:var(--neutral-bg); color:var(--ink-3); cursor:not-allowed}
 .btn-ghost{background:transparent; color:var(--olive); border-color:var(--rule)}
 .btn-ghost:hover{background:var(--forest-tint); color:var(--forest)}
-.actions .neednote{font-size:12px; color:var(--ink-3)}
 
 /* ===== summary column ===== */
 .sumcard{background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); overflow:hidden}
@@ -148,7 +139,6 @@ html[data-domain="marine"] .btn-primary:hover{background:#274b57}
 /* checklist */
 .check{margin-top:var(--s5); background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-md); padding:var(--s5)}
 .check h3{margin:0 0 var(--s2); font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--olive)}
-.check .sub{font-size:12px; color:var(--ink-3); margin:0 0 var(--s4)}
 .ckitem{display:flex; align-items:center; gap:var(--s3); padding:8px 0; border-top:1px solid var(--hairline); font-size:14px; color:var(--ink-3)}
 .ckitem:first-of-type{border-top:0}
 .ckitem .box{width:20px; height:20px; border-radius:var(--r-sm); border:1.5px solid var(--rule); flex:none; display:flex; align-items:center; justify-content:center}
@@ -216,7 +206,6 @@ body.mdopen .mdrawer{transform:none}
   .appbar .inc{margin-left:0; padding-left:0; border-left:0}
   .appbar .blogo,.appbar .bdv,.appbar .bsr,.domain{display:none}
   /* 44px touch targets */
-  .rolechip{min-height:44px; display:inline-flex; align-items:center}
   .page{padding-left:14px; padding-right:14px}
   .grid{grid-template-columns:minmax(0,1fr)}
   .clock .tgt{display:none} .actions{flex-wrap:wrap}
@@ -304,14 +293,13 @@ body.mdopen .mdrawer{display:flex}
           <label>Domain</label>
           <div class="domseg" role="group" aria-label="Operation domain">
             <button data-fdom="land" aria-pressed="true"><span class="d"></span>Land</button>
-            <button data-fdom="marine" aria-pressed="false"><span class="d"></span>Marine (close-to-shore)</button>
+            <button data-fdom="marine" aria-pressed="false"><span class="d"></span>Marine</button>
           </div>
-          <div class="hint" id="domHint">Sets the base map, urgency scoring, forms and terminology for the whole operation.</div>
         </div>
 
         <div class="field">
           <label>Category</label>
-          <div class="catset"><span class="val">Category I</span><span class="hint" style="margin:0">Local coordination. Cat I / II is a marker, not the config axis.</span></div>
+          <select id="cat" aria-label="Category"><option>Category I</option><option>Category II</option></select>
         </div>
 
         <div class="field">
@@ -321,30 +309,21 @@ body.mdopen .mdrawer{display:flex}
 
         <div class="field">
           <label for="desc">Description</label>
-          <textarea id="desc" rows="2" placeholder="One line on the incident, e.g. Overdue tramper, Kepler Track, last seen Luxmore Hut."></textarea>
+          <textarea id="desc" rows="2" placeholder="Brief incident summary"></textarea>
         </div>
 
         <div class="field">
           <label for="pref">Police event number <span class="opt">· optional</span></label>
-          <input id="pref" type="text" placeholder="P-number or RCCNZ reference, if known">
-          <div class="hint">The CAD and records link. Can be added later.</div>
+          <input id="pref" type="text">
         </div>
 
         <div class="field">
           <label for="ic">Incident Controller</label>
-          <input id="ic" type="text" placeholder="Name of the controller (you, if standing up alone)">
-          <div class="hint">The one role needed to go active. Add the rest of the IMT as people arrive.</div>
-          <div class="roles" id="roles" aria-label="Optional IMT roles">
-            <span class="rolechip" role="button" tabindex="0" data-role="Intelligence"><span class="x">+</span>Intelligence</span>
-            <span class="rolechip" role="button" tabindex="0" data-role="Planning"><span class="x">+</span>Planning</span>
-            <span class="rolechip" role="button" tabindex="0" data-role="Operations"><span class="x">+</span>Operations</span>
-            <span class="rolechip" role="button" tabindex="0" data-role="Logistics"><span class="x">+</span>Logistics</span>
-          </div>
+          <input id="ic" type="text" placeholder="Controller name">
         </div>
 
         <div class="actions">
           <button class="btn btn-primary" id="goBtn" disabled>Go active</button>
-          <span class="neednote" id="needNote">Add a description and a controller to go active.</span>
         </div>
       </div>
     </div>
@@ -361,17 +340,8 @@ body.mdopen .mdrawer{display:flex}
         </div>
         <div class="body">
           <div class="sumrow"><span class="k">Domain</span><span class="v"><span class="dom-badge dom-land" id="sumDomain">Land</span></span></div>
-          <div class="sumrow"><span class="k">Category</span><span class="v">Category I</span></div>
-          <div class="sumrow"><span class="k">Description</span><span class="v empty" id="sumDesc">Not set</span></div>
-          <div class="sumrow"><span class="k">Police ref</span><span class="v empty" id="sumPref">Not set</span></div>
+          <div class="sumrow"><span class="k">Category</span><span class="v" id="sumCat">Category I</span></div>
           <div class="sumrow"><span class="k">Controller</span><span class="v empty" id="sumIc">Not appointed</span></div>
-          <div class="sumrow" id="sumRolesRow" style="display:none"><span class="k">IMT roles</span><span class="v" id="sumRoles"></span></div>
-        </div>
-        <div class="foot">
-          <span class="stamp">
-            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>locked</span>
-            <span class="sep">·</span><span id="stampTime">--:--</span><span class="sep">·</span><span id="stampUser">unassigned</span>
-          </span>
         </div>
       </div>
 
@@ -392,10 +362,9 @@ body.mdopen .mdrawer{display:flex}
 
       <div class="check">
         <h3>Stand-up</h3>
-        <p class="sub">The five steps to a running operation.</p>
-        <div class="ckitem done" id="ck-reach"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Reached without admin<span class="who">no specialist setup</span></div>
-        <div class="ckitem" id="ck-create"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Created &amp; described</div>
-        <div class="ckitem" id="ck-config"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Domain &amp; category set</div>
+        <div class="ckitem done" id="ck-reach"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Reached</div>
+        <div class="ckitem" id="ck-create"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Created</div>
+        <div class="ckitem" id="ck-config"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Domain set</div>
         <div class="ckitem" id="ck-role"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Controller appointed</div>
         <div class="ckitem" id="ck-active"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg></span>Active<span class="who" id="ckActiveWho"></span></div>
       </div>
@@ -407,8 +376,8 @@ body.mdopen .mdrawer{display:flex}
 (function(){
   var root=document.documentElement;
   var desc=document.getElementById('desc'), ic=document.getElementById('ic'), pref=document.getElementById('pref');
-  var goBtn=document.getElementById('goBtn'), needNote=document.getElementById('needNote');
-  var active=false, chosenRoles=[];
+  var goBtn=document.getElementById('goBtn');
+  var active=false;
 
   function pad(n){return (n<10?'0':'')+n;}
   function nowClock(){var d=new Date();return pad(d.getHours())+pad(d.getMinutes())+' NZST';}
@@ -428,63 +397,43 @@ body.mdopen .mdrawer{display:flex}
     document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-dom')===dom?'true':'false');});
     document.querySelectorAll('.domseg button').forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-fdom')===dom?'true':'false');});
     var badge=document.getElementById('sumDomain');
-    if(dom==='marine'){badge.textContent='Marine'; badge.className='dom-badge dom-marine';
-      document.getElementById('domHint').textContent='Marine base chart, marine urgency scoring, and the for-affect tasking path to Coastguard.';}
-    else{badge.textContent='Land'; badge.className='dom-badge dom-land';
-      document.getElementById('domHint').textContent='Sets the base map, urgency scoring, forms and terminology for the whole operation.';}
+    if(dom==='marine'){badge.textContent='Marine'; badge.className='dom-badge dom-marine';}
+    else{badge.textContent='Land'; badge.className='dom-badge dom-land';}
   }
   document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){setDomain(b.getAttribute('data-dom'));});});
   document.querySelectorAll('.domseg button').forEach(function(b){b.addEventListener('click',function(){setDomain(b.getAttribute('data-fdom'));});});
 
   // live summary + checklist
   function refresh(){
-    var dv=desc.value.trim(), iv=ic.value.trim(), pv=pref.value.trim();
-    var sd=document.getElementById('sumDesc'); sd.textContent=dv||'Not set'; sd.className='v'+(dv?'':' empty');
+    var dv=desc.value.trim(), iv=ic.value.trim();
     var si=document.getElementById('sumIc'); si.textContent=iv||'Not appointed'; si.className='v'+(iv?'':' empty');
-    var sp=document.getElementById('sumPref'); sp.innerHTML=pv?'<span class="mono">'+pv+'</span>':'Not set'; sp.className='v'+(pv?'':' empty');
-    document.getElementById('stampUser').textContent=iv||'unassigned';
 
     setCk('ck-create', !!dv);
     setCk('ck-config', true); // domain + category always set (Cat I default, domain has a default)
     setCk('ck-role', !!iv);
 
-    var ready=dv&&iv;
-    goBtn.disabled=!ready||active;
-    needNote.style.display = (ready||active)?'none':'inline';
+    goBtn.disabled=!(dv&&iv)||active;
   }
   function setCk(id,on){document.getElementById(id).classList.toggle('done',!!on);}
   desc.addEventListener('input',refresh); ic.addEventListener('input',refresh); pref.addEventListener('input',refresh);
 
-  // optional roles
-  document.querySelectorAll('.rolechip').forEach(function(chip){
-    function toggle(){
-      var r=chip.getAttribute('data-role'), on=chip.getAttribute('aria-pressed')==='true';
-      chip.setAttribute('aria-pressed', on?'false':'true');
-      chip.querySelector('.x').textContent = on?'+':'✓';
-      chosenRoles = on ? chosenRoles.filter(function(x){return x!==r;}) : chosenRoles.concat([r]);
-      var row=document.getElementById('sumRolesRow');
-      if(chosenRoles.length){row.style.display='flex'; document.getElementById('sumRoles').textContent=chosenRoles.join(', ');}
-      else row.style.display='none';
-    }
-    chip.addEventListener('click',toggle);
-    chip.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle();}});
-  });
+  // category select feeds the summary
+  var cat=document.getElementById('cat');
+  cat.addEventListener('change',function(){ document.getElementById('sumCat').textContent=cat.value; });
 
   // go active
   goBtn.addEventListener('click',function(){
     if(goBtn.disabled) return;
     active=true;
     var el=document.getElementById('elapsed').textContent;
-    var t=nowClock();
     var st=document.getElementById('sumStatus'); st.className='pill p-active'; st.innerHTML='<span class="dot"></span>Active';
-    document.getElementById('stampTime').textContent=t;
     document.getElementById('ck-active').classList.add('done');
     document.getElementById('ckActiveWho').textContent=el;
     document.getElementById('clock').classList.remove('over');
     document.getElementById('elapsed').textContent=el;
     var live=document.getElementById('live'); live.classList.add('show');
     document.getElementById('liveSub').textContent='Stood up in '+el+'. Record is live and logging. The COP is ready.';
-    goBtn.textContent='Operation active'; goBtn.disabled=true; needNote.style.display='none';
+    goBtn.textContent='Operation active'; goBtn.disabled=true;
     document.getElementById('statusctl').classList.add('show');
   });
 
