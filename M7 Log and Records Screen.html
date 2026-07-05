@@ -211,6 +211,7 @@ body.mdopen .mdrawer{transform:none}
 /* narrow widths: shed quiet status items before anything can collide */
 @media (max-width:1120px){ .appbar .hsync{display:none} }
 @media (max-width:960px){ .appbar .hclock{display:none} }
+
 .appbar .hsync{display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:11.5px; color:var(--sage); white-space:nowrap}
 .appbar .hsync .hdot{width:7px; height:7px; border-radius:50%; background:#8FBF6F; box-shadow:0 0 0 3px rgba(143,191,111,.22)}
 .appbar .hclock{font-family:var(--mono); font-size:11.5px; color:var(--sage); white-space:nowrap}
@@ -228,6 +229,14 @@ body.mdopen .mdrawer{display:flex}
 .seg button{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; background:transparent; color:#CFD6C2; border:0; padding:5px 13px; cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--sage); color:var(--forest-deep)}
 
+
+/* quiet header: sync and clock hidden; the domain control collapses to its
+   active value and a tap flips it — structure identical on every module */
+.appbar .hsync,.appbar .hclock{display:none}
+.appbar .domain .lab{display:none}
+.appbar .seg{border-color:rgba(252,242,232,.35); border-radius:9px}
+.appbar .seg button{display:none}
+.appbar .seg button[aria-pressed="true"]{display:inline-block; background:transparent; color:var(--cream); text-transform:none; letter-spacing:.01em; font-size:13px; font-weight:600; padding:6px 16px}
 </style>
 </head>
 <body>
@@ -469,6 +478,21 @@ if(window.NodeList && !NodeList.prototype.forEach){ NodeList.prototype.forEach =
   });
   var he=document.getElementById('hdrElapsed');
   if(he){ var hb=260; setInterval(function(){ hb++; var m=Math.floor(hb/60),s=hb%60; he.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s; },1000); }
+})();
+</script>
+<script>
+/* quiet header: tapping the visible (active) domain value flips to the other
+   domain. Decided at capture phase, before the buttons' own handlers run, so
+   programmatic clicks that switch domains are never flipped back. */
+(function(){
+  document.querySelectorAll('.appbar .seg').forEach(function(sg){
+    sg.addEventListener('click',function(e){
+      var btn = e.target.closest ? e.target.closest('button') : null;
+      if(!btn || btn.getAttribute('aria-pressed')!=='true') return;
+      var oth = Array.prototype.filter.call(sg.querySelectorAll('button'),function(x){return x!==btn;})[0];
+      if(oth) setTimeout(function(){ oth.click(); },0);
+    }, true);
+  });
 })();
 </script>
 </body>
