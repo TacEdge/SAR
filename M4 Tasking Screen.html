@@ -89,7 +89,6 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 .field input,.field textarea{width:100%; font-family:var(--ui); font-size:15px; padding:11px 13px; background:var(--paper); border:1px solid var(--rule); border-radius:var(--r-sm); color:var(--ink); resize:vertical}
 .field input::placeholder,.field textarea::placeholder{color:#a7a996}
 .field input:focus,.field textarea:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
-.hint{font-size:12px; color:var(--ink-3); margin-top:6px}
 
 /* type + geometry pickers */
 .pickrow{display:flex; flex-wrap:wrap; gap:var(--s2)}
@@ -110,15 +109,10 @@ html[data-shell] .appbar .inc{margin-left:0; padding-left:0; border-left:0}
 
 /* routing (domain-driven) */
 .route{margin-top:var(--s2); border:1px solid var(--rule); border-radius:var(--r-md); padding:var(--s4); background:var(--cream-2)}
-.route .rlabel{font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin-bottom:8px}
 .route .mode{display:flex; align-items:center; gap:10px; font-size:15px; font-weight:600; color:var(--accent)}
 .route .mode .ic{width:26px;height:26px;border-radius:var(--r-sm); background:var(--accent-tint); color:var(--accent); display:flex; align-items:center; justify-content:center; flex:none}
 .route .mode .ic svg{width:15px;height:15px}
-.route .desc{font-size:13px; color:var(--ink-2); margin-top:8px}
-.route .desc b{color:var(--ink)}
-.land-only{display:block} .marine-only{display:none}
-html[data-domain="marine"] .land-only{display:none}
-html[data-domain="marine"] .marine-only{display:block}
+.route .mode .chev{width:16px; height:16px; margin-left:auto; color:var(--ink-3)}
 
 /* channel + push */
 .pushrow{display:flex; align-items:center; gap:var(--s4); margin-top:var(--s6); padding-top:var(--s5); border-top:1px solid var(--hairline)}
@@ -131,7 +125,6 @@ html[data-domain="marine"] .marine-only{display:block}
 html[data-domain="marine"] .btn-push:hover{background:#274b57}
 .btn-push:disabled{background:var(--neutral-bg); color:var(--ink-3); cursor:not-allowed}
 .btn-push svg{width:16px;height:16px}
-.pushnote{font-size:12px; color:var(--ink-3)}
 
 /* board */
 .board .rh{display:flex; align-items:center; justify-content:space-between; padding:11px var(--s4); background:var(--cream-2); border-bottom:1px solid var(--hairline)}
@@ -147,8 +140,6 @@ html[data-domain="marine"] .btn-push:hover{background:#274b57}
 .task .tid{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
 .task .nm{font-size:14px; font-weight:600; margin:2px 0}
 .task .meta{font-family:var(--mono); font-size:11px; color:var(--ink-3); display:flex; gap:10px; flex-wrap:wrap; margin-top:4px}
-.task .meta .pushed{color:var(--forest); display:inline-flex; align-items:center; gap:4px}
-.task .meta .pushed svg{width:11px;height:11px}
 .chipst{font-family:var(--mono); font-size:10px; font-weight:500; padding:2px 8px; border-radius:var(--r-sm); border:1px solid; text-transform:uppercase; letter-spacing:.03em; white-space:nowrap; flex:none}
 .c-created{border-color:var(--rule); color:var(--ink-3); background:var(--paper)}
 .c-assigned{border-color:var(--info); color:var(--info); background:var(--info-bg)}
@@ -291,20 +282,18 @@ body.mdopen .mdrawer{display:flex}
 
 <div class="page">
   <div class="head">
-    <div><h1>Tasking</h1><p class="strap">Create, assign, attach, and push to the field <button class="strapmore" id="strapMore" type="button" aria-expanded="false" aria-controls="strapFull">Learn more <span aria-hidden="true">▾</span></button></p>
-    <p class="strapfull" id="strapFull" hidden>Create it, assign it, attach where, push it to the field. One task object, whether you task direct or for-affect.</p></div>
+    <h1>Tasking</h1>
   </div>
 
   <div class="grid">
     <!-- COMPOSER -->
     <div class="panel">
       <div class="ph"><span class="t">New task</span><span class="ref" id="newRef">TASK-016</span></div>
-      <div class="composer-timer"><div class="tasktimer" id="timer" title="Time on this task"><span class="r"></span><span class="t" id="ttime">00:00</span> <span>task · target &lt; 1:00</span></div></div>
       <div class="pb">
 
         <div class="field">
           <label for="subj">Subject</label>
-          <input id="subj" type="text" placeholder="e.g. Sector C creek-line search">
+          <input id="subj" type="text" placeholder="Task subject">
         </div>
 
         <div class="field">
@@ -320,12 +309,11 @@ body.mdopen .mdrawer{display:flex}
         <div class="field">
           <label>Assign resource</label>
           <div class="reschips" role="group" aria-label="Resources">
-            <button class="reschip" data-res="ROMEO-2"><span class="st in"></span>ROMEO-2 <small>ground · sector A</small></button>
-            <button class="reschip" data-res="ROMEO-4"><span class="st in"></span>ROMEO-4 <small>ground · sector B</small></button>
-            <button class="reschip" data-res="K9-1"><span class="st stage"></span>K9-1 <small>dog · staging</small></button>
-            <button class="reschip" data-res="Heli-1"><span class="st avail"></span>Heli-1 <small>air · Wanaka</small></button>
+            <button class="reschip" data-res="ROMEO-2"><span class="st in"></span>ROMEO-2 <small>Ground</small></button>
+            <button class="reschip" data-res="ROMEO-4"><span class="st in"></span>ROMEO-4 <small>Ground</small></button>
+            <button class="reschip" data-res="K9-1"><span class="st stage"></span>K9-1 <small>Dog</small></button>
+            <button class="reschip" data-res="Heli-1"><span class="st avail"></span>Heli-1 <small>Air</small></button>
           </div>
-          <div class="hint">One or more. Assigned assets and their history stay linked to the task.</div>
         </div>
 
         <div class="field">
@@ -341,16 +329,7 @@ body.mdopen .mdrawer{display:flex}
         <div class="field">
           <label>Routing</label>
           <div class="route">
-            <div class="land-only">
-              <div class="rlabel">Land · direct tasking</div>
-              <div class="mode"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>Direct task to the assigned team</div>
-              <div class="desc">The team works <b>under your immediate control</b>. You task and track them directly (TASK-10).</div>
-            </div>
-            <div class="marine-only">
-              <div class="rlabel">Marine · task for-affect</div>
-              <div class="mode"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v6M5 21a7 7 0 0 1 14 0M12 9l4 4M12 9l-4 4"/></svg></span>Task Coastguard for-affect</div>
-              <div class="desc">Coastguard receives the tasking as a <b>parent</b> and issues its own direct tasks to its assets (<b>child</b>). Same task object, one flow (TASK-11).</div>
-            </div>
+            <div class="mode"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>Direct to assigned team<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
           </div>
         </div>
 
@@ -358,12 +337,10 @@ body.mdopen .mdrawer{display:flex}
           <div class="channels" role="group" aria-label="Push channel">
             <button aria-pressed="true" data-ch>App</button>
             <button data-ch>SMS</button>
-            <button data-ch>Email</button>
           </div>
           <button class="btn-push" id="pushBtn" disabled>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Push to field
           </button>
-          <span class="pushnote" id="pushNote">Add a subject and a resource to push.</span>
         </div>
 
         <div class="pushed-strip" id="pushed">
@@ -385,15 +362,15 @@ body.mdopen .mdrawer{display:flex}
       <div class="tasks" id="taskList">
         <div class="task" data-st="c-progress">
           <div class="top"><div><div class="tid">TASK-012</div><div class="nm">Sector A hasty search</div></div><span class="chipst c-progress">In progress</span></div>
-          <div class="meta"><span>ROMEO-2</span><span>sector A · 0.9 km²</span><span class="pushed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>app</span></div>
+          <div class="meta"><span>ROMEO-2</span><span>0.9 km²</span></div>
         </div>
         <div class="task" data-st="c-assigned">
           <div class="top"><div><div class="tid">TASK-014</div><div class="nm">Sector B sweep</div></div><span class="chipst c-assigned">Assigned</span></div>
-          <div class="meta"><span>ROMEO-4</span><span>sector B · 1.2 km²</span><span class="pushed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>app</span></div>
+          <div class="meta"><span>ROMEO-4</span><span>1.2 km²</span></div>
         </div>
         <div class="task" data-st="c-created">
           <div class="top"><div><div class="tid">TASK-015</div><div class="nm">Road-end containment</div></div><span class="chipst c-created">Created</span></div>
-          <div class="meta"><span>unassigned</span><span>single location</span></div>
+          <div class="meta"><span>Unassigned</span></div>
         </div>
       </div>
     </div>
@@ -403,7 +380,7 @@ body.mdopen .mdrawer{display:flex}
 <script>
 (function(){
   var root=document.documentElement;
-  var subj=document.getElementById('subj'), pushBtn=document.getElementById('pushBtn'), pushNote=document.getElementById('pushNote');
+  var subj=document.getElementById('subj'), pushBtn=document.getElementById('pushBtn');
   var chosenRes=[], geo='Search area', channel='App', nextId=16;
 
   // domain
@@ -440,29 +417,19 @@ body.mdopen .mdrawer{display:flex}
       var r=chip.getAttribute('data-res'), on=chip.getAttribute('aria-pressed')==='true';
       chip.setAttribute('aria-pressed', on?'false':'true');
       chosenRes = on ? chosenRes.filter(function(x){return x!==r;}) : chosenRes.concat([r]);
-      refresh(); startTimer();
+      refresh();
     });
   });
 
-  // task timer
-  var timer=document.getElementById('timer'), running=false, t=0, iv=null;
-  function startTimer(){ if(running) return; running=true; timer.classList.add('run');
-    iv=setInterval(function(){t++; var m=Math.floor(t/60),s=t%60; document.getElementById('ttime').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s; if(t>=60) timer.classList.add('over');},1000);
-  }
-  function stopTimer(){running=false; timer.classList.remove('run'); clearInterval(iv);}
-  function resetTimer(){t=0; document.getElementById('ttime').textContent='00:00'; timer.classList.remove('over');}
-  subj.addEventListener('focus',startTimer); subj.addEventListener('input',function(){refresh();startTimer();});
+  subj.addEventListener('input',refresh);
 
   function refresh(){
-    var ready = subj.value.trim() && chosenRes.length;
-    pushBtn.disabled=!ready; pushNote.style.display=ready?'none':'inline';
+    pushBtn.disabled = !(subj.value.trim() && chosenRes.length);
   }
 
   // push
   pushBtn.addEventListener('click',function(){
     if(pushBtn.disabled) return;
-    var el=document.getElementById('ttime').textContent;
-    stopTimer();
     var id='TASK-0'+nextId; nextId++;
     var team=chosenRes.join(', ');
     var marine=root.getAttribute('data-domain')==='marine';
@@ -470,19 +437,17 @@ body.mdopen .mdrawer{display:flex}
     // add to board
     var el2=document.createElement('div'); el2.className='task fresh'; el2.setAttribute('data-st','c-assigned');
     el2.innerHTML='<div class="top"><div><div class="tid">'+id+'</div><div class="nm">'+(subj.value.trim())+'</div></div><span class="chipst c-assigned">Assigned</span></div>'+
-      '<div class="meta"><span>'+team+'</span><span>'+geoLabel+'</span><span class="pushed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>'+channel.toLowerCase()+'</span></div>';
+      '<div class="meta"><span>'+team+'</span><span>'+geoLabel+'</span></div>';
     var list=document.getElementById('taskList'); list.insertBefore(el2, list.firstChild);
     setTimeout(function(){el2.classList.remove('fresh');},2600);
     // confirmation
     var strip=document.getElementById('pushed'); strip.classList.add('show');
-    document.getElementById('pushedTitle').textContent='Task pushed to '+team+' in '+el;
-    document.getElementById('pushedSub').textContent = marine
-      ? 'Sent to Coastguard for-affect via '+channel+'. Parent task '+id+' open; child tasks follow from the agency.'
-      : 'Delivered to the field via '+channel+'. '+id+' is now Assigned and logged.';
+    document.getElementById('pushedTitle').textContent='Task pushed to '+team;
+    document.getElementById('pushedSub').textContent = id+' assigned · sent via '+channel + (marine?' to Coastguard':'');
     // reset composer
     subj.value=''; chosenRes=[]; document.querySelectorAll('.reschip').forEach(function(c){c.setAttribute('aria-pressed','false');});
     document.getElementById('newRef').textContent='TASK-0'+nextId;
-    refresh(); resetTimer();
+    refresh();
   });
 
   // filter
