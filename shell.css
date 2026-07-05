@@ -74,22 +74,24 @@ button{font-family:inherit}
 .stage{flex:1; position:relative; min-width:0; background:var(--canvas)}
 .stage iframe{width:100%; height:100%; border:0; display:block; background:var(--paper)}
 
-/* ===== landing panel ===== */
-.landing{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  background:var(--canvas); padding:var(--s6)}
-.landing.hidden{display:none}
-.landing .card{max-width:520px; background:var(--paper); border:1px solid var(--hairline);
-  border-radius:var(--r-md); box-shadow:var(--shadow); overflow:hidden; text-align:center}
-.landing .brandband{background:var(--forest); border-bottom:3px solid var(--accent);
-  padding:var(--s5) var(--s6); display:flex; justify-content:center}
-.landing .brandband .logo{height:34px; width:auto; display:block}
-.landing .cardbody{padding:var(--s6) var(--s6) var(--s7)}
-.landing h1{font-size:26px; font-weight:700; letter-spacing:-.01em; margin:0 0 var(--s2); color:var(--ink)}
-.landing p{color:var(--ink-2); margin:0 auto var(--s6); max-width:40ch}
-.landing .begin{font-size:15px; font-weight:600; padding:12px 26px; border-radius:var(--r-sm);
-  border:1px solid transparent; background:var(--accent); color:#fff; cursor:pointer; letter-spacing:.01em}
-.landing .begin:hover{background:var(--forest-deep)}
-html[data-domain="marine"] .landing .begin:hover{background:#274b57}
+/* ===== entry state: the product doorway, not part of the workspace =====
+   Covers the whole viewport so no module rail or workspace chrome exists
+   before entry. Only the brandmark, the domain label, and the way in. */
+.entry{position:fixed; inset:0; z-index:300; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; background:var(--canvas);
+  padding:calc(var(--safe-top) + var(--s6)) var(--s6) var(--s8)}
+.entry.hidden{display:none}
+.entry .elogo{width:min(58vw,440px); height:auto; display:block}
+.entry .esr{margin-top:var(--s5); font-size:clamp(15px,2.2vw,21px); font-weight:600;
+  letter-spacing:.34em; text-indent:.34em; text-transform:uppercase; color:var(--forest)}
+.entry .begin{margin-top:var(--s8); font-size:17px; font-weight:600; padding:14px 42px;
+  border-radius:var(--r-md); border:1px solid transparent; background:var(--forest);
+  color:var(--cream); cursor:pointer; letter-spacing:.01em}
+.entry .begin:hover{background:var(--forest-deep)}
+.entry .begin:focus-visible{outline:2px solid var(--forest); outline-offset:3px}
+
+/* the workspace shell exists only after entry */
+body:not(.entered) .nav{display:none}
 
 /* ===== mobile: the shell sidebar hides and the module fills the screen.
    Each module carries its own top app bar and module drawer, and handles the

@@ -31,20 +31,17 @@
     <div id="navList"></div>
   </nav>
 
-  <!-- central stage: iframe + landing panel -->
+  <!-- central stage -->
   <div class="stage">
     <iframe id="screenFrame" title="SAROP Workspace module"></iframe>
-    <div class="landing" id="landing">
-      <div class="card">
-        <div class="brandband"><img class="logo" src="assets/tacedge-logo.png" alt="TacEdge" width="1978" height="391"></div>
-        <div class="cardbody">
-          <h1>SAROP Workspace</h1>
-          <p>A clickable prototype of the single-operation workspace. Open any module from the left, or start at stand-up.</p>
-          <button class="begin" id="beginBtn" type="button">Enter the workspace</button>
-        </div>
-      </div>
-    </div>
   </div>
+</div>
+
+<!-- entry state: a quiet front door, fully separate from the workspace shell -->
+<div class="entry" id="landing">
+  <img class="elogo" src="assets/tacedge-logo-olive.png" alt="TacEdge" width="1978" height="391">
+  <div class="esr">Search &amp; Rescue</div>
+  <button class="begin" id="beginBtn" type="button">Enter workspace</button>
 </div>
 
 <script src="shell.js"></script>
