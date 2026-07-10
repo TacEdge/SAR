@@ -86,7 +86,7 @@ body.mdopen .mdrawer{display:flex}
 .sbar .sref i{font-style:normal; opacity:.55; padding:0 3px}
 
 /* app scroll body */
-.app{flex:1; overflow-y:auto; padding:16px 18px 0}
+.app{flex:1; overflow-y:auto; padding:14px 16px 0}
 
 /* task card (from M4) */
 .taskcard{background:var(--card); border:1px solid var(--cardline); border-left:4px solid var(--brand); border-radius:var(--r-md); padding:14px 16px; margin-bottom:18px}
@@ -97,28 +97,29 @@ body.mdopen .mdrawer{display:flex}
 
 /* capture tiles */
 .sect{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:600; margin:2px 0 10px}
-.tiles{display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-bottom:22px}
-.tile{background:var(--card); border:1px solid var(--cardline); border-radius:var(--r-md); padding:18px 14px; min-height:74px; display:flex; align-items:center; gap:12px; color:var(--text); text-align:left}
+.tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin:14px 0 18px}
+.tile{background:var(--card); border:1px solid var(--cardline); border-radius:var(--r-md); padding:12px 4px 11px; min-height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; color:var(--text); text-align:center}
 .tile:active{background:var(--brandtint)}
-.tile .ti{width:38px; height:38px; border-radius:10px; background:var(--brandtint); color:var(--brand); display:flex; align-items:center; justify-content:center; flex:none}
+.tile .ti{width:34px; height:34px; border-radius:10px; background:var(--brandtint); color:var(--brand); display:flex; align-items:center; justify-content:center; flex:none}
 .tile .ti svg{width:21px; height:21px}
-.tile .tt{font-size:16px; font-weight:600}
+.tile .tt{font-size:12.5px; font-weight:600}
 
 /* captures list */
-.cap{background:var(--card); border:1px solid var(--cardline); border-radius:var(--r-md); padding:13px 15px; margin-bottom:11px; animation:pop .25s ease}
+.cap{background:var(--card); border:1px solid var(--cardline); border-radius:var(--r-md); padding:12px 12px; margin-bottom:11px; animation:pop .25s ease}
 @keyframes pop{from{opacity:0; transform:translateY(-6px)}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.cap{animation:none}}
-.cap .ct{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px}
+.cap .ct{display:flex; align-items:center; gap:7px}
+.cap .ctitle{flex:1; min-width:0; font-size:13.5px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.cap .chev{color:var(--muted); font-size:16px; line-height:1; flex:none}
 .cattag{font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:var(--r-sm)}
 .cattag.clue{background:rgba(166,53,43,.14); color:var(--bad)}
 .cattag.obs{background:var(--brandtint); color:var(--brand)}
 .cattag.track{background:rgba(53,96,110,.16); color:var(--info)}
 .phone[data-theme="night"] .cattag.track{color:#7FB8C6}
-.cap .cbody{font-size:14.5px; color:var(--text); line-height:1.4}
-.cap .cmeta{font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:7px; display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.cap .cmeta{font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:6px; display:flex; align-items:center; gap:6px; flex-wrap:wrap}
 .cap .cmeta .lock{display:inline-flex; align-items:center; gap:3px; color:var(--brand)}
 .cap .cmeta .lock svg{width:10px; height:10px}
-.syncchip{display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; padding:3px 9px; border-radius:var(--r-pill); border:1px solid var(--cardline)}
+.syncchip{display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:600; padding:3px 8px; border-radius:var(--r-pill); border:1px solid var(--cardline); flex:none; white-space:nowrap}
 .syncchip .sd{width:7px; height:7px; border-radius:50%}
 .syncchip.local{color:var(--muted)} .syncchip.local .sd{background:var(--muted)}
 .syncchip.queued{color:var(--warn)} .syncchip.queued .sd{background:var(--warn)}
@@ -130,26 +131,15 @@ body.mdopen .mdrawer{display:flex}
 
 /* sync footer */
 .sect .scount{font-family:var(--mono); font-size:10px; letter-spacing:0; text-transform:none; color:var(--muted); float:right}
-.viewall{display:flex; align-items:center; justify-content:space-between; width:100%; background:var(--card); border:1px solid var(--cardline); border-radius:var(--r-md); padding:13px 16px; margin-top:10px; font-family:inherit; font-size:13.5px; font-weight:600; color:var(--headline); cursor:pointer}
-.viewall span{color:var(--muted); font-size:16px; line-height:1}
-.syncbar{background:var(--card); border-top:1px solid var(--cardline); padding:15px 20px; display:flex; align-items:center; gap:13px}
-.syncbar .si{width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none}
-.phone[data-signal="offline"] .syncbar .si{background:rgba(169,116,27,.16); color:var(--warn)}
-.phone[data-signal="online"] .syncbar .si{background:var(--brandtint); color:var(--ok)}
-.syncbar .si svg{width:19px; height:19px}
-.syncbar .st{font-size:14px; font-weight:600; color:var(--text)}
-.syncbar .ss{font-size:12px; color:var(--muted)}
 
 /* ===== tabs: Capture / Map ===== */
-.tabs{display:flex; gap:6px; padding:2px 0 14px}
-.tabs button{flex:1; font-size:14px; font-weight:600; padding:10px; border-radius:var(--r-sm); border:1px solid var(--cardline); background:var(--card); color:var(--muted)}
-.tabs button[aria-selected="true"]{background:var(--brandtint); color:var(--brand); border-color:var(--brand)}
-.pane[hidden]{display:none}
 
 /* map mode makes the app a non-scrolling flex column so the map fills */
 .app.mapmode{overflow:hidden; display:flex; flex-direction:column; padding-bottom:0}
 #paneMap{flex:1; display:flex; flex-direction:column; min-height:0}
-.opmapwrap{position:relative; flex:1; min-height:0; border-radius:var(--r-md); overflow:hidden; border:1px solid var(--cardline)}
+.opmapwrap{position:relative; flex:none; height:300px; border-radius:var(--r-md); overflow:hidden; border:1px solid var(--cardline)}
+.locate{position:absolute; top:10px; right:10px; z-index:3; width:44px; height:44px; border-radius:50%; border:1px solid var(--cardline); background:var(--card); color:var(--brand); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.25); cursor:pointer}
+.locate svg{width:19px; height:19px}
 #opmap{position:absolute; inset:0; background:var(--app)}
 /* one compact map-settings pill: current basemap (tap to change) + 3D toggle.
    Dark treatment so it reads on any imagery, echoing the marker-card language. */
@@ -191,15 +181,7 @@ body.mdopen .mdrawer{display:flex}
 @media (prefers-reduced-motion:reduce){.opin.syncing .dot{animation:none}}
 
 /* map bottom bar: legend + capture-here */
-.mapbar{flex:none; display:flex; align-items:center; gap:10px; padding:12px 0 16px}
-.mapbar .here{flex:1; justify-content:center}
-.here{display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:14px; font-weight:600; padding:11px 16px; border-radius:var(--r-pill); background:var(--brand); color:#fff; border:0}
-.here svg{width:17px; height:17px}
-.phone[data-theme="night"] .here{color:var(--app)}
 /* markup point-capture toggle: outline variant, filled while armed */
-.here.alt{background:transparent; color:var(--brand); border:1.5px solid var(--brand)}
-.here.alt.on{background:var(--brand); color:#fff}
-.phone[data-theme="night"] .here.alt:not(.on){color:var(--brand); background:transparent}
 
 /* capture sheet: map-driven capture, same flow as the tiles */
 .sheet{position:absolute; inset:0; z-index:60; background:rgba(10,14,8,.42); display:flex; align-items:flex-end}
@@ -319,19 +301,32 @@ body.mdopen .mdrawer{transform:none}
       </div>
 
       <div class="app" id="app">
-        <div class="tabs" role="tablist">
-          <button id="tabCapture" role="tab" aria-selected="true">Capture</button>
-          <button id="tabMap" role="tab" aria-selected="false">Map</button>
-        </div>
-
-        <div class="pane" id="paneCapture">
         <div class="taskcard">
           <div class="k">Your task<span class="tbadge">Assigned</span></div>
           <div class="nm">Sector B sweep</div>
           <div class="m">TASK-014 · Assigned · 1.2 km²</div>
         </div>
 
-        <div class="sect">Capture</div>
+        <div class="opmapwrap">
+          <div id="opmap"></div>
+          <div class="mapset">
+            <div class="row">
+              <button id="msBase" type="button" aria-expanded="false" aria-controls="msMenu" aria-label="Basemap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+                <span id="msBaseLbl">Topo</span><span class="ms-caret" aria-hidden="true">▾</span>
+              </button>
+              <span class="ms-dv" aria-hidden="true"></span>
+              <button id="msTilt" type="button" class="ms-tilt" aria-pressed="false">3D</button>
+            </div>
+            <div class="ms-menu" id="msMenu" hidden>
+              <button data-base="linz-topo" class="on">Topo</button>
+              <button data-base="linz-aerial">Aerial</button>
+              <button data-base="satellite">Sat</button>
+            </div>
+          </div>
+          <button class="locate" id="locateBtn" type="button" aria-label="Centre on the task area"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22"/></svg></button>
+        </div>
+
         <div class="tiles">
           <button class="tile" data-add="obs"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></span><span class="tt">Observation</span></button>
           <button class="tile" data-add="clue"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span class="tt">Clue</span></button>
@@ -342,54 +337,19 @@ body.mdopen .mdrawer{transform:none}
         <div class="sect" id="capHead">Recent captures<span class="scount" id="capCount">3 on device</span></div>
         <div id="caps">
           <div class="cap" data-sync="local">
-            <div class="ct"><span class="cattag clue">Clue</span><span class="syncchip local"><span class="sd"></span>Captured</span></div>
-            <div class="cbody">Single footprint near creek fork</div>
+            <div class="ct"><span class="cattag clue">Clue</span><span class="ctitle">Single footprint near creek fork</span><span class="syncchip local"><span class="sd"></span>Captured</span><span class="chev" aria-hidden="true">›</span></div>
             <div class="cmeta"><span>14:43</span>·<span>NZTM 1573290E 5180410N</span></div>
           </div>
           <div class="cap" data-sync="queued">
-            <div class="ct"><span class="cattag obs">Observation</span><span class="syncchip queued"><span class="sd"></span>Queued</span></div>
-            <div class="cbody">Broken fern, recent passage</div>
+            <div class="ct"><span class="cattag obs">Observation</span><span class="ctitle">Broken fern, recent passage</span><span class="syncchip queued"><span class="sd"></span>Queued</span><span class="chev" aria-hidden="true">›</span></div>
             <div class="cmeta"><span>14:46</span>·<span>NZTM 1573180E 5180520N</span></div>
           </div>
           <div class="cap" data-sync="queued">
-            <div class="ct"><span class="cattag obs">Photo</span><span class="syncchip queued"><span class="sd"></span>Queued</span></div>
-            <div class="cbody">Track junction</div>
-            <div class="cmeta"><span>14:48</span>·<span>1 photo</span></div>
+            <div class="ct"><span class="cattag obs">Photo</span><span class="ctitle">Track junction</span><span class="syncchip queued"><span class="sd"></span>Queued</span><span class="chev" aria-hidden="true">›</span></div>
+            <div class="cmeta"><span>14:48</span>·<span>NZTM 1573125E 5180345N</span></div>
           </div>
         </div>
-        <button class="viewall" id="viewAll" type="button">View all captures<span aria-hidden="true">›</span></button>
         <div style="height:16px"></div>
-        </div><!-- /paneCapture -->
-
-        <div class="pane" id="paneMap" hidden>
-          <div class="opmapwrap">
-            <div id="opmap"></div>
-            <div class="mapset">
-              <div class="row">
-                <button id="msBase" type="button" aria-expanded="false" aria-controls="msMenu" aria-label="Basemap">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
-                  <span id="msBaseLbl">Topo</span><span class="ms-caret" aria-hidden="true">▾</span>
-                </button>
-                <span class="ms-dv" aria-hidden="true"></span>
-                <button id="msTilt" type="button" class="ms-tilt" aria-pressed="false">3D</button>
-              </div>
-              <div class="ms-menu" id="msMenu" hidden>
-                <button data-base="linz-topo" class="on">Topo</button>
-                <button data-base="linz-aerial">Aerial</button>
-                <button data-base="satellite">Sat</button>
-              </div>
-            </div>
-          </div>
-          <div class="mapbar">
-            <button class="here alt" id="dropBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>Drop point</button>
-            <button class="here" id="hereBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22"/></svg>Capture here</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="syncbar">
-        <span class="si" id="syncIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg></span>
-        <div><div class="st" id="syncTitle">2 captured offline</div><div class="ss" id="syncSub">Held on this device. Will sync when back in range.</div></div>
       </div>
 
       <div class="sheet" id="sheet" hidden>
@@ -426,19 +386,8 @@ body.mdopen .mdrawer{transform:none}
 
   function countPending(){return document.querySelectorAll('.cap[data-sync="queued"]').length;}
   function updateBar(){
-    var n=countPending(), online=isOnline();
     var cc=document.getElementById('capCount');
     if(cc) cc.textContent=document.querySelectorAll('#caps .cap').length+' on device';
-    if(online && n===0){
-      document.getElementById('syncTitle').textContent='All captures synced';
-      document.getElementById('syncSub').textContent='On the IMT log. Nothing re-keyed.';
-    } else if(online){
-      document.getElementById('syncTitle').textContent='Syncing '+n+'…';
-      document.getElementById('syncSub').textContent='Writing to the spine.';
-    } else {
-      document.getElementById('syncTitle').textContent=n+' captured offline';
-      document.getElementById('syncSub').textContent='Held on this device. Will sync when back in range.';
-    }
   }
 
   function goOffline(){
@@ -503,8 +452,7 @@ body.mdopen .mdrawer{transform:none}
     var syncClass=online?'synced':'queued', syncLabel=online?'Synced':'Queued';
     tSeq++;
     var el=document.createElement('div'); el.className='cap'; el.setAttribute('data-sync', online?'synced':'queued');
-    el.innerHTML='<div class="ct"><span class="cattag '+meta.cat+'">'+meta.label+'</span><span class="syncchip '+syncClass+'"><span class="sd"></span>'+syncLabel+'</span></div>'+
-      '<div class="cbody">'+body+'</div>'+
+    el.innerHTML='<div class="ct"><span class="cattag '+meta.cat+'">'+meta.label+'</span><span class="ctitle">'+body+'</span><span class="syncchip '+syncClass+'"><span class="sd"></span>'+syncLabel+'</span><span class="chev" aria-hidden="true">›</span></div>'+
       '<div class="cmeta"><span>14:5'+((tSeq)%10)+'</span>·'+metaText+'</div>';
     var caps=document.getElementById('caps'); caps.insertBefore(el, caps.firstChild);
     var entry={ kind:kind, cat:meta.cat, label:meta.label, col:meta.col, sync:online?'synced':'queued',
@@ -558,8 +506,8 @@ body.mdopen .mdrawer{transform:none}
         try{ map.fitBounds([[167.629,-45.405],[167.653,-45.390]], {padding:26, duration:0}); }catch(e){}
         map.on('click', function(e){ openSheet(e.lngLat.lng, e.lngLat.lat); });
         /* point capture via the TacEdge markup tooling behind the adapter:
-           "Drop point" arms the point tool; the placed point opens the same
-           capture sheet, and the capture pipeline renders the final marker. */
+           a placed point opens the same capture sheet, and the capture
+           pipeline renders the final marker. */
         opMarkup = SaropMap.attachMarkup(mapCtrl, {
           kindStyles:{ point:{ markerColor:'#35606E' } },
           onChange:function(ev,row){
@@ -568,28 +516,19 @@ body.mdopen .mdrawer{transform:none}
               pendingMarkupId=row._id;
               openSheet(c[0], c[1]);
             }
-          },
-          onToolChange:function(){ syncDropBtn(); }   // one-shot placement re-arms Select
+          }
         });
-        syncDropBtn(); syncBaseLbl();
+        syncBaseLbl();
         setTimeout(function(){ map.resize(); },150);
       }
     });
   }
 
-  /* ---- tabs ---- */
-  var app=document.getElementById('app');
-  function selectTab(which){
-    var cap=which==='capture';
-    document.getElementById('tabCapture').setAttribute('aria-selected', cap?'true':'false');
-    document.getElementById('tabMap').setAttribute('aria-selected', cap?'false':'true');
-    document.getElementById('paneCapture').hidden=!cap;
-    document.getElementById('paneMap').hidden=cap;
-    app.classList.toggle('mapmode', !cap);
-    if(!cap){ ensureMap(); setTimeout(function(){ if(mapCtrl) mapCtrl.resize(); },60); }
-  }
-  document.getElementById('tabCapture').addEventListener('click',function(){ selectTab('capture'); });
-  document.getElementById('tabMap').addEventListener('click',function(){ selectTab('map'); });
+  /* ---- one surface: the map is part of the capture screen ---- */
+  ensureMap();
+  document.getElementById('locateBtn').addEventListener('click',function(){
+    if(mapCtrl) try{ mapCtrl.map.fitBounds([[167.629,-45.405],[167.653,-45.390]], {padding:26}); }catch(e){}
+  });
 
   /* ---- map settings: one compact pill — current basemap (tap to change)
      plus a small 3D toggle. Alternatives stay hidden until opened. ---- */
@@ -644,21 +583,6 @@ body.mdopen .mdrawer{transform:none}
   document.querySelectorAll('.sheetopts button').forEach(function(b){
     b.addEventListener('click',function(){ var k=b.getAttribute('data-k'), c=pendingCoord; closeSheet(); addCapture(k, c); });
   });
-  document.getElementById('hereBtn').addEventListener('click',function(){ openSheet(G.R4[0], G.R4[1]); });
-
-  /* ---- Drop point: arm/disarm the markup point tool ---- */
-  var dropBtn=document.getElementById('dropBtn');
-  function syncDropBtn(){
-    var on=!!(opMarkup && opMarkup.getTool()==='point');
-    dropBtn.classList.toggle('on', on);
-    dropBtn.setAttribute('aria-pressed', on?'true':'false');
-  }
-  dropBtn.addEventListener('click',function(){
-    if(!opMarkup) return;
-    opMarkup.setTool(opMarkup.getTool()==='point' ? 'select' : 'point');
-    syncDropBtn();
-  });
-
   updateBar();
 })();
 </script>
